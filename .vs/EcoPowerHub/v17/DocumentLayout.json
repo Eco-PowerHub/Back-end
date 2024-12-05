@@ -1,0 +1,54 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\backend\\EcoPowerHub\\EcoPowerHub\\EcoPowerHub\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{173F0E38-7F67-4559-B6B2-5A9616EAA2DE}|Infrastructure\\Infrastructure.csproj|e:\\backend\\ecopowerhub\\ecopowerhub\\ecopowerhub\\infrastructure\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{173F0E38-7F67-4559-B6B2-5A9616EAA2DE}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{421224D0-B4A8-46AE-9C6E-91E7C7361E17}|EcoPowerHub\\EcoPowerHub.csproj|e:\\backend\\ecopowerhub\\ecopowerhub\\ecopowerhub\\ecopowerhub\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{421224D0-B4A8-46AE-9C6E-91E7C7361E17}|EcoPowerHub\\EcoPowerHub.csproj|solutionrelative:ecopowerhub\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "E:\\backend\\EcoPowerHub\\EcoPowerHub\\EcoPowerHub\\Infrastructure\\Data\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "Infrastructure\\Data\\ApplicationDbContext.cs",
+              "ToolTip": "E:\\backend\\EcoPowerHub\\EcoPowerHub\\EcoPowerHub\\Infrastructure\\Data\\ApplicationDbContext.cs",
+              "RelativeToolTip": "Infrastructure\\Data\\ApplicationDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-05T18:40:49.742Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\backend\\EcoPowerHub\\EcoPowerHub\\EcoPowerHub\\EcoPowerHub\\Program.cs",
+              "RelativeDocumentMoniker": "EcoPowerHub\\Program.cs",
+              "ToolTip": "E:\\backend\\EcoPowerHub\\EcoPowerHub\\EcoPowerHub\\EcoPowerHub\\Program.cs",
+              "RelativeToolTip": "EcoPowerHub\\Program.cs",
+              "ViewState": "AgIAAAMAAACAZmZmZmYkwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-05T18:40:17.457Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
