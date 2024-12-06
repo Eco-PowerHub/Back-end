@@ -1,0 +1,6 @@
+@EcoPower_HostAddress = http://localhost:5104
+
+GET {{EcoPower_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
