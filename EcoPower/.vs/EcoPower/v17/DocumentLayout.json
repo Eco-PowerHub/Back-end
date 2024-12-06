@@ -1,0 +1,277 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "F:\\GradutionProject\\EcoPower\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\migrations\\20241206164500_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:migrations\\20241206164500_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\data\\ecopowerdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:data\\ecopowerdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\models\\support.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:models\\support.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|F:\\GradutionProject\\EcoPower\\Migrations\\20241206164108_initialCreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Migrations\\20241206164108_initialCreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\models\\property.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:models\\property.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\models\\payment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:models\\payment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\models\\order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:models\\order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\models\\package.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:models\\package.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\models\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:models\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\repositories\\services\\tokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:repositories\\services\\tokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\models\\engineer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:models\\engineer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\models\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:models\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|f:\\gradutionproject\\ecopower\\data\\seedroler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{94612B57-0CD5-4F77-9975-4DBD40AEB033}|EcoPower.csproj|solutionrelative:data\\seedroler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "20241206164500_initialCreate.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Migrations\\20241206164500_initialCreate.cs",
+              "RelativeDocumentMoniker": "Migrations\\20241206164500_initialCreate.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Migrations\\20241206164500_initialCreate.cs",
+              "RelativeToolTip": "Migrations\\20241206164500_initialCreate.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T16:45:01.091Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "20241206164108_initialCreate.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Migrations\\20241206164108_initialCreate.cs",
+              "RelativeDocumentMoniker": "Migrations\\20241206164108_initialCreate.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Migrations\\20241206164108_initialCreate.cs",
+              "RelativeToolTip": "Migrations\\20241206164108_initialCreate.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T16:41:08.432Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Order.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Models\\Order.cs",
+              "RelativeDocumentMoniker": "Models\\Order.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Models\\Order.cs",
+              "RelativeToolTip": "Models\\Order.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAxwA0AAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T16:36:53.044Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Product.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Models\\Product.cs",
+              "RelativeDocumentMoniker": "Models\\Product.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Models\\Product.cs",
+              "RelativeToolTip": "Models\\Product.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAzwA0AAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T16:35:33.7Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-12-06T16:30:03.857Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "TokenService.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Repositories\\Services\\TokenService.cs",
+              "RelativeDocumentMoniker": "Repositories\\Services\\TokenService.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Repositories\\Services\\TokenService.cs",
+              "RelativeToolTip": "Repositories\\Services\\TokenService.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABIAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T16:10:03.409Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Support.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Models\\Support.cs",
+              "RelativeDocumentMoniker": "Models\\Support.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Models\\Support.cs",
+              "RelativeToolTip": "Models\\Support.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAAAAwAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T13:57:48.387Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "EcoPowerDbContext.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Data\\EcoPowerDbContext.cs",
+              "RelativeDocumentMoniker": "Data\\EcoPowerDbContext.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Data\\EcoPowerDbContext.cs",
+              "RelativeToolTip": "Data\\EcoPowerDbContext.cs",
+              "ViewState": "AgIAAIcAAAAAAAAAAAAUwJIAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T13:07:51.669Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ApplicationUser.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Models\\ApplicationUser.cs",
+              "RelativeDocumentMoniker": "Models\\ApplicationUser.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Models\\ApplicationUser.cs",
+              "RelativeToolTip": "Models\\ApplicationUser.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAwAsAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T13:10:15.042Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Engineer.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Models\\Engineer.cs",
+              "RelativeDocumentMoniker": "Models\\Engineer.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Models\\Engineer.cs",
+              "RelativeToolTip": "Models\\Engineer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T13:55:54.347Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Category.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Models\\Category.cs",
+              "RelativeDocumentMoniker": "Models\\Category.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Models\\Category.cs",
+              "RelativeToolTip": "Models\\Category.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T13:55:24.983Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Package.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Models\\Package.cs",
+              "RelativeDocumentMoniker": "Models\\Package.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Models\\Package.cs",
+              "RelativeToolTip": "Models\\Package.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T13:14:22.344Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Payment.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Models\\Payment.cs",
+              "RelativeDocumentMoniker": "Models\\Payment.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Models\\Payment.cs",
+              "RelativeToolTip": "Models\\Payment.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAxwAsAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T13:57:12.328Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Property.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Models\\Property.cs",
+              "RelativeDocumentMoniker": "Models\\Property.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Models\\Property.cs",
+              "RelativeToolTip": "Models\\Property.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAYwAsAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T13:58:01.403Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Program.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAwBoAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T13:22:40.452Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "SeedRoler.cs",
+              "DocumentMoniker": "F:\\GradutionProject\\EcoPower\\Data\\SeedRoler.cs",
+              "RelativeDocumentMoniker": "Data\\SeedRoler.cs",
+              "ToolTip": "F:\\GradutionProject\\EcoPower\\Data\\SeedRoler.cs",
+              "RelativeToolTip": "Data\\SeedRoler.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-06T13:18:39.849Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
