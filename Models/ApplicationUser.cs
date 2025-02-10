@@ -11,5 +11,6 @@ namespace EcoPowerHub.Models
         public string? Address { get; set; }
         public DateTime RegisterdAt { get; set; } = DateTime.UtcNow;
         public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<RefreshToken>? RefreshTokens = new List<RefreshToken>();
     }
 }

@@ -1,10 +1,16 @@
 
 using EcoPowerHub.Data;
 using EcoPowerHub.Models;
+using EcoPowerHub.Repositories.Interfaces;
+using EcoPowerHub.Repositories.Services;
+using EcoPowerHub.UOW;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace EcoPowerHub
 {
@@ -25,7 +31,29 @@ namespace EcoPowerHub
             //add identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
              .AddEntityFrameworkStores<EcoPowerDbContext>();
-
+            //add Authentication 
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(op =>
+            {
+                op.SaveToken = false;
+                op.RequireHttpsMetadata = false;
+                op.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = builder.Configuration["JWT:Issuer"],
+                    ValidAudience = builder.Configuration["JWT:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])),
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+            //inject services 
+            builder.Services.AddScoped<IUnitOfWork , UnitOfWork>();
+         // builder.Services.AddScoped<ITokenService,TokenService>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
