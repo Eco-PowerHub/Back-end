@@ -1,5 +1,5 @@
 pipeline {
-    agnet ang
+    agent any
     environment {
         GIT_REPO = 'https://github.com/Eco-PowerHub/Back-end.git'
         BRANCH = 'Dev'
