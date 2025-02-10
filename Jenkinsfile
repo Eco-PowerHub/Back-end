@@ -9,27 +9,26 @@ pipeline {
     }
 
     stages {
-
         stage("Fetch Git Repo") {
-            stepes {
+            steps {
                 git branch: "${BRANCH}", url: "${GIT_REPO}"
             }    
         }
 
         stage("Restore Dependencies") {
-            stepes {
+            steps {
                 sh 'dotnet restore'
             }
         }
 
         // stage("Building") {
-        //     stepes {
+        //     steps {
         //         sh 'dotnet build --no-restore -c Release'
         //     }
         // }
 
         stage("Publish") {
-            stepes {
+            steps {
                 sh 'RUN dotnet publish -c Release -o publish'
             }
         }
