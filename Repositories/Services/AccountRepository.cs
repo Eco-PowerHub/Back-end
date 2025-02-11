@@ -8,6 +8,7 @@ using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Net;
+using System.Security.Principal;
 using HttpStatusCode = System.Net.HttpStatusCode;
 namespace EcoPowerHub.Repositories.Services
 {
@@ -103,7 +104,7 @@ namespace EcoPowerHub.Repositories.Services
             if (user == null)
                 return new ResponseDto { Message = "User not found!" };
 
-            if (user.RefreshTokens != null)
+            if (user.RefreshTokens?.Any() == true)
                 user.RefreshTokens.Clear();
             await _userManager.UpdateAsync(user);
             return new ResponseDto
@@ -122,7 +123,7 @@ namespace EcoPowerHub.Repositories.Services
                 {
                     Message = "User not found!",
                     IsSucceeded = false , 
-                    StatusCode = (int)HttpStatusCode.BadRequest
+                    StatusCode = (int)HttpStatusCode.NotFound
                 };
             var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
             if(!result.Succeeded)
@@ -150,7 +151,7 @@ namespace EcoPowerHub.Repositories.Services
                 {
                     Message = "User not found!",
                     IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest
+                    StatusCode = (int)HttpStatusCode.NotFound
                 };
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user, token, dto.NewPassword);
@@ -170,22 +171,129 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = (int)HttpStatusCode.OK
             };
             }
-        public Task<ResponseDto> DeleteProfileAsync(LoginDto account)
+        public async Task<ResponseDto> DeleteProfileAsync(LoginDto account)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByEmailAsync(account.Email);
+            if (user is null)
+                return new ResponseDto
+                {
+                    Message = "User not found!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
+            if (user.RefreshTokens?.Any() == true)
+                user.RefreshTokens.Clear();
+            var result =  await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                return new ResponseDto
+                {
+                    Message = "Failed to delete account, try agin",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
+            return new ResponseDto
+            {
+                Message = "Account deleted successfully ,Your Data Will Be Safely Removed",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK
+            };
         }
-        public Task<ResponseDto> updateProfile(UserDto profileDto)
+        public async Task<ResponseDto> updateProfile(UserDto profileDto)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByEmailAsync(profileDto.Email);
+            if (user is null)
+            {
+                return new ResponseDto
+                {
+                    Message = "User not found!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
+            }
+            _mapper.Map(profileDto, user);  
+            var result =  await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return new ResponseDto
+                {
+                    Message = "Failed to update user, try again",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
+            var updatedUser = _mapper.Map<UserDto>(user);
+            return new ResponseDto
+            {
+                Message = "User updated successfully",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK,
+                Data = updatedUser
+            };
+
         }
-        public Task<ResponseDto> GenerateRefreshTokenAsync(string email)
+        public async Task<ResponseDto> GenerateRefreshTokenAsync(string email)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+            {
+                return new ResponseDto
+                {
+                    Message = "User not found!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
+            }
+            if (user.RefreshTokens.Any(t=>t.IsActive))
+            {
+                return new ResponseDto
+                {
+                    Message = "Token still active!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                };
+            }
+            var token = _tokenService.GenerateToken(user);
+            var refreshToken = _tokenService.GeneraterefreshToken();
+            user.RefreshTokens.Add(refreshToken);
+            var updateResult=  await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                return new ResponseDto
+                {
+                    Message = "Failed to update user!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+            return new ResponseDto
+            {
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK,
+                Data = new
+                {
+                    IsAuthenticated = true,
+                    Token = token,
+                    RefreshToken = refreshToken,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                }
+            }; 
         }
       
-        public Task<bool> RevokeRefreshTokenAsync(string email)
+        public async Task<bool> RevokeRefreshTokenAsync(string email)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByEmailAsync(email);
+               if(user == null) return false;
+
+            var activeToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
+            if(activeToken == null) return false;
+
+            activeToken.RevokedOn = DateTime.UtcNow;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded) return false;
+            return true;
         }
         
 

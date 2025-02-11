@@ -11,6 +11,7 @@ namespace EcoPowerHub.AutoMapper
           CreateMap<LoginDto,ApplicationUser>().ReverseMap();
           CreateMap<RegisterDto,ApplicationUser>().ReverseMap();
           CreateMap<PasswordSettingDto,ApplicationUser>().ReverseMap();
+            CreateMap<UserDto, ApplicationUser>().ReverseMap();
         
         }
     }

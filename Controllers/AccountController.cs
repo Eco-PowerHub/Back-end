@@ -64,5 +64,45 @@ namespace EcoPowerHub.Controllers
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
+        [HttpPut("EditProfile")]
+        public async Task<IActionResult> EditProfile([FromBody] UserDto userDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var response = await _unitOfWork.Accounts.updateProfile(userDto);
+            if (response.IsSucceeded)
+                return Ok(response);
+            return StatusCode(response.StatusCode, new { response.Message });
+        }
+        [HttpDelete("DeleteAccount")]
+        public async Task<IActionResult> DeleteAccount([FromBody] LoginDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var response = await _unitOfWork.Accounts.DeleteProfileAsync(dto);
+            if (response.IsSucceeded)
+                return Ok(response);
+            return StatusCode(response.StatusCode, new { response.Message });
+        }
+        [HttpPost("GenerateRefreshToken")]
+        public async Task<IActionResult> GenerateRefreshToken([FromBody] string email)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var response = await _unitOfWork.Accounts.GenerateRefreshTokenAsync(email);
+            if (response.IsSucceeded)
+                return Ok(response);
+            return StatusCode(response.StatusCode, new { response.Message });
+        }
+        [HttpPost("RevokeRefreshToken")]
+        public async Task<IActionResult> RevokeRefreshToken([FromBody] string email)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var token = await _unitOfWork.Accounts.RevokeRefreshTokenAsync(email);
+            if (!token)
+                return NotFound("User or token not found!");
+            return Ok("Token revoked successfully");
+        }
     }
 }
