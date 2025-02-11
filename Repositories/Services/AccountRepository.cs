@@ -114,14 +114,62 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public Task<ResponseDto> ChangePasswordAsync(PasswordSettingDto dto)
+        public async Task<ResponseDto> ChangePasswordAsync(PasswordSettingDto dto)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user is null)
+                return new ResponseDto
+                {
+                    Message = "User not found!",
+                    IsSucceeded = false , 
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+            if(!result.Succeeded)
+            {
+                return new ResponseDto
+                {
+                    Message = "Failed to change password , try agin",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
+            return new ResponseDto
+            {
+                Message = "Password has changed successfully",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK
+            };
         }
-        public Task<ResponseDto> ResetPasswordAsync(PasswordSettingDto dto)
+        public async Task<ResponseDto> ResetPasswordAsync(PasswordSettingDto dto)
         {
-            throw new NotImplementedException();
-        }
+
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user is null)
+                return new ResponseDto
+                {
+                    Message = "User not found!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, dto.NewPassword);
+            if (!result.Succeeded)
+            {
+                return new ResponseDto
+                {
+                    Message = "Failed to change password , try agin",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
+            return new ResponseDto
+            {
+                Message = "Passwored reset successfully ",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK
+            };
+            }
         public Task<ResponseDto> DeleteProfileAsync(LoginDto account)
         {
             throw new NotImplementedException();
