@@ -8,7 +8,7 @@ namespace EcoPowerHub.AutoMapper
     {
         public MappingProfile() 
         {
-         // CreateMap<LoginDto,ApplicationUser>().ReverseMap();
+          CreateMap<LoginDto,ApplicationUser>().ReverseMap();
           CreateMap<RegisterDto,ApplicationUser>().ReverseMap();
           CreateMap<PasswordSettingDto,ApplicationUser>().ReverseMap();
         

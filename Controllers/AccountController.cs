@@ -15,7 +15,7 @@ namespace EcoPowerHub.Controllers
             _unitOfWork = unitOfWork;
         }
         [HttpPost("Register")]
-        public async Task<IActionResult> Register(RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
         {
             if(!ModelState.IsValid) 
                 return BadRequest(ModelState);
@@ -23,6 +23,26 @@ namespace EcoPowerHub.Controllers
             if(response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode,new {response.Message});
+        }
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody]LoginDto Dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var response = await _unitOfWork.Accounts.LoginAsync(Dto);
+            if (response.IsSucceeded)
+                return Ok(response);
+            return StatusCode(response.StatusCode, new { response.Message });
+        }
+        [HttpPost("Logout")]
+        public async Task<IActionResult> Logout([FromBody]LoginDto Dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var response = await _unitOfWork.Accounts.Logout(Dto);
+            if (response.IsSucceeded)
+                return Ok(response);
+            return StatusCode(response.StatusCode, new { response.Message });
         }
     }
 }

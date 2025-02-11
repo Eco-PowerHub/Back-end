@@ -8,6 +8,7 @@ using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Net;
+using HttpStatusCode = System.Net.HttpStatusCode;
 namespace EcoPowerHub.Repositories.Services
 {
     public class AccountRepository : GenericRepository<ApplicationUser>, IAccountRepository
@@ -40,7 +41,7 @@ namespace EcoPowerHub.Repositories.Services
                 {
                     Message = errors,
                     IsSucceeded = false,
-                    StatusCode = (int)System.Net.HttpStatusCode.BadRequest
+                    StatusCode = (int)HttpStatusCode.BadRequest
                 };
             }
              await _userManager.AddToRoleAsync(user,registerDto.Role.ToString());
@@ -49,24 +50,68 @@ namespace EcoPowerHub.Repositories.Services
             {
                 Message = "User has been registerd successfully",
                 IsSucceeded = true,
-                StatusCode = (int)System.Net.HttpStatusCode.Created,
+                StatusCode = (int)HttpStatusCode.Created,
                 Data = new
                 {
                     Token = token,
                     IsAuthenticated = true,
                     UserName = user.UserName,
+                    Email = user.Email,
                     Role = registerDto.Role
                 }
             };
         }
-        public Task<ResponseDto> LoginAsync(LoginDto loginDto)
+        public async Task<ResponseDto> LoginAsync(LoginDto loginDto)
         {
-            throw new NotImplementedException();
+          var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            if (user is null ||! await _userManager.CheckPasswordAsync(user, loginDto.Password))
+                return new ResponseDto { Message = "User not found!" };
+            var token = _tokenService.GenerateToken(user);
+            var refreshToken = string.Empty;
+            DateTime refreshTokenExpiration;
+            if(user.RefreshTokens!.Any(t=>t.IsActive))
+            {
+                var activeToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
+                refreshToken = activeToken.Token;
+                refreshTokenExpiration = activeToken.ExpiresOn;
+            }
+            else
+            {
+                var newRefreshToken = _tokenService.GeneraterefreshToken();
+                refreshToken = newRefreshToken.Token;
+                refreshTokenExpiration = newRefreshToken.ExpiresOn;
+            }
+            return new ResponseDto
+            {
+                Message = "User login successfully",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK,
+                Data = new
+                {
+                    IsAuthenticated = true,
+                    RefreshToken = refreshToken,
+                    RefreshTokenExpiration = refreshTokenExpiration,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                }
+            };   
         }
 
-        public Task<ResponseDto> Logout(LoginDto logoutDto)
+        public async Task<ResponseDto> Logout(LoginDto logoutDto)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByEmailAsync(logoutDto.Email);
+            if (user == null)
+                return new ResponseDto { Message = "User not found!" };
+
+            if (user.RefreshTokens != null)
+                user.RefreshTokens.Clear();
+            await _userManager.UpdateAsync(user);
+            return new ResponseDto
+            {
+                Message = "Logged out successfully.",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK,
+            };
         }
 
         public Task<ResponseDto> ChangePasswordAsync(PasswordSettingDto dto)
