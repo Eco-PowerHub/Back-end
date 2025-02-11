@@ -18,7 +18,7 @@ namespace EcoPowerHub.Repositories.GenericRepositories
           var models = await _dbSet.AsNoTracking().ToListAsync();
             return models;
         }
-        public async Task<T> GetById(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
             var model = await _dbSet.FindAsync(id);
             return model;

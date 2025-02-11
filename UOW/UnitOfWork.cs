@@ -1,4 +1,6 @@
 ﻿using EcoPowerHub.Data;
+using EcoPowerHub.Models;
+using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +17,7 @@ namespace EcoPowerHub.UOW
         public IAccountRepository AccountRepository {  get; private set; }
 
         public ITokenService TokenService {  get; private set; }
+        public IGenericRepository<Package> Package {  get; private set; }
 
         public async Task<int> SaveCompleted()
         {

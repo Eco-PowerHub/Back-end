@@ -1,4 +1,6 @@
-﻿using EcoPowerHub.Repositories.Interfaces;
+﻿using EcoPowerHub.Models;
+using EcoPowerHub.Repositories.GenericRepositories;
+using EcoPowerHub.Repositories.Interfaces;
 
 namespace EcoPowerHub.UOW
 {
@@ -6,6 +8,7 @@ namespace EcoPowerHub.UOW
     {
         public IAccountRepository AccountRepository { get; }
         public ITokenService TokenService { get; }
+        public IGenericRepository<Package> Package {  get; }
         Task<int> SaveCompleted();
 
     }
