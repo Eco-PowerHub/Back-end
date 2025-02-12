@@ -4,6 +4,7 @@ using EcoPowerHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoPowerHub.Migrations
 {
     [DbContext(typeof(EcoPowerDbContext))]
-    partial class EcoPowerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250212140235_addProductTable")]
+    partial class addProductTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -224,7 +227,7 @@ namespace EcoPowerHub.Migrations
                         .HasColumnType("varchar(500)");
 
                     b.Property<decimal>("EnergyInWatt")
-                        .HasColumnType("decimal(12,2)");
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<byte[]>("Image")
                         .IsRequired()

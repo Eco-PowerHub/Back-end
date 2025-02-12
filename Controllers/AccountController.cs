@@ -1,4 +1,5 @@
-﻿using EcoPowerHub.DTO.UserDto;
+﻿using EcoPowerHub.DTO;
+using EcoPowerHub.DTO.UserDto;
 using EcoPowerHub.UOW;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,17 +16,17 @@ namespace EcoPowerHub.Controllers
             _unitOfWork = unitOfWork;
         }
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            if(!ModelState.IsValid) 
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var response = await _unitOfWork.Accounts.RegisterAsync(registerDto);
-            if(response.IsSucceeded)
+            if (response.IsSucceeded)
                 return Ok(response);
-            return StatusCode(response.StatusCode,new {response.Message});
+            return StatusCode(response.StatusCode, new { response.Message });
         }
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody]LoginDto Dto)
+        public async Task<IActionResult> Login([FromBody] LoginDto Dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -35,7 +36,7 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
         [HttpPost("Logout")]
-        public async Task<IActionResult> Logout([FromBody]LoginDto Dto)
+        public async Task<IActionResult> Logout([FromBody] LoginDto Dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -85,24 +86,26 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
         [HttpPost("GenerateRefreshToken")]
-        public async Task<IActionResult> GenerateRefreshToken([FromBody] string email)
+        public async Task<IActionResult> NewRefreshToken([FromBody] string email)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Accounts.GenerateRefreshTokenAsync(email);
+            var response = await _unitOfWork.Accounts.GetRefreshTokenAsync(email);
             if (response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
-        [HttpPost("RevokeRefreshToken")]
-        public async Task<IActionResult> RevokeRefreshToken([FromBody] string email)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var token = await _unitOfWork.Accounts.RevokeRefreshTokenAsync(email);
-            if (!token)
-                return NotFound("User or token not found!");
-            return Ok("Token revoked successfully");
-        }
+        // [HttpPost("RevokeRefreshToken")]
+        //public async Task<IActionResult> RevokeRefreshToken([FromBody] RevokeToken model)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var token = await _unitOfWork.Accounts.RevokeRefreshTokenAsync(model.Token);
+        //    if (!token)
+        //        return NotFound("User or token not found!");
+        //    return Ok("Token revoked successfully");
+        //}
+    
     }
 }
+

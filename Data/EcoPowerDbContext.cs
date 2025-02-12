@@ -65,6 +65,7 @@ namespace EcoPowerHub.Data
             {
                 entity.Property(p=>p.Details).HasMaxLength(500).IsRequired();
                 entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
+                entity.Property(p => p.EnergyInWatt).HasColumnType("decimal(12,2)");
                 entity.Property(p => p.Image).IsRequired();
 
                 entity.HasOne(p => p.Company)

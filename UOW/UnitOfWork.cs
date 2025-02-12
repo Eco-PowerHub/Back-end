@@ -15,13 +15,16 @@ namespace EcoPowerHub.UOW
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
+        private readonly ILogger<UnitOfWork> _logger;
+
         public UnitOfWork
             (
             EcoPowerDbContext context,
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IMapper mapper,
-            ITokenService tokenService
+            ITokenService tokenService,
+            ILogger<UnitOfWork> logger
 
        
             ) 
@@ -31,8 +34,9 @@ namespace EcoPowerHub.UOW
             _roleManager = roleManager;
             _mapper = mapper;
             _tokenService = tokenService;
+            _logger = logger;
 
-            Accounts = new AccountRepository(_context, _userManager,_roleManager,_mapper,_tokenService);
+            Accounts = new AccountRepository(_context, _userManager,_roleManager,_mapper,_tokenService,_logger);
             
         }
         public IAccountRepository Accounts {  get; private set; }

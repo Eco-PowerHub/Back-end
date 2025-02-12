@@ -14,8 +14,8 @@ namespace EcoPowerHub.Repositories.Interfaces
         Task<ResponseDto> DeleteProfileAsync(LoginDto account);
         Task<ResponseDto> ChangePasswordAsync(PasswordSettingDto dto);
         Task<ResponseDto> ResetPasswordAsync(PasswordSettingDto dto);
-        Task<ResponseDto> GenerateRefreshTokenAsync(string email);
-        Task<bool>  RevokeRefreshTokenAsync(string email);
+        Task<ResponseDto> GetRefreshTokenAsync(string email);
+       // Task<bool>  RevokeRefreshTokenAsync(string token);
 
     }
 }

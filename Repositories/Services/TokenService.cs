@@ -27,13 +27,13 @@ namespace EcoPowerHub.Repositories.Services
             return new RefreshToken
             {
                 Token = Convert.ToBase64String(randomNum),
-                ExpiresOn = DateTime.UtcNow.AddDays(3)
+                ExpiresOn = DateTime.UtcNow.AddDays(1),
+                CreatedAt = DateTime.UtcNow
             };
         }
 
         public  string GenerateToken(ApplicationUser user)
         {
-            var roles = _userManager.GetRolesAsync(user).Result;
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name,user.UserName!),
@@ -42,6 +42,7 @@ namespace EcoPowerHub.Repositories.Services
                 new Claim(JwtRegisteredClaimNames.Email,user.Email!),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
             };
+            var roles = _userManager.GetRolesAsync(user).Result;
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
@@ -54,7 +55,8 @@ namespace EcoPowerHub.Repositories.Services
                 audience : _configuration["JWT:Audience"],
                 claims : claims,
                 signingCredentials : credentials,
-                expires : DateTime.UtcNow.AddHours(1)
+                expires : DateTime.UtcNow.AddHours(6)
+
             );
             return new JwtSecurityTokenHandler().WriteToken(Token);
         }

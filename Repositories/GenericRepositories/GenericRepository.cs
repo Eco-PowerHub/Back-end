@@ -8,10 +8,10 @@ namespace EcoPowerHub.Repositories.GenericRepositories
     {
         private readonly EcoPowerDbContext _context;
         private readonly DbSet<T> _dbSet;
-        public GenericRepository(EcoPowerDbContext context, DbSet<T> dbSet) 
+        public GenericRepository(EcoPowerDbContext context) 
         {
             _context = context;
-            _dbSet = dbSet;
+            _dbSet = _context.Set<T>();
         }
         public async Task<IEnumerable<T>> GetAllAsync()
         {

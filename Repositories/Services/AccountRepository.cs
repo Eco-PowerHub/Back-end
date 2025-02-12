@@ -6,7 +6,9 @@ using EcoPowerHub.Helpers;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
+using EcoPowerHub.UOW;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Security.Principal;
 using HttpStatusCode = System.Net.HttpStatusCode;
@@ -19,13 +21,15 @@ namespace EcoPowerHub.Repositories.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
-        public AccountRepository(EcoPowerDbContext context , UserManager<ApplicationUser> userManager , RoleManager<IdentityRole> roleManager,IMapper mapper,ITokenService tokenService) :base(context, context.Set<ApplicationUser>())
+        private readonly ILogger<UnitOfWork> _logger;
+        public AccountRepository(EcoPowerDbContext context , UserManager<ApplicationUser> userManager , RoleManager<IdentityRole> roleManager,IMapper mapper,ITokenService tokenService,ILogger<UnitOfWork> logger) :base(context)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
             _mapper = mapper;
             _tokenService = tokenService;
+            _logger = logger;
         }
         public async Task<ResponseDto> RegisterAsync(RegisterDto registerDto)
         {
@@ -68,19 +72,31 @@ namespace EcoPowerHub.Repositories.Services
             if (user is null ||! await _userManager.CheckPasswordAsync(user, loginDto.Password))
                 return new ResponseDto { Message = "User not found!" };
             var token = _tokenService.GenerateToken(user);
-            var refreshToken = string.Empty;
+            var refreshToken = "";
             DateTime refreshTokenExpiration;
             if(user.RefreshTokens!.Any(t=>t.IsActive))
             {
                 var activeToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
                 refreshToken = activeToken.Token;
                 refreshTokenExpiration = activeToken.ExpiresOn;
+                _logger.LogInformation($" Existing Refresh Token: {refreshToken} , Expires on: {refreshTokenExpiration}");
             }
             else
             {
                 var newRefreshToken = _tokenService.GeneraterefreshToken();
                 refreshToken = newRefreshToken.Token;
                 refreshTokenExpiration = newRefreshToken.ExpiresOn;
+                user.RefreshTokens.Add(newRefreshToken);
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    _logger.LogError("Failed to save new refresh token.");
+                    foreach (var error in updateResult.Errors)
+                    {
+                        _logger.LogError($"Error Code: {error.Code}, Description: {error.Description}");
+                    }
+                }
+                _logger.LogInformation($"New Refresh Token Generated: {refreshToken}, Expires on: {refreshTokenExpiration}");
             }
             return new ResponseDto
             {
@@ -216,12 +232,11 @@ namespace EcoPowerHub.Repositories.Services
             var result =  await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
-                return new ResponseDto
+                _logger.LogError("Failed to update user.");
+                foreach (var error in result.Errors)
                 {
-                    Message = "Failed to update user, try again",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
+                    _logger.LogError($"Error Code: {error.Code}, Description: {error.Description}");
+                }
             }
             var updatedUser = _mapper.Map<UserDto>(user);
             return new ResponseDto
@@ -233,7 +248,7 @@ namespace EcoPowerHub.Repositories.Services
             };
 
         }
-        public async Task<ResponseDto> GenerateRefreshTokenAsync(string email)
+        public async Task<ResponseDto> GetRefreshTokenAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user is null)
@@ -245,18 +260,19 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
-            if (user.RefreshTokens.Any(t=>t.IsActive))
+            var activeToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
+            if (activeToken is null)
             {
                 return new ResponseDto
                 {
-                    Message = "Token still active!",
+                    Message = "No refresh tokens found!",
                     IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
             var token = _tokenService.GenerateToken(user);
             var refreshToken = _tokenService.GeneraterefreshToken();
-            user.RefreshTokens.Add(refreshToken);
+            user.RefreshTokens!.Add(refreshToken);
             var updateResult=  await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
             {
@@ -282,20 +298,19 @@ namespace EcoPowerHub.Repositories.Services
             }; 
         }
       
-        public async Task<bool> RevokeRefreshTokenAsync(string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-               if(user == null) return false;
+        //public async Task<bool> RevokeRefreshTokenAsync(string token)
+        //{
+        //    var user = await _userManager.Users.SingleOrDefaultAsync(u=>u.RefreshTokens.Any(t=>t.Token==token));
 
-            var activeToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
-            if(activeToken == null) return false;
+        //    if (user == null)
+        //        return false;
+        //    var refreshToken = user.RefreshTokens.Single(t=>t.Token == token);
+        //    if (!refreshToken.IsActive) return false;
+        //    refreshToken.RevokedOn = DateTime.UtcNow;
+        //    await _userManager.UpdateAsync(user);
+        //    return true;
+        //}
 
-            activeToken.RevokedOn = DateTime.UtcNow;
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded) return false;
-            return true;
-        }
-        
 
     }
 }
