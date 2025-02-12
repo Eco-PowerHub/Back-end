@@ -8,7 +8,7 @@ namespace EcoPowerHub.Repositories.GenericRepositories
     {
         private readonly EcoPowerDbContext _context;
         private readonly DbSet<T> _dbSet;
-        public GenericRepository(EcoPowerDbContext context, DbSet<T> dbSet)
+        public GenericRepository(EcoPowerDbContext context)
         {
             _context = context;
             _dbSet = _context.Set<T>();
@@ -31,6 +31,7 @@ namespace EcoPowerHub.Repositories.GenericRepositories
 
         public async Task<T> UpdateAsync(T entity)
         {
+            
             _dbSet.Update(entity); 
             await _context.SaveChangesAsync();
             return entity;

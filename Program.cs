@@ -1,4 +1,5 @@
 
+using EcoPowerHub.AutoMapper;
 using EcoPowerHub.Data;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.Interfaces;
@@ -51,9 +52,14 @@ namespace EcoPowerHub
                     ClockSkew = TimeSpan.Zero
                 };
             });
+
+            //inject automapper
+            builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
             //inject services 
             builder.Services.AddScoped<IUnitOfWork , UnitOfWork>();
          // builder.Services.AddScoped<ITokenService,TokenService>();
+            builder.Services.AddScoped<IPackageRepository, PackageRepository>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
