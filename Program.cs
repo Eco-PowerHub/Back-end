@@ -62,7 +62,7 @@ namespace EcoPowerHub
             //inject services 
             builder.Services.AddScoped<IUnitOfWork , UnitOfWork>();
          // builder.Services.AddScoped<ITokenService,TokenService>();
-            builder.Services.AddScoped<IPackageRepository, PackageRepository>();
+          
 
             builder.Services.AddScoped<ITokenService, TokenService>();
 
