@@ -23,7 +23,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET: api/<PackageController>
-        [HttpGet]
+        [HttpGet("GetAllPackage")]
         public async Task<IActionResult> GetAllPackages()
         {
             var response = await _packageRepository.GetAllAsync();
@@ -33,7 +33,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET api/<PackageController>/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}, GetPackageById")]
         public async Task<IActionResult> GetPackageById(int id)
         {
             var response = await _packageRepository.GetById(id);
@@ -43,7 +43,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET: api/Package/company/{companyId}
-        [HttpGet("company/{companyId}")]
+        [HttpGet("company/{companyId}, GetPackagesByCompanyId")]
         public async Task<IActionResult> GetPackagesByCompanyId(int companyId)
         {
             var response = await _packageRepository.GetPackagesByCompanyId(companyId);
@@ -53,7 +53,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // POST api/<PackageController>
-        [HttpPost]
+        [HttpPost("CreatePackage")]
         //[Authorize(Roles ="Company")]
         //[AllowAnonymous]
         public async Task<IActionResult> CreatePackage([FromBody] PackageDto packageDto)
@@ -70,7 +70,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // PUT api/<PackageController>/5
-        [HttpPut("{id}")]
+        [HttpPut("{id}, EditPackage")]
         //[Authorize(Roles ="Company")]
         public async Task<IActionResult> EditPackage( [FromBody] PackageDto packageDto)
         {
@@ -87,8 +87,8 @@ namespace EcoPowerHub.Controllers
         }
 
         // DELETE api/<PackageController>/5
-        [HttpDelete("{id}")]
-        [Authorize(Roles ="Company")]
+        [HttpDelete("{id},DeletePackage")]
+        //[Authorize(Roles ="Company")]
         public async Task<IActionResult> DeletePackage(int id)
         {
             var response = await _packageRepository.DeleteAsync(id);

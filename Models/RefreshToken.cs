@@ -7,7 +7,7 @@
         public DateTime? RevokedOn { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsExpired => DateTime.UtcNow > ExpiresOn;
-        public bool IsActive => !IsExpired || RevokedOn == null;
+        public bool IsActive => !IsExpired && RevokedOn == null;
       
     }
 }

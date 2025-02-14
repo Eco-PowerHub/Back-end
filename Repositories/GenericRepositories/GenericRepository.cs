@@ -8,7 +8,7 @@ namespace EcoPowerHub.Repositories.GenericRepositories
     {
         private readonly EcoPowerDbContext _context;
         private readonly DbSet<T> _dbSet;
-        public GenericRepository(EcoPowerDbContext context)
+        public GenericRepository(EcoPowerDbContext context) 
         {
             _context = context;
             _dbSet = _context.Set<T>();

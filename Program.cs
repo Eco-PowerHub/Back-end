@@ -11,7 +11,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Text;
+
 
 namespace EcoPowerHub
 {
@@ -31,7 +33,8 @@ namespace EcoPowerHub
                    ));
             //add identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-             .AddEntityFrameworkStores<EcoPowerDbContext>();
+             .AddEntityFrameworkStores<EcoPowerDbContext>()
+             .AddDefaultTokenProviders();
             //add Authentication 
             builder.Services.AddAuthentication(options =>
             {
@@ -61,10 +64,16 @@ namespace EcoPowerHub
          // builder.Services.AddScoped<ITokenService,TokenService>();
             builder.Services.AddScoped<IPackageRepository, PackageRepository>();
 
+            builder.Services.AddScoped<ITokenService, TokenService>();
+
             builder.Services.AddControllers();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSingleton<CloudinaryService>();
+
 
             var app = builder.Build();
 
