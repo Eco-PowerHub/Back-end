@@ -122,7 +122,7 @@ namespace EcoPowerHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.Company", b =>
@@ -156,7 +156,7 @@ namespace EcoPowerHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.Order", b =>
@@ -204,7 +204,7 @@ namespace EcoPowerHub.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.Package", b =>
@@ -237,7 +237,7 @@ namespace EcoPowerHub.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Packages");
+                    b.ToTable("Packages", (string)null);
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.PackageOrder", b =>
@@ -260,7 +260,7 @@ namespace EcoPowerHub.Migrations
 
                     b.HasKey("PackageId", "OrderId");
 
-                    b.ToTable("PackageOrders");
+                    b.ToTable("PackageOrders", (string)null);
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.Product", b =>
@@ -301,7 +301,7 @@ namespace EcoPowerHub.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.ProductOrder", b =>
@@ -314,7 +314,7 @@ namespace EcoPowerHub.Migrations
 
                     b.HasKey("OrderId", "ProductId");
 
-                    b.ToTable("ProductOreders");
+                    b.ToTable("ProductOreders", (string)null);
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.ProductPackage", b =>
@@ -330,7 +330,7 @@ namespace EcoPowerHub.Migrations
 
                     b.HasKey("PackageId", "ProductId");
 
-                    b.ToTable("ProductPackages");
+                    b.ToTable("ProductPackages", (string)null);
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.UserFeedBack", b =>
@@ -354,7 +354,7 @@ namespace EcoPowerHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserFeedBacks");
+                    b.ToTable("UserFeedBacks", (string)null);
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.UserSupport", b =>
@@ -380,7 +380,7 @@ namespace EcoPowerHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserSupport");
+                    b.ToTable("UserSupport", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
