@@ -25,6 +25,8 @@ namespace EcoPowerHub
 
             // Add services to the container.
 
+            //Email config
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("MailSettings"));
             //add ConnectionString 
            builder.Services.AddDbContext<EcoPowerDbContext>(options =>
             options.UseMySql(

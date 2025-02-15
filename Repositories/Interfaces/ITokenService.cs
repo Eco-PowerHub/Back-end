@@ -6,6 +6,8 @@ namespace EcoPowerHub.Repositories.Interfaces
     {
        string GenerateToken(ApplicationUser user);
         RefreshToken GeneraterefreshToken();
+         string GenerateOTP();
+
 
     }
 }

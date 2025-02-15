@@ -10,6 +10,7 @@ using EcoPowerHub.UOW;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Net.Mail;
 using System.Security.Principal;
 using HttpStatusCode = System.Net.HttpStatusCode;
 namespace EcoPowerHub.Repositories.Services
@@ -22,6 +23,7 @@ namespace EcoPowerHub.Repositories.Services
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
         private readonly ILogger<UnitOfWork> _logger;
+        private readonly IMailingService _mailingService;
         public AccountRepository(EcoPowerDbContext context , UserManager<ApplicationUser> userManager , RoleManager<IdentityRole> roleManager,IMapper mapper,ITokenService tokenService,ILogger<UnitOfWork> logger) :base(context)
         {
             _context = context;
@@ -297,7 +299,29 @@ namespace EcoPowerHub.Repositories.Services
                 }
             }; 
         }
-      
+
+        public async Task<IdentityResult> SendOTPAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return IdentityResult.Failed(new IdentityError { Description = "User Not Found" });
+
+            var otp = _tokenService.GenerateOTP();
+            user.OTP = otp;
+            user.OTPExpiry = DateTime.UtcNow.AddMinutes(15);
+            await _userManager.UpdateAsync(user);
+
+            var message = new MailMessage(new[] { user.Email }, "Your OTP", $"Your OTP For Change Your Password In T_ECOM is: {otp}");
+            _mailingService.SendMail(message);
+
+            return IdentityResult.Success;
+        }
+
+        public Task<IdentityResult> verifyOTPRequest(VerifyOTPRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
         //public async Task<bool> RevokeRefreshTokenAsync(string token)
         //{
         //    var user = await _userManager.Users.SingleOrDefaultAsync(u=>u.RefreshTokens.Any(t=>t.Token==token));
