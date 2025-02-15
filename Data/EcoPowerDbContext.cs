@@ -66,7 +66,7 @@ namespace EcoPowerHub.Data
                 entity.Property(p=>p.Details).HasMaxLength(500).IsRequired();
                 entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
                 entity.Property(p => p.EnergyInWatt).HasColumnType("decimal(12,2)");
-                entity.Property(p => p.Image).IsRequired();
+                entity.Property(p => p.Image).IsRequired(); 
 
                 entity.HasOne(p => p.Company)
                       .WithMany(c => c.Packages) 
@@ -91,7 +91,7 @@ namespace EcoPowerHub.Data
                 entity.Property(p => p.Stock).IsRequired();
                 entity.Property(p => p.Amount).IsRequired(); 
                 entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
-                entity.Property(p => p.Image).IsRequired();
+               // entity.Property(p => p.Image).IsRequired(); 
 
                 entity.HasOne(p => p.Category)
                       .WithMany(c => c.Products)
@@ -109,7 +109,20 @@ namespace EcoPowerHub.Data
             modelBuilder.Entity<UserFeedBack>().Property(f => f.Content).IsRequired().HasMaxLength(1000);
             modelBuilder.Entity<UserSupport>().Property(s=>s.Subject).IsRequired().HasMaxLength(500);
             modelBuilder.Entity<UserSupport>().Property(s => s.Response).HasMaxLength(255);
-
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.Property(p => p.Image)
+                      .IsRequired()
+                      .HasColumnType("longtext")
+                      .HasCharSet("utf8mb4");
+            });
+            modelBuilder.Entity<Package>(entity =>
+            {
+                entity.Property(p => p.Image)
+                      .IsRequired()
+                      .HasColumnType("longtext")
+                      .HasCharSet("utf8mb4");
+            });
         }
 
     }

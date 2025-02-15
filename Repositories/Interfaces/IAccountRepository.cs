@@ -17,8 +17,8 @@ namespace EcoPowerHub.Repositories.Interfaces
         Task<ResponseDto> ResetPasswordAsync(PasswordSettingDto dto);
         Task<ResponseDto> GetRefreshTokenAsync(string email);
         // Task<bool>  RevokeRefreshTokenAsync(string token);
-        Task<IdentityResult> SendOTPAsync(string email);
-        Task<IdentityResult> verifyOTPRequest(VerifyOTPRequest request);
+        //Task<IdentityResult> SendOTPAsync(string email);
+        //Task<IdentityResult> verifyOTPRequest(VerifyOTPRequest request);
 
 
     }

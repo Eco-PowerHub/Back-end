@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
@@ -28,11 +29,14 @@ namespace EcoPowerHub
             //Email config
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("MailSettings"));
             //add ConnectionString 
-           builder.Services.AddDbContext<EcoPowerDbContext>(options =>
-            options.UseMySql(
-                  builder.Configuration.GetConnectionString("DefaultConnection"),
-                  ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-                   ));
+            builder.Services.AddDbContext<EcoPowerDbContext>(options =>
+                 options.UseMySql(
+                 builder.Configuration.GetConnectionString("DefaultConnection"),
+                 new MySqlServerVersion(new Version(8, 0, 41)) 
+                ));
+
+
+
             //add identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
              .AddEntityFrameworkStores<EcoPowerDbContext>()
@@ -57,11 +61,15 @@ namespace EcoPowerHub
                     ClockSkew = TimeSpan.Zero
                 };
             });
+
             //inject automapper
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
             //inject services 
             builder.Services.AddScoped<IUnitOfWork , UnitOfWork>();
+         // builder.Services.AddScoped<ITokenService,TokenService>();
+          
+
             builder.Services.AddScoped<ITokenService, TokenService>();
 
             builder.Services.AddControllers();
@@ -69,6 +77,9 @@ namespace EcoPowerHub
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSingleton<CloudinaryService>();
+
 
             var app = builder.Build();
 
@@ -79,7 +90,7 @@ namespace EcoPowerHub
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+         //   app.UseHttpsRedirection();
 
             app.UseAuthorization();
 

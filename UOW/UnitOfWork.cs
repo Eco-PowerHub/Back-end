@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using EcoPowerHub.Data;
 using EcoPowerHub.Models;
+using EcoPowerHub.Repositories.GenericRepositories;
+
 using EcoPowerHub.Repositories.Interfaces;
 using EcoPowerHub.Repositories.Services;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +13,9 @@ namespace EcoPowerHub.UOW
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly EcoPowerDbContext _context;
+       
+        public IAccountRepository AccountRepository {  get; private set; }
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
@@ -43,6 +48,13 @@ namespace EcoPowerHub.UOW
 
         public ITokenService TokenService {  get; private set; }
 
+        public IGenericRepository<Package> PackageRepository {  get; private set; }
+
+        public UnitOfWork(EcoPowerDbContext context)
+        {
+            _context = context;
+            PackageRepository = new GenericRepository<Package>(context);
+        }
         public async Task<int> SaveCompleted()
         {
             return await _context.SaveChangesAsync();

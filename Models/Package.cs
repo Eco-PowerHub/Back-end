@@ -6,8 +6,8 @@ namespace EcoPowerHub.Models
     {
         public int Id { get; set; }
         public string Details { get; set; }
+        public string Image { get; set; }
         public decimal Price { get; set; }
-        public byte[] Image   { get; set; }
         public decimal EnergyInWatt  { get; set; }
         public int CompanyId { get; set; }
         [ForeignKey("CompanyId")]

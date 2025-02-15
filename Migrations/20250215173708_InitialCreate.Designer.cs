@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoPowerHub.Migrations
 {
     [DbContext(typeof(EcoPowerDbContext))]
-    [Migration("20250212140235_addProductTable")]
-    partial class addProductTable
+    [Migration("20250215173708_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,6 +71,12 @@ namespace EcoPowerHub.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
+
+                    b.Property<string>("OTP")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("OTPExpiry")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("longtext");
@@ -227,11 +233,13 @@ namespace EcoPowerHub.Migrations
                         .HasColumnType("varchar(500)");
 
                     b.Property<decimal>("EnergyInWatt")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(12,2)");
 
-                    b.Property<byte[]>("Image")
+                    b.Property<string>("Image")
                         .IsRequired()
-                        .HasColumnType("longblob");
+                        .HasColumnType("longtext");
+
+                    MySqlPropertyBuilderExtensions.HasCharSet(b.Property<string>("Image"), "utf8mb4");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(12,2)");
@@ -283,9 +291,11 @@ namespace EcoPowerHub.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("Image")
+                    b.Property<string>("Image")
                         .IsRequired()
-                        .HasColumnType("longblob");
+                        .HasColumnType("longtext");
+
+                    MySqlPropertyBuilderExtensions.HasCharSet(b.Property<string>("Image"), "utf8mb4");
 
                     b.Property<string>("Name")
                         .IsRequired()
