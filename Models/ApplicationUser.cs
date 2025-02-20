@@ -13,6 +13,6 @@ namespace EcoPowerHub.Models
         public string? OTP { get; set; }
         public DateTime? OTPExpiry { get; set; }
         public ICollection<Order> Orders { get; set; } = new List<Order>();
-        public ICollection<RefreshToken>? RefreshTokens = new List<RefreshToken>();
+        public ICollection<RefreshToken> RefreshTokens = new List<RefreshToken>();
     }
 }

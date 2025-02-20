@@ -4,10 +4,7 @@ namespace EcoPowerHub.Repositories.Interfaces
 {
     public interface ITokenService
     {
-       string GenerateToken(ApplicationUser user);
-        RefreshToken GeneraterefreshToken();
-         string GenerateOTP();
-
-
+         Task<string> GenerateToken(ApplicationUser user);
+         RefreshToken GeneraterefreshToken();
     }
 }

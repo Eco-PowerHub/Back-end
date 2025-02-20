@@ -23,5 +23,8 @@ namespace EcoPowerHub.DTO.UserDto
         public string ConfirmNewPassword { get; set; }
         [Required]
         public Roles Role  { get; set; }
+        public string OTP { get; set; }
+        public DateTime? OTPExpiry { get; set; }
+
     }
 }

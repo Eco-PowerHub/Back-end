@@ -13,51 +13,52 @@ namespace EcoPowerHub.UOW
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly EcoPowerDbContext _context;
-       
-        public IAccountRepository AccountRepository {  get; private set; }
-
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
         private readonly ILogger<UnitOfWork> _logger;
+    //    ILogger<AccountRepository> _accountLogger;
+        private readonly IEmailService _emailService;
+        private readonly EmailTemplateService _emailTemplateService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+      // private  ISession Session => _httpContextAccessor.HttpContext?.Session;
+
+
 
         public UnitOfWork
             (
             EcoPowerDbContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
             IMapper mapper,
             ITokenService tokenService,
-            ILogger<UnitOfWork> logger
-
-       
+        //    ILogger<UnitOfWork> logger,
+            IEmailService emailService,
+            EmailTemplateService emailTemplateService,
+            IHttpContextAccessor httpContextAccessor
             ) 
         {
             _context = context;
             _userManager = userManager;
-            _roleManager = roleManager;
             _mapper = mapper;
             _tokenService = tokenService;
-            _logger = logger;
+//            _logger = logger;
+            _emailService = emailService;
+            _emailTemplateService = emailTemplateService;
+            _httpContextAccessor = httpContextAccessor;
 
-            Accounts = new AccountRepository(_context, _userManager,_roleManager,_mapper,_tokenService,_logger);
-            
+            Accounts = new AccountRepository(_context, _userManager,_mapper,_httpContextAccessor, _tokenService, _emailService,_emailTemplateService);
+            Packages = new PackageRepository(_context, _mapper);
         }
         public IAccountRepository Accounts {  get; private set; }
 
         public ITokenService TokenService {  get; private set; }
 
-        public IGenericRepository<Package> PackageRepository {  get; private set; }
+        public IPackageRepository Packages {  get; private set; }
 
-        public UnitOfWork(EcoPowerDbContext context)
+        public async Task<bool> SaveCompleted()
         {
-            _context = context;
-            PackageRepository = new GenericRepository<Package>(context);
-        }
-        public async Task<int> SaveCompleted()
-        {
-            return await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync() > 0;
         }
         public void Dispose()
         {

@@ -15,85 +15,88 @@ namespace EcoPowerHub.Controllers
     public class PackageController : ControllerBase
     {
         
-        private readonly IPackageRepository _packageRepository;
-        public PackageController( IPackageRepository packageRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public PackageController(IUnitOfWork unitOfWork)
         {
-            
-            _packageRepository = packageRepository;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: api/<PackageController>
-        [HttpGet("GetAllPackage")]
+        [HttpGet("AllPackages")]
         public async Task<IActionResult> GetAllPackages()
         {
-            var response = await _packageRepository.GetAllAsync();
+            if(!ModelState.IsValid) 
+                return BadRequest(ModelState);
+            var response = await _unitOfWork.Packages.GetAllPackagesAsync();
             if (response.IsSucceeded)
                 return Ok(response);
-            return StatusCode(response.StatusCode, response);
+
+            return StatusCode(response.StatusCode,new {response.Message});
         }
 
         // GET api/<PackageController>/5
-        [HttpGet("{id}, GetPackageById")]
+        [HttpGet("PackageById/{id}")]
         public async Task<IActionResult> GetPackageById(int id)
         {
-            var response = await _packageRepository.GetById(id);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var response = await _unitOfWork.Packages.GetPackageById(id);
             if (response.IsSucceeded)
                 return Ok(response);
-            return StatusCode(response.StatusCode, response);
+
+            return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        // GET: api/Package/company/{companyId}
-        [HttpGet("company/{companyId}, GetPackagesByCompanyId")]
+        [HttpGet("GetPackagesByCompanyId/{companyId}")]
         public async Task<IActionResult> GetPackagesByCompanyId(int companyId)
         {
-            var response = await _packageRepository.GetPackagesByCompanyId(companyId);
+            var response = await _unitOfWork.Packages.GetPackagesByCompanyId(companyId);
             if (response.IsSucceeded)
                 return Ok(response);
+
             return StatusCode(response.StatusCode, response);
         }
 
         // POST api/<PackageController>
-        [HttpPost("CreatePackage")]
-        //[Authorize(Roles ="Company")]
-        //[AllowAnonymous]
-        public async Task<IActionResult> CreatePackage([FromBody] PackageDto packageDto)
+        [HttpPost("AddPackage")]
+        [Authorize(Policy = "Company And Admin")]
+        public async Task<IActionResult> AddPackage([FromBody] PackageDto packageDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            //var package = _mapper.Map<Package>(packageDto);
-            var response= await _packageRepository.AddAsync(packageDto);
-
+            var response= await _unitOfWork.Packages.AddPackageAsync(packageDto);
             if (response.IsSucceeded)
                 return Ok(response);
+
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
         // PUT api/<PackageController>/5
-        [HttpPut("{id}, EditPackage")]
-        //[Authorize(Roles ="Company")]
-        public async Task<IActionResult> EditPackage( [FromBody] PackageDto packageDto)
+        [HttpPut("EditPackage/{id}")]
+        [Authorize(Policy = "Company and Admin")]
+        public async Task<IActionResult> EditPackage(int id,[FromBody] PackageDto packageDto )
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            
-
-            //var package = _mapper.Map<Package>(packageDto);
-            var response = await _packageRepository.UpdateAsync(packageDto);
+            var response = await _unitOfWork.Packages.UpdatePackageAsync(id, packageDto);
             if (response.IsSucceeded)
                 return Ok(response);
+
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
         // DELETE api/<PackageController>/5
-        [HttpDelete("{id},DeletePackage")]
-        //[Authorize(Roles ="Company")]
+        [HttpDelete("DeletePackage/{id}")]
+        [Authorize(Policy = "Company and Admin")]
         public async Task<IActionResult> DeletePackage(int id)
         {
-            var response = await _packageRepository.DeleteAsync(id);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var response = await _unitOfWork.Packages.DeletePackageAsync(id);
             if (response.IsSucceeded)
                 return Ok(response);
+
             return StatusCode(response.StatusCode, new { response.Message });
         }
     }

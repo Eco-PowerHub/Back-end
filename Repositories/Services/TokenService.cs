@@ -19,6 +19,7 @@ namespace EcoPowerHub.Repositories.Services
             _configuration = configuration;
             _userManager = userManager;
         }
+
         public RefreshToken GeneraterefreshToken()
         {
             byte[] randomNum = new byte[32];
@@ -32,7 +33,7 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public  string GenerateToken(ApplicationUser user)
+        public async Task<string> GenerateToken(ApplicationUser user)
         {
             List<Claim> claims = new List<Claim>()
             {
@@ -42,7 +43,7 @@ namespace EcoPowerHub.Repositories.Services
                 new Claim(JwtRegisteredClaimNames.Email,user.Email!),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
             };
-            var roles = _userManager.GetRolesAsync(user).Result;
+            var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
@@ -59,11 +60,6 @@ namespace EcoPowerHub.Repositories.Services
 
             );
             return new JwtSecurityTokenHandler().WriteToken(Token);
-        }
-        public string GenerateOTP()
-        {
-            var random = new Random();
-            return random.Next(100000, 999999).ToString();
         }
     }
 }

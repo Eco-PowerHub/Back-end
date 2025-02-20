@@ -8,6 +8,6 @@
         public DateTime CreatedAt { get; set; }
         public bool IsExpired => DateTime.UtcNow > ExpiresOn;
         public bool IsActive => !IsExpired && RevokedOn == null;
-      
+
     }
 }

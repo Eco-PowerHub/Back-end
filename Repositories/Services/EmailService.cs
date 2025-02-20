@@ -27,10 +27,10 @@ namespace EcoPowerHub.Repositories.Services
             };
             mail.Body = builder.ToMessageBody();
             var smtp = new MailKit.Net.Smtp.SmtpClient();
-            smtp.ConnectAsync(_emailSettings.Host, _emailSettings.Port, SecureSocketOptions.StartTls);
-            smtp.AuthenticateAsync(_emailSettings.Email, _emailSettings.Password);
-            smtp.Send(mail);
-            smtp.DisconnectAsync(true);
+            await smtp.ConnectAsync(_emailSettings.Host, _emailSettings.Port, SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(_emailSettings.Email, _emailSettings.Password);
+            await smtp.SendAsync(mail);
+            await smtp.DisconnectAsync(true);
         }
     }
 }

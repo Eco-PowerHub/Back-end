@@ -1,4 +1,5 @@
 ﻿using EcoPowerHub.DTO;
+using EcoPowerHub.DTO.OTPDto;
 using EcoPowerHub.DTO.UserDto;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.GenericRepositories;
@@ -17,8 +18,8 @@ namespace EcoPowerHub.Repositories.Interfaces
         Task<ResponseDto> ResetPasswordAsync(PasswordSettingDto dto);
         Task<ResponseDto> GetRefreshTokenAsync(string email);
         // Task<bool>  RevokeRefreshTokenAsync(string token);
-        //Task<IdentityResult> SendOTPAsync(string email);
-        //Task<IdentityResult> verifyOTPRequest(VerifyOTPRequest request);
+        Task<ResponseDto> SendOTPAsync(string email);
+        Task<ResponseDto> verifyOTPRequest(VerifyOTP verifyOTP);
 
 
     }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EcoPowerHub.Data;
 using EcoPowerHub.DTO;
+using EcoPowerHub.DTO.OTPDto;
 using EcoPowerHub.DTO.UserDto;
 using EcoPowerHub.Helpers;
 using EcoPowerHub.Models;
@@ -8,7 +9,9 @@ using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
 using EcoPowerHub.UOW;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Principal;
@@ -19,103 +22,112 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly EcoPowerDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
-        private readonly ILogger<UnitOfWork> _logger;
-  
-        public AccountRepository(EcoPowerDbContext context , UserManager<ApplicationUser> userManager , RoleManager<IdentityRole> roleManager,IMapper mapper,ITokenService tokenService,ILogger<UnitOfWork> logger) :base(context)
+     //   private readonly ILogger<AccountRepository> _logger;
+        private readonly IEmailService _emailService;
+        private readonly EmailTemplateService _emailTemplateService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+
+        public AccountRepository( EcoPowerDbContext context , UserManager<ApplicationUser> userManager 
+           ,IMapper mapper, 
+              IHttpContextAccessor httpContextAccessor,
+            ITokenService tokenService,//ILogger<AccountRepository> logger ,
+            IEmailService emailService,EmailTemplateService emailTemplateService) :base(context)
         {
             _context = context;
             _userManager = userManager;
-            _roleManager = roleManager;
             _mapper = mapper;
             _tokenService = tokenService;
-            _logger = logger;
+         //   _logger = logger;
+            _emailService = emailService;
+            _emailTemplateService = emailTemplateService;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<ResponseDto> RegisterAsync(RegisterDto registerDto)
         {
             if (await _userManager.FindByEmailAsync(registerDto.Email) is not null || await _userManager.FindByNameAsync(registerDto.UserName) is not null)
                 return new ResponseDto { Message = "Email or User Name already exists!!" };
-            var user = _mapper.Map<ApplicationUser>(registerDto);
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
-            if (!result.Succeeded)
-            {
-                var errors = string.Empty;
-                foreach (var error in result.Errors)
-                    errors += $"{error.Description},";
-                return new ResponseDto
-                {
-                    Message = errors,
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-            }
-             await _userManager.AddToRoleAsync(user,registerDto.Role.ToString());
-            var token = _tokenService.GenerateToken(user);
+
+            var otp = GeneratetOtp.GenerateOTP();
+            var otpExpiry = DateTime.UtcNow.AddMinutes(5);
+
+
+            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_{registerDto.Email}",otp); // 1-store otp in session 
+            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_Expiry_{registerDto.Email}", otpExpiry.ToString()); //2- store expire time 
+            _httpContextAccessor.HttpContext?.Session.SetString($"TempUserInfo_{registerDto.Email}", JsonConvert.SerializeObject(registerDto)); // 3- store user info temporary
+
+            await _emailService.SendEmailAsync(registerDto.Email, "Your OTP", $"Your OTP is {otp}");
             return new ResponseDto
             {
-                Message = "User has been registerd successfully",
+                Message = "OTP sent to your email. Please verify to complete registration.",
                 IsSucceeded = true,
-                StatusCode = (int)HttpStatusCode.Created,
-                Data = new
-                {
-                    Token = token,
-                    IsAuthenticated = true,
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    Role = registerDto.Role
-                }
+                StatusCode = (int)HttpStatusCode.OK
             };
         }
         public async Task<ResponseDto> LoginAsync(LoginDto loginDto)
         {
-          var user = await _userManager.FindByEmailAsync(loginDto.Email);
-            if (user is null ||! await _userManager.CheckPasswordAsync(user, loginDto.Password))
-                return new ResponseDto { Message = "User not found!" };
-            var token = _tokenService.GenerateToken(user);
-            var refreshToken = "";
+            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
+            {
+                return new ResponseDto
+                {
+                    Message = "User not found!!",
+                    IsSucceeded = false,
+                    StatusCode = 400
+                };
+            }
+
+            var token = await _tokenService.GenerateToken(user);
+            var refreshToken = string.Empty;
             DateTime refreshTokenExpiration;
-            if(user.RefreshTokens!.Any(t=>t.IsActive))
+            Console.WriteLine($"Active tokens before: {user.RefreshTokens?.Count(t => t.IsActive)}");
+
+            if (user.RefreshTokens?.Any(t => t.IsActive) == true)
             {
                 var activeToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
                 refreshToken = activeToken.Token;
                 refreshTokenExpiration = activeToken.ExpiresOn;
-                _logger.LogInformation($" Existing Refresh Token: {refreshToken} , Expires on: {refreshTokenExpiration}");
             }
             else
             {
                 var newRefreshToken = _tokenService.GeneraterefreshToken();
                 refreshToken = newRefreshToken.Token;
                 refreshTokenExpiration = newRefreshToken.ExpiresOn;
+                if (user.RefreshTokens == null)
+                    user.RefreshTokens = new List<RefreshToken>();
+
                 user.RefreshTokens.Add(newRefreshToken);
-                var updateResult = await _userManager.UpdateAsync(user);
-                if (!updateResult.Succeeded)
+
+                var result = await _userManager.UpdateAsync(user);
+                if (!result.Succeeded)
                 {
-                    _logger.LogError("Failed to save new refresh token.");
-                    foreach (var error in updateResult.Errors)
+                    foreach (var error in result.Errors)
                     {
-                        _logger.LogError($"Error Code: {error.Code}, Description: {error.Description}");
+                        Console.WriteLine($"Error: {error.Description}");
                     }
                 }
-                _logger.LogInformation($"New Refresh Token Generated: {refreshToken}, Expires on: {refreshTokenExpiration}");
             }
+
+            Console.WriteLine($"Active tokens after: {user.RefreshTokens?.Count(t => t.IsActive)}");
+
             return new ResponseDto
             {
-                Message = "User login successfully",
+                Message = "Login successfully",
                 IsSucceeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
+                StatusCode = 200,
                 Data = new
                 {
                     IsAuthenticated = true,
+                    token = token,
                     RefreshToken = refreshToken,
                     RefreshTokenExpiration = refreshTokenExpiration,
                     UserName = user.UserName,
-                    Email = user.Email,
+                    Email = user.Email
                 }
-            };   
+            };
         }
-
         public async Task<ResponseDto> Logout(LoginDto logoutDto)
         {
             var user = await _userManager.FindByEmailAsync(logoutDto.Email);
@@ -234,10 +246,14 @@ namespace EcoPowerHub.Repositories.Services
             var result =  await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
-                _logger.LogError("Failed to update user.");
                 foreach (var error in result.Errors)
                 {
-                    _logger.LogError($"Error Code: {error.Code}, Description: {error.Description}");
+                    return new ResponseDto
+                    {
+                        Message = "User not found!",
+                        IsSucceeded = false,
+                        StatusCode = (int)HttpStatusCode.NotFound
+                    };
                 }
             }
             var updatedUser = _mapper.Map<UserDto>(user);
@@ -275,7 +291,7 @@ namespace EcoPowerHub.Repositories.Services
             var token = _tokenService.GenerateToken(user);
             var refreshToken = _tokenService.GeneraterefreshToken();
             user.RefreshTokens!.Add(refreshToken);
-            var updateResult=  await _userManager.UpdateAsync(user);
+            var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
             {
                 return new ResponseDto
@@ -297,30 +313,78 @@ namespace EcoPowerHub.Repositories.Services
                     UserName = user.UserName,
                     Email = user.Email,
                 }
-            }; 
+            };
         }
 
-        //public async Task<IdentityResult> SendOTPAsync(string email)
-        //{
-        //    var user = await _userManager.FindByEmailAsync(email);
-        //    if (user == null)
-        //        return IdentityResult.Failed(new IdentityError { Description = "User Not Found" });
+        public async Task<ResponseDto> SendOTPAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                return new ResponseDto
+                {
+                    Message = "User not found!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
 
-        //    var otp = _tokenService.GenerateOTP();
-        //    user.OTP = otp;
-        //    user.OTPExpiry = DateTime.UtcNow.AddMinutes(15);
-        //    await _userManager.UpdateAsync(user);
+            var otp = GeneratetOtp.GenerateOTP(); 
+            var otpExpiry = DateTime.UtcNow.AddMinutes(5);
 
-        //    var message = new MailMessage(new[] { user.Email }, "Your OTP", $"Your OTP For Change Your Password In T_ECOM is: {otp}");
-        //    _mailingService.SendMail(message);
+            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_{email}", otp);
+            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_Expiry_{email}", otpExpiry.ToString());
 
-        //    return IdentityResult.Success;
-        //}
+             await _emailService.SendEmailAsync(email, "Your OTP Code", $"Your OTP code is {otp}. It expires in 5 minutes.");
+            return new ResponseDto
+            {
+                Message = "OTP sent successfully",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK,
+            };
+        }
 
-        //public Task<IdentityResult> verifyOTPRequest(VerifyOTPRequest request)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public async Task<ResponseDto> verifyOTPRequest(VerifyOTP verifyOTP)
+        {
+            var session = _httpContextAccessor.HttpContext?.Session;
+            if (session == null)
+                return new ResponseDto { Message = "Session expired. Please request a new OTP." };
+            //get otp from current session
+            var storedOtp = session.GetString($"OTP_{verifyOTP.Email}");
+            var storedExpiry = session.GetString($"OTP_Expiry_{verifyOTP.Email}");
+            var tempUserInfoJson = session.GetString($"TempUserInfo_{verifyOTP.Email}");
+
+            //check otp 
+            if (string.IsNullOrEmpty(storedOtp) || string.IsNullOrEmpty(storedExpiry) || string.IsNullOrEmpty(tempUserInfoJson)) 
+                return new ResponseDto { Message = "OTP expired or invalid. Please request a new OTP." };
+
+            if (storedOtp != verifyOTP.OTP)
+                return new ResponseDto { Message = "Invalid OTP." };
+
+            if (DateTime.UtcNow > DateTime.Parse(storedExpiry))
+                return new ResponseDto { Message = "OTP expired. Please request a new OTP." };
+
+            // Deserialize
+            var registerDto = JsonConvert.DeserializeObject<RegisterDto>(tempUserInfoJson);
+            if (registerDto == null)
+                return new ResponseDto { Message = "Invalid session data. Please try again." };
+            var user = _mapper.Map<ApplicationUser>(registerDto);
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
+            if (!result.Succeeded)
+                return new ResponseDto { Message = "Failed to create user. " + string.Join(", ", result.Errors.Select(e => e.Description)) };
+
+            // clear otp data
+            session.Remove($"OTP_{verifyOTP.Email}");
+            session.Remove($"OTP_Expiry_{verifyOTP.Email}");
+            session.Remove($"TempUserInfo_{verifyOTP.Email}");
+
+            return new ResponseDto
+            {
+                Message = "User registered successfully.",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK
+            };
+        }
+    }
+    }
 
         //public async Task<bool> RevokeRefreshTokenAsync(string token)
         //{
@@ -335,6 +399,3 @@ namespace EcoPowerHub.Repositories.Services
         //    return true;
         //}
 
-
-    }
-}

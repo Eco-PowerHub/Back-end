@@ -12,17 +12,101 @@ namespace EcoPowerHub.Repositories.Services
 {
     public class PackageRepository : GenericRepository<Package>, IPackageRepository
     {
-        //private readonly EcoPowerDbContext _context;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
 
-        public PackageRepository(EcoPowerDbContext context, IMapper mapper, IUnitOfWork unitOfWork) : base(context)
+        public PackageRepository(EcoPowerDbContext context, IMapper mapper) : base(context)
         {
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
+            _context = context;
         }
+        public async Task<ResponseDto> GetAllPackagesAsync()
+        {
+            var packages = await _context.Packages.AsNoTracking().ToListAsync();
+            if (packages.Count == 0 || !packages.Any())
+            {
+                return new ResponseDto
+                {
+                    Message = "No packages found",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    Data = new List<PackageDto>()
+                };
+            }
+            var packageDtos = _mapper.Map<IEnumerable<PackageDto>>(packages);
+            return new ResponseDto
+            {
+                Message = "Packages retrieved successfully",
+                IsSucceeded = true,
+                StatusCode = 200,
+                Data = packageDtos
+            };
+        }
+        public async Task<ResponseDto> GetPackageById(int id)
+        {
+            if (id <= 0)
+                return new ResponseDto
+                {
+                    Message = "Invalid Package id",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
 
-        public async Task<ResponseDto> AddAsync(PackageDto packageDto)
+            var package = await _context.Packages.FindAsync(id);
+            if (package is null)
+            {
+                return new ResponseDto
+                {
+                    Message = "Package not found!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
+            }
+            var packageDto = _mapper.Map<PackageDto>(package);
+            return new ResponseDto
+            {
+                Message = "Package retrieved successfully",
+                IsSucceeded = true,
+                StatusCode = 200,
+                Data = packageDto
+            };
+        }
+        public async Task<ResponseDto> GetPackagesByCompanyId(int companyId)
+        {
+            if (companyId <= 0)
+            {
+                return new ResponseDto
+                {
+                    Message = "Invalid company id",
+                    IsSucceeded = false,
+                    StatusCode = 400,
+                    Data = null
+                };
+            }
+            var packages = await _context.Packages.Include(c => c.Company)
+                                                  .AsNoTracking()
+                                                  .Where(c=>c.CompanyId == companyId)
+                                                  .ToListAsync();
+            if (!packages.Any())
+            { 
+                return new ResponseDto
+                {
+                    Message = "No packages found for the given company",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    Data = null
+                };
+            }
+            var packagesDto = _mapper.Map<PackageDto>(packages);
+            return new ResponseDto
+            {
+                Message = "Packages retrived  successfully",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK,
+                Data = packagesDto
+            };
+        }
+        public async Task<ResponseDto> AddPackageAsync(PackageDto packageDto)
         {
             if (packageDto == null)
             {
@@ -43,10 +127,9 @@ namespace EcoPowerHub.Repositories.Services
                 CompanyId = packageDto.CompanyId,
                 Details = packageDto.Details
             };
-            await _unitOfWork.PackageRepository.AddAsync(package);
-
-
-            await _unitOfWork.SaveCompleted();
+            await _context.Packages.AddAsync(package);
+            await _context.SaveChangesAsync();
+           
             var resultDto = _mapper.Map<PackageDto>(package);
             return new ResponseDto
             {
@@ -56,134 +139,9 @@ namespace EcoPowerHub.Repositories.Services
                 Data = resultDto
             };
         }
-
-
-
-
-        public async Task<ResponseDto> GetPackagesByCompanyId(int companyId)
+        public async Task<ResponseDto> UpdatePackageAsync(int id, PackageDto packageDto)
         {
-            if (companyId <= 0)
-            {
-                return new ResponseDto
-                {
-                    Message = "Invalid company id",
-                    IsSucceeded = false,
-                    StatusCode = 400,
-                    Data = null
-                };
-            }
-            var packages = await _unitOfWork.PackageRepository.GetById(companyId);
-                
-
-            if (packages == null )
-            {
-                return new ResponseDto
-                {
-                    Message = "No packages found for the given company",
-                    IsSucceeded = false,
-                    StatusCode = 404,
-                    Data = null
-                };
-            }
-            var packageDtos = _mapper.Map<IEnumerable<PackageDto>>(packages);
-            return new ResponseDto
-            {
-                Message = "Packages retrieved successfully",
-                IsSucceeded = true,
-                StatusCode = 200,
-                Data = packageDtos
-            };
-        }
-
-
-        public async Task<ResponseDto> DeleteAsync(int id)
-        {
-            if (id <= 0)
-                return new ResponseDto
-                {
-                    Message = "Invalid Package id",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-
-            var package = await _unitOfWork.PackageRepository.GetById(id);
-            if (package == null)
-            {
-                return new ResponseDto
-                {
-                    Message = "Package not found!",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound
-                };
-            }
-           await _unitOfWork.PackageRepository.DeleteAsync(id);
-            await _unitOfWork.SaveCompleted();
-
-            return new ResponseDto
-            {
-                Message = "Package deleted successfully! ",
-                IsSucceeded = true,
-                StatusCode = 200
-            };
-        }
-
-        public async Task<ResponseDto> GetAllAsync()
-        {
-            var packages = await _unitOfWork.PackageRepository.GetAllAsync();
-            if (packages == null || !packages.Any())
-            {
-                return new ResponseDto
-                {
-                    Message = "No packages found",
-                    IsSucceeded = true, 
-                    StatusCode = 200,
-                    Data = new List<PackageDto>()
-                };
-            }
-            var packageDtos = _mapper.Map<IEnumerable<PackageDto>>(packages);
-            return new ResponseDto
-            {
-                Message = "Packages retrieved successfully",
-                IsSucceeded = true,
-                StatusCode = 200,
-                Data = packageDtos
-            };
-        }
-
-        public async Task<ResponseDto> GetById(int id)
-        {
-            if (id <= 0)
-                return new ResponseDto
-                {
-                    Message = "Invalid Package id",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-
-            var package = await _unitOfWork.PackageRepository.GetById(id);
-            if (package == null)
-            {
-                return new ResponseDto
-                {
-                    Message = "Package not found!",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound
-                };
-            }
-            var packageDto = _mapper.Map<PackageDto>(package);
-            return new ResponseDto
-            {
-                Message = "Package retrieved successfully",
-                IsSucceeded = true,
-                StatusCode = 200,
-                Data = packageDto
-            };
-        }
-
-
-        public async Task<ResponseDto> UpdateAsync( PackageDto packageDto)
-        {
-            if (packageDto == null)
+            if (packageDto is null)
             {
                 return new ResponseDto
                 {
@@ -192,20 +150,19 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.BadRequest
                 };
             }
-            var existingPackage = await _unitOfWork.PackageRepository.GetById(packageDto.Id);
-            if (existingPackage == null)
+            var package = await _context.Packages.FindAsync(id);
+            if (package is null)
             {
                 return new ResponseDto
                 {
                     Message = "Package not found!",
                     IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest
+                    StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
-            _mapper.Map(packageDto, existingPackage);
-            await _unitOfWork.PackageRepository.UpdateAsync(existingPackage);
-            await _unitOfWork.SaveCompleted();
-
+            _mapper.Map(packageDto, package);
+             _context.Packages.Update(package);
+            await _context.SaveChangesAsync();
 
             return new ResponseDto
             {
@@ -215,5 +172,37 @@ namespace EcoPowerHub.Repositories.Services
                 Data = packageDto
             };
         }
+        public async Task<ResponseDto> DeletePackageAsync(int id)
+        {
+            if (id <= 0)
+                return new ResponseDto
+                {
+                    Message = "Invalid Package id",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+
+            var package = await _context.Packages.FindAsync(id);
+            if (package is null)
+            {
+                return new ResponseDto
+                {
+                    Message = "Package not found!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
+            }
+             _context.Packages.Remove(package);
+            await _context.SaveChangesAsync();
+            return new ResponseDto
+            {
+                Message = "Package deleted successfully! ",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK
+            };
+        }
+
+      
+       
     }
 }

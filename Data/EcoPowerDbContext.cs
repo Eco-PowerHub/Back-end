@@ -123,6 +123,7 @@ namespace EcoPowerHub.Data
                       .HasColumnType("longtext")
                       .HasCharSet("utf8mb4");
             });
+          
         }
 
     }

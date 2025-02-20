@@ -1,4 +1,5 @@
 ﻿using EcoPowerHub.DTO;
+using EcoPowerHub.DTO.OTPDto;
 using EcoPowerHub.DTO.UserDto;
 using EcoPowerHub.UOW;
 using Microsoft.AspNetCore.Http;
@@ -85,7 +86,7 @@ namespace EcoPowerHub.Controllers
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
-        [HttpPost("GenerateRefreshToken")]
+        [HttpPost("GetRefreshToken")]
         public async Task<IActionResult> NewRefreshToken([FromBody] string email)
         {
             if (!ModelState.IsValid)
@@ -105,7 +106,24 @@ namespace EcoPowerHub.Controllers
         //        return NotFound("User or token not found!");
         //    return Ok("Token revoked successfully");
         //}
-    
+
+        [HttpPost("send-otp")]
+        public async Task<IActionResult> SendOTP([FromBody] SendOtpRequest request)
+        {
+            var result = await _unitOfWork.Accounts.SendOTPAsync(request.Email);
+            if(result.IsSucceeded)
+                return Ok(result);
+            return StatusCode(result.StatusCode, new { result.Message });
+        }
+        [HttpPost("verify-otp")]
+        public async Task<IActionResult> VerifyOTP([FromBody] VerifyOTP otpRequest)
+        {
+            var result = await _unitOfWork.Accounts.verifyOTPRequest(otpRequest);
+            if(result.IsSucceeded)
+                return Ok(result);
+
+            return StatusCode(result.StatusCode , new {result.Message});
+        }
     }
 }
 

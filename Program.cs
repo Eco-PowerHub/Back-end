@@ -27,14 +27,15 @@ namespace EcoPowerHub
             // Add services to the container.
 
             //Email config
-            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("MailSettings"));
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+            builder.Services.AddSingleton<EmailTemplateService>(provider =>
+            new EmailTemplateService(Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "WelcomeEmailTemplate.html")));
             //add ConnectionString 
             builder.Services.AddDbContext<EcoPowerDbContext>(options =>
                  options.UseMySql(
                  builder.Configuration.GetConnectionString("DefaultConnection"),
                  new MySqlServerVersion(new Version(8, 0, 41)) 
                 ));
-
 
 
             //add identity
@@ -61,19 +62,33 @@ namespace EcoPowerHub
                     ClockSkew = TimeSpan.Zero
                 };
             });
+            //add authorization policy
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Company and Admin", policy => policy.RequireRole("Company","Admin"));
+            });
 
             //inject automapper
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
             //inject services 
             builder.Services.AddScoped<IUnitOfWork , UnitOfWork>();
-         // builder.Services.AddScoped<ITokenService,TokenService>();
-          
-
             builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+            builder.Services.AddTransient<IEmailService, EmailService>();
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddSession();
+            builder.Services.AddLogging();
+            builder.Logging.AddConsole();
 
             builder.Services.AddControllers();
-
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -84,14 +99,13 @@ namespace EcoPowerHub
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+    
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
 
-         //   app.UseHttpsRedirection();
-
+            //   app.UseHttpsRedirection();
+            app.UseSession();
+            app.UseRouting();
             app.UseAuthorization();
 
 
