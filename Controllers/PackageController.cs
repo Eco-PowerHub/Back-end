@@ -47,7 +47,7 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        [HttpGet("GetPackagesByCompanyId/{companyId}")]
+        [HttpGet("PackagesByCompanyId/{companyId}")]
         public async Task<IActionResult> GetPackagesByCompanyId(int companyId)
         {
             var response = await _unitOfWork.Packages.GetPackagesByCompanyId(companyId);
