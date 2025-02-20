@@ -6,10 +6,12 @@ namespace EcoPowerHub.UOW
 {
     public interface IUnitOfWork : IDisposable
     {
+
         public IAccountRepository Accounts { get; }
         public ITokenService TokenService { get; }
         public IPackageRepository Packages { get; }
+        public ICategoryRepository Categories { get; }
+        public IProductRepository Products { get; }
         Task<bool> SaveCompleted();
-
     }
 }
