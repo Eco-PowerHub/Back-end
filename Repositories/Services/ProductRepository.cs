@@ -15,7 +15,7 @@ namespace EcoPowerHub.Repositories.Services
         private readonly IMapper _mapper;
         private readonly EcoPowerDbContext _context;
 
-        public ProductRepository( IMapper mapper, EcoPowerDbContext context):base(context)
+        public ProductRepository(  EcoPowerDbContext context, IMapper mapper) :base(context)
         {
             _mapper = mapper;
             _context= context;
@@ -23,31 +23,17 @@ namespace EcoPowerHub.Repositories.Services
         public async Task<ResponseDto> GetAllAsync()
         {
             var products = await _context.Products.AsNoTracking().ToListAsync();
-            if(products == null|| !products.Any())
-            {
-                return new ResponseDto
-                {
-                    Message = "No Product Found",
-                    IsSucceeded = true,
-                    StatusCode=200,
-                    Data = new List<Product>()
-                };
-            }
-            var ProductDtos= _mapper.Map<IEnumerable<ProductDto>>(products);
-            return new ResponseDto
-            {
-                Message = "Products retrieved successfully",
-                IsSucceeded = true,
-                StatusCode = 200,
-                Data = ProductDtos
-            };
+            return products.Any()
+                ? new ResponseDto { Message = "Products retrieved successfully", IsSucceeded = true, StatusCode = (int)HttpStatusCode.OK, Data = _mapper.Map<IEnumerable<ProductDto>>(products) }
+                :new ResponseDto { Message = "No Product Found", IsSucceeded = true, StatusCode = (int)HttpStatusCode.OK, Data = new List<ProductDto>()};
+
         }
 
         public async Task<ResponseDto> GetById(int id)
         {
             if (id <= 0)
             {
-                new ResponseDto
+                return new ResponseDto
                 {
                     Message = "Invalid Product Id ",
                     IsSucceeded = false,
@@ -87,7 +73,7 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
             var products = await _context.Products
-                .Where(p => p.CategoryId == categoryId).ToListAsync();
+                .Where(p => p.CategoryId == categoryId).AsNoTracking().ToListAsync();
             if(products==null || !products.Any())
             {
                 return new ResponseDto
@@ -119,12 +105,12 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
             var products = await _context.Products
-                .Where(p=>p.CompanyId== companyId).ToListAsync();
+                .Where(p=>p.CompanyId== companyId).AsNoTracking().ToListAsync();
             if(products==null || !products.Any())
             {
                 return new ResponseDto
                 {
-                    Message = "No products found for the given",
+                    Message = "No products found for the given company",
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
@@ -151,7 +137,10 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
             var product = await _context.Products
-                .FirstOrDefaultAsync(p => p.Name.ToLower() == name.ToLower());
+                .Where(p => p.Name.ToLower() == name.ToLower())
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
             if (product == null)
             {
                 return new ResponseDto
@@ -185,6 +174,7 @@ namespace EcoPowerHub.Repositories.Services
             var products = await _context.Products
                 .Where(p => p.CategoryId == categoryId)
                 .OrderBy(p => p.Price)
+                .AsNoTracking()
                 .ToListAsync();
             if (products == null || !products.Any())
             {
@@ -216,6 +206,18 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.BadRequest
                 };
             }
+
+            var existingProduct = await _context.Products.AnyAsync(p => p.Name == productDto.Name);
+            if (existingProduct)
+            {
+                return new ResponseDto
+                {
+                    Message = "Product with the same name already exists!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.Conflict
+                };
+            }
+
             var product = _mapper.Map<Product>(productDto);
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
@@ -259,7 +261,7 @@ namespace EcoPowerHub.Repositories.Services
                 Message = "Product Updated successfully! ",
                 IsSucceeded = true,
                 StatusCode = 200,
-                Data = productDto
+                Data = existingProduct
             };
         }
 
@@ -306,7 +308,8 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
             var products = await _context.Products
-                .Where(p => EF.Functions.Like(p.Name, $"%{searchTerm}"))
+                .Where(p => p.Name.ToLower().Contains(searchTerm.ToLower()))
+                .AsNoTracking()
                 .ToListAsync();
             if (products == null || !products.Any())
             {

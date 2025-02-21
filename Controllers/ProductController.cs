@@ -21,7 +21,7 @@ namespace EcoPowerHub.Controllers
 
 
         // GET: api/<ProductController>
-        [HttpGet]
+        [HttpGet("GetAllProducts")]
         public async Task<IActionResult> GetAllProducts()
         {
             if (!ModelState.IsValid)
@@ -34,7 +34,7 @@ namespace EcoPowerHub.Controllers
 
         
         // GET api/<ProductController>/5
-        [HttpGet("{id}")]
+        [HttpGet("GetProductById{id}")]
         public async Task<IActionResult>  GetProductById(int id)
         {
             if (!ModelState.IsValid)
@@ -46,6 +46,7 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
+        [HttpGet("GetProductByName")]
 
         public async Task<IActionResult> GetProductByName(string name)
         {
@@ -58,6 +59,7 @@ namespace EcoPowerHub.Controllers
 
             return StatusCode(response.StatusCode, new { response.Message });
         }
+        [HttpGet("GetProductsByCategoryId")]
 
         public async Task<IActionResult> GetProductsByCategoryId(int categoryId)
         {
@@ -68,7 +70,7 @@ namespace EcoPowerHub.Controllers
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
-
+        [HttpGet("GetProductsByCompanyId")]
         public async Task<IActionResult> GetProductsByCompanyId(int companyId)
         {
             if (!ModelState.IsValid)
@@ -78,7 +80,7 @@ namespace EcoPowerHub.Controllers
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
-
+        [HttpGet("SortProductByPrice")]
         public async Task<IActionResult> GetProductsSortedByPrice(int categoryId)
         {
             if (!ModelState.IsValid)
@@ -91,7 +93,7 @@ namespace EcoPowerHub.Controllers
 
 
         // POST api/<ProductController>
-        [HttpPost]
+        [HttpPost("AddProduct")]
         public async Task<IActionResult> AddProduct([FromBody] ProductDto productDto)
         {
             if(!ModelState.IsValid)
@@ -103,7 +105,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // PUT api/<ProductController>/5
-        [HttpPut("{id}")]
+        [HttpPut("EditProduct/{id}")]
         public async Task<IActionResult> EditProduct(int id,[FromBody] ProductDto productDto)
         {
             if (!ModelState.IsValid)
@@ -115,7 +117,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // DELETE api/<ProductController>/5
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteProduct/{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             if (!ModelState.IsValid)
@@ -126,6 +128,7 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
+        [HttpGet("SearchProducts")]
         public async Task<IActionResult> SearchProducts(string searchTerm)
         {
             var response = await _unitOfWork.Products.SearchProductAsync(searchTerm);
@@ -135,4 +138,3 @@ namespace EcoPowerHub.Controllers
         }
     }
 }
-//nnnnnnnnnnnnnnaaaaaaaaaaaaaaaaammmmmmmmmmmmmmmmmmeeeeeeeeeeeeeeeeee

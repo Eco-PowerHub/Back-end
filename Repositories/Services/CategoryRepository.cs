@@ -1,10 +1,10 @@
-﻿using EcoPowerHub.Data;
+﻿using AutoMapper;
+using EcoPowerHub.Data;
 using EcoPowerHub.DTO;
 using EcoPowerHub.Helpers;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
-using EcoPowerHub.UOW;
 using Microsoft.EntityFrameworkCore;
 
 namespace EcoPowerHub.Repositories.Services
@@ -12,30 +12,34 @@ namespace EcoPowerHub.Repositories.Services
     public class CategoryRepository : GenericRepository<Category>, ICategoryRepository
     {
         private readonly EcoPowerDbContext _context;
-        public CategoryRepository(EcoPowerDbContext context, IUnitOfWork unitOfWork) : base(context)
+        private readonly IMapper _mapper;
+        public CategoryRepository(EcoPowerDbContext context, IMapper mapper) : base(context)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<ResponseDto> GetAllAsync()
         {
-            var categories = await _context.Categories.AsNoTracking().ToListAsync(); 
-            if (categories == null || !categories.Any())
+           
+           var categories = await _context.Categories.AsNoTracking().ToListAsync();
+           if(categories.Count ==0 || !categories.Any())
             {
                 return new ResponseDto
                 {
                     Message = "No Categories Found",
-                    IsSucceeded = true,
-                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound,
                     Data = new List<Category>()
                 };
             }
+           var categoryDtos = _mapper.Map<IEnumerable<CategoryDto>>(categories);
             return new ResponseDto
             {
-                Message = "Categories retrieved successfully!",
+                Message = "Categories retrieved successfully",
                 IsSucceeded = true,
-                StatusCode=200,
-                Data = categories
+                StatusCode = (int)HttpStatusCode.OK,
+                Data = categoryDtos
             };
         }
 
@@ -59,12 +63,13 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
+            var categoryDto = _mapper.Map<CategoryDto>(category);
             return new ResponseDto
             {
                 Message = "Category retrieved successfully",
                 IsSucceeded = true,
                 StatusCode = 200,
-                Data = category
+                Data = categoryDto
             };
         }
 
@@ -83,7 +88,7 @@ namespace EcoPowerHub.Repositories.Services
 
             var category = await _context.Categories
                 .FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower());
-
+            //var category = await _context.Categories.FirstOrDefaultAsync(c => EF.Functions.Like(c.Name, name));
             if (category == null)
             {
                 return new ResponseDto
@@ -93,19 +98,19 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = 404
                 };
             }
-
+            var categoryDto = _mapper.Map<CategoryDto>(category);
             return new ResponseDto
             {
                 Message = "Category retrieved successfully.",
                 IsSucceeded = true,
                 StatusCode = 200,
-                Data = category  
+                Data = categoryDto  
             };
         }
 
-        public async Task<ResponseDto> AddAsync(Category category)
+        public async Task<ResponseDto> AddAsync(CategoryDto categoryDto)
         {
-            if (category == null)
+            if (categoryDto == null )
             {
                 return new ResponseDto
                 {
@@ -115,6 +120,18 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
 
+            var existingCategory = await _context.Categories.AnyAsync(c => c.Name == categoryDto.Name);
+            if (existingCategory)
+            {
+                return new ResponseDto
+                {
+                    Message = "Category already exists!",
+                    IsSucceeded = false,
+                    StatusCode = 409
+                };
+            }
+
+            var category = _mapper.Map<Category>(categoryDto);
             await _context.Categories.AddAsync(category);
             await _context.SaveChangesAsync();
             return new ResponseDto
@@ -148,7 +165,19 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
-            await _context.Categories.FindAsync(id);
+
+            if (await _context.Products.AnyAsync(p => p.CategoryId == id))
+            {
+                return new ResponseDto
+                {
+                    Message = "Cannot delete category with associated products.",
+                    IsSucceeded = false,
+                    StatusCode = 409
+                };
+            }
+
+
+            _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
 
             return new ResponseDto
@@ -158,38 +187,44 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = 200
             };
         }
-       
-        public async Task<ResponseDto> UpdateAsync(int id, Category category)
+
+        public async Task<ResponseDto> UpdateAsync(int id, CategoryDto categoryDto)
         {
-            if (category == null)
+            if (categoryDto == null || id <= 0)
             {
                 return new ResponseDto
                 {
-                    Message = "Invalid Category data!",
+                    Message = "Invalid Category data or ID!",
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.BadRequest
                 };
             }
-            var existingCategory = await _context.Categories.FindAsync(category.Id);
+
+            var existingCategory = await _context.Categories
+                .Include(c => c.Products) 
+                .FirstOrDefaultAsync(c => c.Id == id);
+
             if (existingCategory == null)
             {
                 return new ResponseDto
                 {
                     Message = "Category not found!",
                     IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest
+                    StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
+            _mapper.Map( categoryDto,existingCategory);
             _context.Categories.Update(existingCategory);
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             return new ResponseDto
             {
-                Message = "Category updated successfully! ",
+                Message = "Category updated successfully with products!",
                 IsSucceeded = true,
                 StatusCode = 200,
                 Data = existingCategory
             };
         }
+
     }
 }

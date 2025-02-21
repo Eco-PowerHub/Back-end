@@ -49,6 +49,8 @@ namespace EcoPowerHub.UOW
 
             Accounts = new AccountRepository(_context, _userManager, _mapper, _httpContextAccessor, _tokenService, _emailService, _emailTemplateService);
             Packages = new PackageRepository(_context, _mapper);
+            Categories = new CategoryRepository(_context, _mapper);
+            Products = new ProductRepository(_context, _mapper);
         }
         public IAccountRepository Accounts { get; private set; }
 

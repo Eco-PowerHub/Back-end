@@ -1,4 +1,5 @@
-﻿using EcoPowerHub.Models;
+﻿using EcoPowerHub.DTO;
+using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.Interfaces;
 using EcoPowerHub.UOW;
 using Microsoft.AspNetCore.Mvc;
@@ -37,8 +38,6 @@ namespace EcoPowerHub.Controllers
         [HttpGet("GetCategoryById/{id}")]
         public async Task<IActionResult> GetCategoryById(int id)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
             var response = await _unitOfWork.Categories.GetById(id);
             if (response.IsSucceeded)
                 return Ok(response);
@@ -50,8 +49,6 @@ namespace EcoPowerHub.Controllers
         [HttpGet("GetCategoryByName/{name}")]
         public async Task<IActionResult> GetCategoryByName(string name)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
             var response = await _unitOfWork.Categories.GetByName(name);
             if (response.IsSucceeded)
                 return Ok(response);
@@ -61,11 +58,17 @@ namespace EcoPowerHub.Controllers
 
         // POST api/<CategoryController>
         [HttpPost("AddCategory")]
-        public async Task<IActionResult> AddCategory([FromBody] Category category)
+        public async Task<IActionResult> AddCategory([FromBody] CategoryDto categoryDto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var response = await _unitOfWork.Categories.AddAsync(category);
+                return BadRequest(new ResponseDto
+                {
+                    Message = "Invalid request data.",
+                    IsSucceeded = false,
+                    StatusCode = 400
+                });
+
+            var response = await _unitOfWork.Categories.AddAsync(categoryDto);
             if (response.IsSucceeded)
                 return Ok(response);
 
@@ -74,11 +77,17 @@ namespace EcoPowerHub.Controllers
 
         // PUT api/<CategoryController>/5
         [HttpPut("EditCategory/{id}")]
-        public async Task<IActionResult> EditCategory(int id, [FromBody] Category category)
+        public async Task<IActionResult> EditCategory(int id, [FromBody] CategoryDto categoryDto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var response = await _unitOfWork.Categories.UpdateAsync(id,category);
+                return BadRequest(new ResponseDto
+                {
+                    Message = "Invalid request data.",
+                    IsSucceeded = false,
+                    StatusCode = 400
+                });
+
+            var response = await _unitOfWork.Categories.UpdateAsync(id,categoryDto);
             if (response.IsSucceeded)
                 return Ok(response);
 
@@ -89,8 +98,6 @@ namespace EcoPowerHub.Controllers
         [HttpDelete("DeleteCategory/{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
             var response = await _unitOfWork.Categories.DeleteAsync(id);
             if (response.IsSucceeded)
                 return Ok(response);

@@ -15,6 +15,7 @@ namespace EcoPowerHub.AutoMapper
             CreateMap<UserDto, ApplicationUser>().ReverseMap();
             CreateMap<PackageDto, Package>().ReverseMap();
             CreateMap<ProductDto, Product>().ReverseMap();
+            CreateMap<CategoryDto, Category>().ReverseMap();
 
         }
     }
