@@ -51,6 +51,7 @@ namespace EcoPowerHub.UOW
             Packages = new PackageRepository(_context, _mapper);
             Categories = new CategoryRepository(_context, _mapper);
             Products = new ProductRepository(_context, _mapper);
+            UserFeedbacks = new UserFeedbackRepository(_context);
         }
         public IAccountRepository Accounts { get; private set; }
 
@@ -60,6 +61,7 @@ namespace EcoPowerHub.UOW
         public IProductRepository Products { get; private set; }
 
         public ICategoryRepository Categories {  get; private set; }
+        public IUserFeedbackRepository UserFeedbacks { get; private set; }
 
         public async Task<bool> SaveCompleted()
         {
