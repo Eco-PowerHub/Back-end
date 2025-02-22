@@ -1,8 +1,7 @@
-﻿using CloudinaryDotNet.Actions;
-using CloudinaryDotNet;
-using EcoPowerHub.Repositories.Interfaces;
-using System.Linq;
-using AngleSharp.Io.Dom;
+﻿using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using EcoPowerHub.Models;
+using Microsoft.Extensions.Options;
 
 namespace EcoPowerHub.Repositories.Services
 {
@@ -10,38 +9,28 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly Cloudinary _cloudinary;
 
-        public CloudinaryService(IConfiguration configuration)
+        public CloudinaryService(IOptions<CloudinarySettings> cloudinarySettings)
         {
             var account = new Account(
-                configuration["Cloudinary:CloudName"],
-                configuration["Cloudinary:ApiKey"],
-                configuration["Cloudinary:ApiSecret"]
+                cloudinarySettings.Value.CloudName,
+                cloudinarySettings.Value.ApiKey,
+                cloudinarySettings.Value.ApiSecret
             );
 
             _cloudinary = new Cloudinary(account);
         }
 
-        public async Task<string> UploadImageAsync(Stream fileStream, string fileName)
+        public async Task<(string imageUrl, string publicId)> UploadImageAsync(Stream fileStream, string fileName)
         {
             var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(fileName, fileStream),
-                Transformation = new Transformation().Quality(80).FetchFormat("jpg") // Optimize image
+                PublicId = Path.GetFileNameWithoutExtension(fileName), // حفظ `public_id`
+                Transformation = new Transformation().Quality(80).FetchFormat("jpg")
             };
 
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-            return uploadResult?.SecureUrl?.AbsoluteUri;
-        }
-
-        public async Task<string> UploadFileAsync(Stream fileStream, string fileName)
-        {
-            var uploadParams = new RawUploadParams
-            {
-                File = new FileDescription(fileName, fileStream)
-            };
-
-            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-            return uploadResult?.SecureUrl?.AbsoluteUri;
+            return (uploadResult.SecureUrl?.AbsoluteUri, uploadResult.PublicId);
         }
 
         public async Task<bool> DeleteFileAsync(string publicId)

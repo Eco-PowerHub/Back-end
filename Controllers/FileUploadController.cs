@@ -22,8 +22,9 @@ namespace EcoPowerHub.Controllers
                 return BadRequest("No file uploaded");
 
             using var stream = file.OpenReadStream();
-            var url = await _cloudinaryService.UploadImageAsync(stream, file.FileName);
-            return Ok(new { Url = url });
+            var (url, publicId) = await _cloudinaryService.UploadImageAsync(stream, file.FileName);
+
+            return Ok(new { ImageUrl = url, PublicId = publicId });
         }
 
         [HttpDelete("delete/{publicId}")]
