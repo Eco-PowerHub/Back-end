@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EcoPowerHub.DTO;
 using EcoPowerHub.DTO.UserDto;
+using EcoPowerHub.DTO.UserSupportDto;
 using EcoPowerHub.Models;
 
 namespace EcoPowerHub.AutoMapper
@@ -16,7 +17,9 @@ namespace EcoPowerHub.AutoMapper
             CreateMap<PackageDto, Package>().ReverseMap();
             CreateMap<ProductDto, Product>().ReverseMap();
             CreateMap<CategoryDto, Category>().ReverseMap();
-
+            CreateMap<CreateUserSupportDto, UserSupport>();
+            CreateMap<UserSupport, GetUserSupportDto>();
+            CreateMap<AddResponseDto, UserSupport>();
         }
     }
 }

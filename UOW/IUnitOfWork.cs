@@ -13,6 +13,7 @@ namespace EcoPowerHub.UOW
         public ICategoryRepository Categories { get; }
         public IProductRepository Products { get; }
         public IUserFeedbackRepository UserFeedbacks { get; }
+        public ISupportRepository Supports { get; }
         Task<bool> SaveCompleted();
     }
 }
