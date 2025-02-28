@@ -4,3 +4,5 @@ obj
 publish
 Jenkinsfile
 Ansible/
+docker-compose.yaml
+Dockerfile
