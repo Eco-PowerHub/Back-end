@@ -1,3 +1,8 @@
+def COLOR_MAP = [
+    'SUCCESS': 'good',
+    'FAILURE': 'danger',
+]
+
 pipeline {
 
     agent any
@@ -62,13 +67,11 @@ pipeline {
     }
 
     post {
-        success {
-            echo 'Build and Tests completed successfully!'
-        }
-        failure {
-            echo 'Build or Tests failed. Check the logs for details.'
-        }
         always {
+            echo 'Slack Notification'
+            slackSend channel: '#cicd',
+                color: COLOR_MAP[currentBuild.currentResult],
+                message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}"
             sh 'docker logout'
         }
     }
