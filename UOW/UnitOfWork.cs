@@ -14,7 +14,6 @@ namespace EcoPowerHub.UOW
     {
         private readonly EcoPowerDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
         private readonly ILogger<UnitOfWork> _logger;
@@ -49,12 +48,14 @@ namespace EcoPowerHub.UOW
 
             Accounts = new AccountRepository(_context, _userManager,_mapper,_httpContextAccessor, _tokenService, _emailService,_emailTemplateService);
             Packages = new PackageRepository(_context, _mapper);
+            Company = new CompanyRepository(_context, _mapper);
         }
         public IAccountRepository Accounts {  get; private set; }
 
         public ITokenService TokenService {  get; private set; }
 
         public IPackageRepository Packages {  get; private set; }
+        public ICompanyRepository Company { get; private set; }
 
         public async Task<bool> SaveCompleted()
         {

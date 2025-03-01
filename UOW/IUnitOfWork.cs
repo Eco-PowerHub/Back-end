@@ -9,6 +9,7 @@ namespace EcoPowerHub.UOW
         public IAccountRepository Accounts { get; }
         public ITokenService TokenService { get; }
         public IPackageRepository Packages { get; }
+        public ICompanyRepository Company { get; }
         Task<bool> SaveCompleted();
 
     }

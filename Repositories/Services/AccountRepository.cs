@@ -24,23 +24,23 @@ namespace EcoPowerHub.Repositories.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
-     //   private readonly ILogger<AccountRepository> _logger;
+        //   private readonly ILogger<AccountRepository> _logger;
         private readonly IEmailService _emailService;
         private readonly EmailTemplateService _emailTemplateService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
 
-        public AccountRepository( EcoPowerDbContext context , UserManager<ApplicationUser> userManager 
-           ,IMapper mapper, 
+        public AccountRepository(EcoPowerDbContext context, UserManager<ApplicationUser> userManager
+           , IMapper mapper,
               IHttpContextAccessor httpContextAccessor,
             ITokenService tokenService,//ILogger<AccountRepository> logger ,
-            IEmailService emailService,EmailTemplateService emailTemplateService) :base(context)
+            IEmailService emailService, EmailTemplateService emailTemplateService) : base(context)
         {
             _context = context;
             _userManager = userManager;
             _mapper = mapper;
             _tokenService = tokenService;
-         //   _logger = logger;
+            //   _logger = logger;
             _emailService = emailService;
             _emailTemplateService = emailTemplateService;
             _httpContextAccessor = httpContextAccessor;
@@ -54,11 +54,12 @@ namespace EcoPowerHub.Repositories.Services
             var otpExpiry = DateTime.UtcNow.AddMinutes(5);
 
 
-            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_{registerDto.Email}",otp); // 1-store otp in session 
+            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_{registerDto.Email}", otp); // 1-store otp in session 
             _httpContextAccessor.HttpContext?.Session.SetString($"OTP_Expiry_{registerDto.Email}", otpExpiry.ToString()); //2- store expire time 
             _httpContextAccessor.HttpContext?.Session.SetString($"TempUserInfo_{registerDto.Email}", JsonConvert.SerializeObject(registerDto)); // 3- store user info temporary
 
-            await _emailService.SendEmailAsync(registerDto.Email, "Your OTP", $"Your OTP is {otp}");
+            await _emailService.SendEmailAsync(registerDto.Email, "Your OTP", $"Hi {registerDto.UserName}" +
+                $",Use the code below to log in to your Eco PowerHub account. Your OTP is {otp},This code expires in 5 minutes.");
             return new ResponseDto
             {
                 Message = "OTP sent to your email. Please verify to complete registration.",
@@ -66,6 +67,7 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = (int)HttpStatusCode.OK
             };
         }
+        
         public async Task<ResponseDto> LoginAsync(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
@@ -78,13 +80,10 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = 400
                 };
             }
-
             var token = await _tokenService.GenerateToken(user);
             var refreshToken = string.Empty;
             DateTime refreshTokenExpiration;
-            Console.WriteLine($"Active tokens before: {user.RefreshTokens?.Count(t => t.IsActive)}");
-
-            if (user.RefreshTokens?.Any(t => t.IsActive) == true)
+            if (user.RefreshTokens!.Any(t => t.IsActive))
             {
                 var activeToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
                 refreshToken = activeToken.Token;
@@ -95,26 +94,10 @@ namespace EcoPowerHub.Repositories.Services
                 var newRefreshToken = _tokenService.GeneraterefreshToken();
                 refreshToken = newRefreshToken.Token;
                 refreshTokenExpiration = newRefreshToken.ExpiresOn;
-                if (user.RefreshTokens == null)
-                    user.RefreshTokens = new List<RefreshToken>();
-
-                user.RefreshTokens.Add(newRefreshToken);
-
-                var result = await _userManager.UpdateAsync(user);
-                if (!result.Succeeded)
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        Console.WriteLine($"Error: {error.Description}");
-                    }
-                }
             }
-
-            Console.WriteLine($"Active tokens after: {user.RefreshTokens?.Count(t => t.IsActive)}");
-
             return new ResponseDto
             {
-                Message = "Login successfully",
+                Message = " User login successfully ",
                 IsSucceeded = true,
                 StatusCode = 200,
                 Data = new
@@ -152,11 +135,11 @@ namespace EcoPowerHub.Repositories.Services
                 return new ResponseDto
                 {
                     Message = "User not found!",
-                    IsSucceeded = false , 
+                    IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
-            if(!result.Succeeded)
+            if (!result.Succeeded)
             {
                 return new ResponseDto
                 {
@@ -200,7 +183,7 @@ namespace EcoPowerHub.Repositories.Services
                 IsSucceeded = true,
                 StatusCode = (int)HttpStatusCode.OK
             };
-            }
+        }
         public async Task<ResponseDto> DeleteProfileAsync(LoginDto account)
         {
             var user = await _userManager.FindByEmailAsync(account.Email);
@@ -213,7 +196,7 @@ namespace EcoPowerHub.Repositories.Services
                 };
             if (user.RefreshTokens?.Any() == true)
                 user.RefreshTokens.Clear();
-            var result =  await _userManager.DeleteAsync(user);
+            var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
             {
                 return new ResponseDto
@@ -242,8 +225,8 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
-            _mapper.Map(profileDto, user);  
-            var result =  await _userManager.UpdateAsync(user);
+            _mapper.Map(profileDto, user);
+            var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
@@ -269,51 +252,43 @@ namespace EcoPowerHub.Repositories.Services
         public async Task<ResponseDto> GetRefreshTokenAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user is null)
+            if (user == null)
             {
                 return new ResponseDto
                 {
-                    Message = "User not found!",
+                    Message = "Invalid Email!!",
                     IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound
+                    StatusCode = 400,
                 };
             }
             var activeToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
-            if (activeToken is null)
+            if (activeToken is not null)
             {
                 return new ResponseDto
                 {
-                    Message = "No refresh tokens found!",
+                    Message = "Token still active",
                     IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound
+                    StatusCode = 400,
                 };
             }
-            var token = _tokenService.GenerateToken(user);
+            // var token = await _tokenService.GenerateToken(user);
             var refreshToken = _tokenService.GeneraterefreshToken();
-            user.RefreshTokens!.Add(refreshToken);
-            var updateResult = await _userManager.UpdateAsync(user);
-            if (!updateResult.Succeeded)
-            {
-                return new ResponseDto
-                {
-                    Message = "Failed to update user!",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.InternalServerError
-                };
-            }
+            user.RefreshTokens.Add(refreshToken);
+            await _userManager.UpdateAsync(user);
             return new ResponseDto
             {
                 IsSucceeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
+                StatusCode = 200,
                 Data = new
                 {
                     IsAuthenticated = true,
-                    Token = token,
+                    //       Token = token,
                     RefreshToken = refreshToken,
                     UserName = user.UserName,
                     Email = user.Email,
                 }
             };
+
         }
 
         public async Task<ResponseDto> SendOTPAsync(string email)
@@ -327,13 +302,13 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
 
-            var otp = GeneratetOtp.GenerateOTP(); 
+            var otp = GeneratetOtp.GenerateOTP();
             var otpExpiry = DateTime.UtcNow.AddMinutes(5);
 
             _httpContextAccessor.HttpContext?.Session.SetString($"OTP_{email}", otp);
             _httpContextAccessor.HttpContext?.Session.SetString($"OTP_Expiry_{email}", otpExpiry.ToString());
 
-             await _emailService.SendEmailAsync(email, "Your OTP Code", $"Your OTP code is {otp}. It expires in 5 minutes.");
+            await _emailService.SendEmailAsync(email, "Your OTP Code", $"Your OTP code is {otp}. It expires in 5 minutes.");
             return new ResponseDto
             {
                 Message = "OTP sent successfully",
@@ -353,7 +328,7 @@ namespace EcoPowerHub.Repositories.Services
             var tempUserInfoJson = session.GetString($"TempUserInfo_{verifyOTP.Email}");
 
             //check otp 
-            if (string.IsNullOrEmpty(storedOtp) || string.IsNullOrEmpty(storedExpiry) || string.IsNullOrEmpty(tempUserInfoJson)) 
+            if (string.IsNullOrEmpty(storedOtp) || string.IsNullOrEmpty(storedExpiry) || string.IsNullOrEmpty(tempUserInfoJson))
                 return new ResponseDto { Message = "OTP expired or invalid. Please request a new OTP." };
 
             if (storedOtp != verifyOTP.OTP)
@@ -371,11 +346,23 @@ namespace EcoPowerHub.Repositories.Services
             if (!result.Succeeded)
                 return new ResponseDto { Message = "Failed to create user. " + string.Join(", ", result.Errors.Select(e => e.Description)) };
 
+
             // clear otp data
             session.Remove($"OTP_{verifyOTP.Email}");
             session.Remove($"OTP_Expiry_{verifyOTP.Email}");
             session.Remove($"TempUserInfo_{verifyOTP.Email}");
+            var emailBody = _emailTemplateService.RenderWelcomeEmail(
+                     user.UserName, 
+                     user.Email    ,
+                     user.Role.ToString()
+                  );
 
+            // Send the email
+            await _emailService.SendEmailAsync(
+                user.Email,    
+                "Welcome to EcoPowerHub!",
+                emailBody      // Email body (HTML)
+            );
             return new ResponseDto
             {
                 Message = "User registered successfully.",
@@ -383,19 +370,27 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = (int)HttpStatusCode.OK
             };
         }
-    }
-    }
 
-        //public async Task<bool> RevokeRefreshTokenAsync(string token)
-        //{
-        //    var user = await _userManager.Users.SingleOrDefaultAsync(u=>u.RefreshTokens.Any(t=>t.Token==token));
 
-        //    if (user == null)
-        //        return false;
-        //    var refreshToken = user.RefreshTokens.Single(t=>t.Token == token);
-        //    if (!refreshToken.IsActive) return false;
-        //    refreshToken.RevokedOn = DateTime.UtcNow;
-        //    await _userManager.UpdateAsync(user);
-        //    return true;
-        //}
+
+        public async Task<bool> RevokeRefreshTokenAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return false;
+            }
+
+            var activeToken = user.RefreshTokens?.FirstOrDefault(t => t.IsActive);
+            if (activeToken != null && activeToken.IsActive) // Check for null before accessing IsActive
+            {
+                activeToken.RevokedOn = DateTime.UtcNow;
+                await _userManager.UpdateAsync(user);
+                return true;
+            }
+
+            return false;
+        }
+    }
+}
 

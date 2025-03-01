@@ -30,7 +30,7 @@ namespace EcoPowerHub.Repositories.Services
             };
 
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-            return uploadResult?.SecureUrl?.AbsoluteUri;
+            return uploadResult.SecureUrl.AbsoluteUri;
         }
 
         public async Task<string> UploadFileAsync(Stream fileStream, string fileName)

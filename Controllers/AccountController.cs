@@ -96,16 +96,16 @@ namespace EcoPowerHub.Controllers
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
-        // [HttpPost("RevokeRefreshToken")]
-        //public async Task<IActionResult> RevokeRefreshToken([FromBody] RevokeToken model)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
-        //    var token = await _unitOfWork.Accounts.RevokeRefreshTokenAsync(model.Token);
-        //    if (!token)
-        //        return NotFound("User or token not found!");
-        //    return Ok("Token revoked successfully");
-        //}
+        [HttpPost("RevokeRefreshToken")]
+        public async Task<IActionResult> RevokeRefreshToken([FromBody] string email)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var token = await _unitOfWork.Accounts.RevokeRefreshTokenAsync(email);
+            if (!token)
+                return NotFound("User or token not found!");
+            return Ok("Token revoked successfully");
+        }
 
         [HttpPost("send-otp")]
         public async Task<IActionResult> SendOTP([FromBody] SendOtpRequest request)
