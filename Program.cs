@@ -1,4 +1,5 @@
 
+using CloudinaryDotNet;
 using EcoPowerHub.AutoMapper;
 using EcoPowerHub.Data;
 using EcoPowerHub.Models;
@@ -69,6 +70,16 @@ namespace EcoPowerHub
                 options.AddPolicy("Company and Admin", policy => policy.RequireRole("Company","Admin"));
             });
 
+            //cloudinary
+            var cloudinarySettings = builder.Configuration.GetSection("Cloudinary").Get<CloudinarySettings>();
+            var cloudinaryAccount = new Account(
+                cloudinarySettings.CloudName,
+                cloudinarySettings.ApiKey,
+                cloudinarySettings.ApiSecret
+            );
+
+            var cloudinary = new Cloudinary(cloudinaryAccount);
+
             //inject automapper
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
@@ -90,6 +101,7 @@ namespace EcoPowerHub
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+<<<<<<< HEAD
          
             builder.Services.AddCors(options =>
             {
@@ -101,6 +113,14 @@ namespace EcoPowerHub
                               .AllowAnyMethod();
                     });
             });
+=======
+
+            //cloudinary DI
+            builder.Services.AddSingleton(cloudinary);
+            builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
+            builder.Services.AddScoped<CloudinaryService>();
+
+>>>>>>> 7740503d34511a176c63549010bb78c4a74d82cf
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
