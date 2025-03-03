@@ -3,6 +3,7 @@ using EcoPowerHub.DTO;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
+using EcoPowerHub.UOW;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
@@ -69,7 +70,7 @@ namespace EcoPowerHub.Repositories.Services
         }
         public async Task<ResponseDto> AddFeedbackAsync(UserFeedBack feedback)
         {
-            if(feedback == null || string.IsNullOrWhiteSpace(feedback.Content))
+            if (feedback == null || string.IsNullOrWhiteSpace(feedback.Content))
             {
                 return new ResponseDto
                 {
@@ -89,9 +90,11 @@ namespace EcoPowerHub.Repositories.Services
                 Data = feedback
             };
         }
-        public async Task<ResponseDto> DeleteFeedbackAsync(int id)
+      
+        public async Task<ResponseDto> DeleteFeedbackAsync(int feedbackId)
         {
-            if (id <=0 )
+
+            if (feedbackId <= 0)
             {
                 return new ResponseDto
                 {
@@ -100,8 +103,8 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.BadRequest,
                 };
             }
-            var feedback =await _context.UserFeedBacks.FindAsync(id);
-            if(feedback== null)
+            var feedback = await _context.UserFeedBacks.FindAsync(feedbackId);
+            if (feedback == null)
             {
                 return new ResponseDto
                 {

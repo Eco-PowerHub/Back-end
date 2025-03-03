@@ -36,6 +36,7 @@ namespace EcoPowerHub.Controllers
 
         // GET api/<PackageController>/5
         [HttpGet("PackageById/{id}")]
+        [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> GetPackageById(int id)
         {
             if (!ModelState.IsValid)
@@ -48,6 +49,7 @@ namespace EcoPowerHub.Controllers
         }
 
         [HttpGet("PackagesByCompanyId/{companyId}")]
+        [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> GetPackagesByCompanyId(int companyId)
         {
             var response = await _unitOfWork.Packages.GetPackagesByCompanyId(companyId);

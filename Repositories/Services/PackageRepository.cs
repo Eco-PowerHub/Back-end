@@ -87,7 +87,7 @@ namespace EcoPowerHub.Repositories.Services
                                                   .AsNoTracking()
                                                   .Where(c => c.CompanyId == companyId)
                                                   .ToListAsync();
-            if (!packages.Any())
+            if (packages.Count == 0)
             {
                 return new ResponseDto
                 {
@@ -97,7 +97,7 @@ namespace EcoPowerHub.Repositories.Services
                     Data = null
                 };
             }
-            var packagesDto = _mapper.Map<PackageDto>(packages);
+            var packagesDto = _mapper.Map<List<PackageDto>>(packages);
             return new ResponseDto
             {
                 Message = "Packages retrived  successfully",
@@ -135,7 +135,7 @@ namespace EcoPowerHub.Repositories.Services
             {
                 Message = "Package added successfully!",
                 IsSucceeded = true,
-                StatusCode = 200,
+                StatusCode = 201,
                 Data = resultDto
             };
         }
@@ -160,7 +160,11 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
-            _mapper.Map(packageDto, package);
+            // _mapper.Map(packageDto, package);
+            package.Details = packageDto.Details;
+            package.Price = packageDto.Price;
+            package.Image = packageDto.Image;
+            package.CompanyId = packageDto.CompanyId;
             _context.Packages.Update(package);
             await _context.SaveChangesAsync();
 

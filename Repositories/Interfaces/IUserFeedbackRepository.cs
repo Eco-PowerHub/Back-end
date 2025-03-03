@@ -9,6 +9,6 @@ namespace EcoPowerHub.Repositories.Interfaces
         Task<ResponseDto> GetAllFeedbacksAsync();
         Task<ResponseDto> GetFeedbackByIdAsync(int id);
         Task<ResponseDto> AddFeedbackAsync(UserFeedBack feedback);
-        Task<ResponseDto> DeleteFeedbackAsync(int id);
+        Task<ResponseDto> DeleteFeedbackAsync(int feedbackId);
     }
 }

@@ -129,24 +129,11 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
        
-        public async Task<ResponseDto> GetCompanyPackages(PackageDto packageDto)
+        public async Task<ResponseDto> GetCompanyPackages(int companyId)
         {
-            var company = await _context.Companies.Include(p=>p.Packages)
-                                                    .Where(c=>c.Id == packageDto.CompanyId)
-                                                    .ToListAsync();
-            if (company.Count == 0)
-            {
-                return new ResponseDto
-                {
-                    Message = "No packages found for this company!",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null
-                };
-            }
-            var packages = company.SelectMany(c=>c.Packages)
-                .Where(p=>p.Id == packageDto.Id)
-                .ToList();
+
+            var packages = await _context.Packages.Where(p => p.CompanyId == companyId).AsNoTracking().ToListAsync();
+               
             if(packages.Count == 0)
             {
                 return new ResponseDto
@@ -157,33 +144,20 @@ namespace EcoPowerHub.Repositories.Services
                     Data = null
                 };
             }
+            var packageDto = _mapper.Map<List<PackageDto>>(packages);
             return new ResponseDto
             {
                 IsSucceeded = true,
                 StatusCode = (int)HttpStatusCode.OK,
-                Data = packages
+                Data = packageDto
             };
         }
 
-        public async Task<ResponseDto> GetCompanyProducts(ProductDto product)
+        public async Task<ResponseDto> GetCompanyProducts(int companyId)
         {
-            var companies = await _context.Companies.Include(p => p.Products)
-                                                    .Where(c => c.Id == product.CompanyId)
-                                                    .ToListAsync();
-            if (companies.Count == 0)
-            {
-                return new ResponseDto
-                {
-                    Message = "No products found for this company!",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null
-                };
-            }
-            var selesctedProducts = companies.SelectMany(p=>p.Products)
-                                             .Where(p=>p.Id == product.Id)
-                                             .ToList();
-            if(selesctedProducts.Count == 0)
+
+            var products = await _context.Products.Where(p => p.CompanyId == companyId).AsNoTracking().ToListAsync();
+            if(products.Count == 0)
             {
                 return new ResponseDto
                 {
@@ -193,25 +167,26 @@ namespace EcoPowerHub.Repositories.Services
                     Data = null
                 };
             }
+            var productDto = _mapper.Map<List<ProductDto>>(products);
             return new ResponseDto
             {
                 IsSucceeded = true,
                 StatusCode = (int)HttpStatusCode.OK,
-                Data = selesctedProducts
+                Data = productDto
             };
         }
 
-        public async Task<ResponseDto> UpdateCompany(int id, Company company)
+        public async Task<ResponseDto> UpdateCompany(int id, CompanyDto company)
         {
-            if (company.Id != id)
-            {
-                return new ResponseDto
-                {
-                    Message = "Company ID in URL and body do not match!",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-            }
+        //    if (company.id != id)
+        //    {
+        //        return new ResponseDto
+        //        {
+        //            Message = "Company ID in URL and body do not match!",
+        //            IsSucceeded = false,
+        //            StatusCode = (int)HttpStatusCode.BadRequest
+        //        };
+        //    }
             var updatedCompany = await _context.Companies.FindAsync(id);
             if (updatedCompany is null)
             {

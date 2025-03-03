@@ -1,7 +1,10 @@
-﻿namespace EcoPowerHub.DTO
+﻿using System.Text.Json.Serialization;
+
+namespace EcoPowerHub.DTO
 {
     public class PackageDto
     {
+        [JsonIgnore]
         public int Id { get; set; }
         public string Details { get; set; }
         public decimal Price { get; set; }

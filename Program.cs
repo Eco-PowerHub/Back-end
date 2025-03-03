@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
 
@@ -51,7 +52,7 @@ namespace EcoPowerHub
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(op =>
             {
-                op.SaveToken = false;
+                op.SaveToken = true;
                 op.RequireHttpsMetadata = false;
                 op.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -67,15 +68,43 @@ namespace EcoPowerHub
             //add authorization policy
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("Company and Admin", policy => policy.RequireRole("Company","Admin"));
+                options.AddPolicy("Company and Admin", policy => policy.RequireRole("Company", "Admin"));
+                options.AddPolicy("Only Client", policy => policy.RequireRole("Client"));
+                options.AddPolicy("Only Admin", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("Client and Admin", policy => policy.RequireRole("Client", "Admin"));
+                options.AddPolicy("Client and Company", policy => policy.RequireRole("Client", "Company"));
+            });
+
+            //add authorization headers
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter your JWT token",
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference{Type = ReferenceType.SecurityScheme , Id = "Bearer"}
+                        },
+                        new string []{}
+                    }
+                });
             });
 
             //cloudinary
             var cloudinarySettings = builder.Configuration.GetSection("Cloudinary").Get<CloudinarySettings>();
             var cloudinaryAccount = new Account(
-                cloudinarySettings.CloudName,
-                cloudinarySettings.ApiKey,
-                cloudinarySettings.ApiSecret
+                cloudinarySettings?.CloudName,
+                cloudinarySettings?.ApiKey,
+                cloudinarySettings?.ApiSecret
             );
 
             var cloudinary = new Cloudinary(cloudinaryAccount);
@@ -101,7 +130,6 @@ namespace EcoPowerHub
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
-<<<<<<< HEAD
          
             builder.Services.AddCors(options =>
             {
@@ -113,14 +141,11 @@ namespace EcoPowerHub
                               .AllowAnyMethod();
                     });
             });
-=======
 
             //cloudinary DI
             builder.Services.AddSingleton(cloudinary);
             builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
             builder.Services.AddScoped<CloudinaryService>();
-
->>>>>>> 7740503d34511a176c63549010bb78c4a74d82cf
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

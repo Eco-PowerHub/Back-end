@@ -19,11 +19,11 @@ namespace EcoPowerHub.Repositories.Services
             _mapper = mapper;
         }
 
-        public async Task<ResponseDto> GetAllAsync()
+        public async Task<ResponseDto> GetAllCategories()
         {
            
            var categories = await _context.Categories.AsNoTracking().ToListAsync();
-           if(categories.Count ==0 || !categories.Any())
+           if(categories.Count == 0)
             {
                 return new ResponseDto
                 {
@@ -43,7 +43,7 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public async Task<ResponseDto> GetById(int id)
+        public async Task<ResponseDto> GetCategoryById(int id)
         {
             if (id <= 0)
                 return new ResponseDto
@@ -74,7 +74,7 @@ namespace EcoPowerHub.Repositories.Services
         }
 
 
-        public async Task<ResponseDto> GetByName(string name)
+        public async Task<ResponseDto> GetCategoryByName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -88,7 +88,6 @@ namespace EcoPowerHub.Repositories.Services
 
             var category = await _context.Categories
                 .FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower());
-            //var category = await _context.Categories.FirstOrDefaultAsync(c => EF.Functions.Like(c.Name, name));
             if (category == null)
             {
                 return new ResponseDto
@@ -108,7 +107,7 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public async Task<ResponseDto> AddAsync(CategoryDto categoryDto)
+        public async Task<ResponseDto> AddCategoryAsync(CategoryDto categoryDto)
         {
             if (categoryDto == null )
             {
@@ -143,7 +142,7 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public async Task<ResponseDto> DeleteAsync(int id)
+        public async Task<ResponseDto> DeleteCategoryAsync(int id)
         {
             if (id <= 0)
             {
@@ -188,7 +187,7 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public async Task<ResponseDto> UpdateAsync(int id, CategoryDto categoryDto)
+        public async Task<ResponseDto> UpdateCategoryAsync(int id, CategoryDto categoryDto)
         {
             if (categoryDto == null || id <= 0)
             {
