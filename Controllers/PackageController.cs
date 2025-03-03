@@ -14,7 +14,7 @@ namespace EcoPowerHub.Controllers
     [ApiController]
     public class PackageController : ControllerBase
     {
-        
+
         private readonly IUnitOfWork _unitOfWork;
         public PackageController(IUnitOfWork unitOfWork)
         {
@@ -25,17 +25,18 @@ namespace EcoPowerHub.Controllers
         [HttpGet("AllPackages")]
         public async Task<IActionResult> GetAllPackages()
         {
-            if(!ModelState.IsValid) 
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var response = await _unitOfWork.Packages.GetAllPackagesAsync();
             if (response.IsSucceeded)
                 return Ok(response);
 
-            return StatusCode(response.StatusCode,new {response.Message});
+            return StatusCode(response.StatusCode, new { response.Message });
         }
 
         // GET api/<PackageController>/5
         [HttpGet("PackageById/{id}")]
+        [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> GetPackageById(int id)
         {
             if (!ModelState.IsValid)
@@ -48,6 +49,7 @@ namespace EcoPowerHub.Controllers
         }
 
         [HttpGet("PackagesByCompanyId/{companyId}")]
+        [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> GetPackagesByCompanyId(int companyId)
         {
             var response = await _unitOfWork.Packages.GetPackagesByCompanyId(companyId);
@@ -64,7 +66,7 @@ namespace EcoPowerHub.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response= await _unitOfWork.Packages.AddPackageAsync(packageDto);
+            var response = await _unitOfWork.Packages.AddPackageAsync(packageDto);
             if (response.IsSucceeded)
                 return Ok(response);
 
@@ -74,7 +76,7 @@ namespace EcoPowerHub.Controllers
         // PUT api/<PackageController>/5
         [HttpPut("EditPackage/{id}")]
         [Authorize(Policy = "Company and Admin")]
-        public async Task<IActionResult> EditPackage(int id,[FromBody] PackageDto packageDto )
+        public async Task<IActionResult> EditPackage(int id, [FromBody] PackageDto packageDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

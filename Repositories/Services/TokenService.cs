@@ -37,29 +37,37 @@ namespace EcoPowerHub.Repositories.Services
         {
             List<Claim> claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name,user.UserName!),
-                new Claim(ClaimTypes.NameIdentifier,user.Id),
-             //   new Claim(ClaimTypes.Role,user.Role!),
-                new Claim(JwtRegisteredClaimNames.Email,user.Email!),
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
+                new Claim(ClaimTypes.Name, user.UserName!),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email!),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+
             var roles = await _userManager.GetRolesAsync(user);
+
+            if (!roles.Any())
+            {
+                Console.WriteLine("🚨 No roles found for this user!");
+            }
+
             foreach (var role in roles)
             {
+                Console.WriteLine($"Adding role to claims: {role}"); // Debugging
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]!));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var Token = new JwtSecurityToken
+            var token = new JwtSecurityToken
             (
                 issuer: _configuration["JWT:Issuer"],
-                audience : _configuration["JWT:Audience"],
-                claims : claims,
-                signingCredentials : credentials,
-                expires : DateTime.UtcNow.AddHours(6)
-
+                audience: _configuration["JWT:Audience"],
+                claims: claims,
+                signingCredentials: credentials,
+                expires: DateTime.UtcNow.AddHours(6)
             );
-            return new JwtSecurityTokenHandler().WriteToken(Token);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

@@ -85,10 +85,10 @@ namespace EcoPowerHub.Repositories.Services
             }
             var packages = await _context.Packages.Include(c => c.Company)
                                                   .AsNoTracking()
-                                                  .Where(c=>c.CompanyId == companyId)
+                                                  .Where(c => c.CompanyId == companyId)
                                                   .ToListAsync();
-            if (!packages.Any())
-            { 
+            if (packages.Count == 0)
+            {
                 return new ResponseDto
                 {
                     Message = "No packages found for the given company",
@@ -97,7 +97,7 @@ namespace EcoPowerHub.Repositories.Services
                     Data = null
                 };
             }
-            var packagesDto = _mapper.Map<PackageDto>(packages);
+            var packagesDto = _mapper.Map<List<PackageDto>>(packages);
             return new ResponseDto
             {
                 Message = "Packages retrived  successfully",
@@ -129,13 +129,13 @@ namespace EcoPowerHub.Repositories.Services
             };
             await _context.Packages.AddAsync(package);
             await _context.SaveChangesAsync();
-           
+
             var resultDto = _mapper.Map<PackageDto>(package);
             return new ResponseDto
             {
                 Message = "Package added successfully!",
                 IsSucceeded = true,
-                StatusCode = 200,
+                StatusCode = 201,
                 Data = resultDto
             };
         }
@@ -160,8 +160,12 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
-            _mapper.Map(packageDto, package);
-             _context.Packages.Update(package);
+            // _mapper.Map(packageDto, package);
+            package.Details = packageDto.Details;
+            package.Price = packageDto.Price;
+            package.Image = packageDto.Image;
+            package.CompanyId = packageDto.CompanyId;
+            _context.Packages.Update(package);
             await _context.SaveChangesAsync();
 
             return new ResponseDto
@@ -192,7 +196,7 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
-             _context.Packages.Remove(package);
+            _context.Packages.Remove(package);
             await _context.SaveChangesAsync();
             return new ResponseDto
             {
@@ -202,7 +206,7 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-      
-       
+
+
     }
 }

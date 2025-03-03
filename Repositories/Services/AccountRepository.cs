@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using EcoPowerHub.Data;
 using EcoPowerHub.DTO;
-using EcoPowerHub.DTO.OTPDto;
 using EcoPowerHub.DTO.UserDto;
 using EcoPowerHub.Helpers;
 using EcoPowerHub.Models;
@@ -80,6 +79,7 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = 400
                 };
             }
+           
             var token = await _tokenService.GenerateToken(user);
             var refreshToken = string.Empty;
             DateTime refreshTokenExpiration;
@@ -317,7 +317,7 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public async Task<ResponseDto> verifyOTPRequest(VerifyOTP verifyOTP)
+        public async Task<ResponseDto> verifyOTPRequest(VerifyOTPRequest verifyOTP)
         {
             var session = _httpContextAccessor.HttpContext?.Session;
             if (session == null)
@@ -345,7 +345,7 @@ namespace EcoPowerHub.Repositories.Services
             var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded)
                 return new ResponseDto { Message = "Failed to create user. " + string.Join(", ", result.Errors.Select(e => e.Description)) };
-
+            await _userManager.AddToRoleAsync(user, registerDto.Role.ToString());
 
             // clear otp data
             session.Remove($"OTP_{verifyOTP.Email}");

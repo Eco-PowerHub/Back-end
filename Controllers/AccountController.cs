@@ -1,7 +1,7 @@
 ﻿using EcoPowerHub.DTO;
-using EcoPowerHub.DTO.OTPDto;
 using EcoPowerHub.DTO.UserDto;
 using EcoPowerHub.UOW;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +17,7 @@ namespace EcoPowerHub.Controllers
             _unitOfWork = unitOfWork;
         }
         [HttpPost("Register")]
+        [Authorize(Policy = "Client and Company")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             if (!ModelState.IsValid)
@@ -87,6 +88,8 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
         [HttpPost("GetRefreshToken")]
+        [Authorize(Policy = "Only Admin")]
+
         public async Task<IActionResult> NewRefreshToken([FromBody] string email)
         {
             if (!ModelState.IsValid)
@@ -97,6 +100,7 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
         [HttpPost("RevokeRefreshToken")]
+        [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> RevokeRefreshToken([FromBody] string email)
         {
             if (!ModelState.IsValid)
@@ -108,7 +112,8 @@ namespace EcoPowerHub.Controllers
         }
 
         [HttpPost("send-otp")]
-        public async Task<IActionResult> SendOTP([FromBody] SendOtpRequest request)
+        [Authorize(Policy = "Only Admin")]
+        public async Task<IActionResult> SendOTP([FromBody] SendOtpRequestDto request)
         {
             var result = await _unitOfWork.Accounts.SendOTPAsync(request.Email);
             if(result.IsSucceeded)
@@ -116,7 +121,8 @@ namespace EcoPowerHub.Controllers
             return StatusCode(result.StatusCode, new { result.Message });
         }
         [HttpPost("verify-otp")]
-        public async Task<IActionResult> VerifyOTP([FromBody] VerifyOTP otpRequest)
+        [Authorize(Policy = "Client and Company")]
+        public async Task<IActionResult> VerifyOTP([FromBody] VerifyOTPRequest otpRequest)
         {
             var result = await _unitOfWork.Accounts.verifyOTPRequest(otpRequest);
             if(result.IsSucceeded)
