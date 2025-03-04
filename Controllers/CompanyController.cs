@@ -30,7 +30,7 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode , new {response.Message});
         }
 
-        [HttpGet("CompanybyId/{id}")]
+        [HttpGet("CompanyById/{id}")]
         [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> GetCompanybyId(int id)
         {
@@ -42,9 +42,9 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        [HttpGet("CompanybyName/{name}")]
+        [HttpGet("CompanybyName")]
         [Authorize(Policy = "Client and Admin")]
-        public async Task<IActionResult> CompanybyName(string name)
+        public async Task<IActionResult> CompanybyName([FromQuery] string name)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -56,7 +56,7 @@ namespace EcoPowerHub.Controllers
 
         [HttpPost("AddCompany")]
         [Authorize(Policy = "Only Admin")]
-        public async Task<IActionResult> AddCompany(CompanyDto company)
+        public async Task<IActionResult> AddCompany([FromBody]CompanyDto company)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -66,9 +66,9 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        [HttpPut("EditCompany")]
+        [HttpPut("EditCompany/{id}")]
         [Authorize(Policy = "Company and Admin")]
-        public async Task<IActionResult> EditCompany(int id ,CompanyDto company)
+        public async Task<IActionResult> EditCompany(int id ,[FromBody]CompanyDto company)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -79,7 +79,7 @@ namespace EcoPowerHub.Controllers
         }
         [HttpDelete("DeleteCompany/{id}")]
         [Authorize(Policy = "Only Admin")]
-        public async Task<IActionResult> DeleteCompany(int id)
+        public async Task<IActionResult> DeleteCompany( int id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -89,21 +89,21 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
         [HttpGet("CompanyProducts")]
-        public async Task<IActionResult> GetCompanyProducts(int companyId)
+        public async Task<IActionResult> GetCompanyProducts([FromQuery] string companyName)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Company.GetCompanyProducts(companyId);
+            var response = await _unitOfWork.Company.GetCompanyProducts(companyName);
             if (response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
         [HttpGet("CompanyPackages")]
-        public async Task<IActionResult> GetCompanyPackages(int companyId)
+        public async Task<IActionResult> GetCompanyPackages([FromQuery]string companyName)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Company.GetCompanyPackages(companyId);
+            var response = await _unitOfWork.Company.GetCompanyPackages(companyName);
             if (response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });

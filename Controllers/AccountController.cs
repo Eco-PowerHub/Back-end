@@ -17,7 +17,7 @@ namespace EcoPowerHub.Controllers
             _unitOfWork = unitOfWork;
         }
         [HttpPost("Register")]
-        [Authorize(Policy = "Client and Company")]
+       // [Authorize(Policy = "Client and Company")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             if (!ModelState.IsValid)
@@ -87,7 +87,7 @@ namespace EcoPowerHub.Controllers
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
-        [HttpPost("GetRefreshToken")]
+        [HttpPost("RefreshToken")]
         [Authorize(Policy = "Only Admin")]
 
         public async Task<IActionResult> NewRefreshToken([FromBody] string email)

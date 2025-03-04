@@ -6,15 +6,15 @@ namespace EcoPowerHub.Repositories.Interfaces
 {
     public interface IProductRepository: IGenericRepository<Product>
     {
-        Task<ResponseDto> GetAllAsync();
-        Task<ResponseDto> GetById(int id);
-        Task<ResponseDto> GetByName(string name);
-        Task<ResponseDto> GetByCategory(int categoryId);
-        Task<ResponseDto> GetByCompany(int companyId);
-        Task<ResponseDto> GetProductsSortedByPrice(int categoryId);
-        Task<ResponseDto> AddAsync(ProductDto productDto);
-        Task<ResponseDto> UpdateAsync(int id,ProductDto productDto);
-        Task<ResponseDto> DeleteAsync(int id);
+        Task<ResponseDto> GetAllProductsAsync();
+        Task<ResponseDto> GetProductById(int id);
+        Task<ResponseDto> GetProductByName(string name);
+        Task<ResponseDto> GetProductByCategory(string categoryName);
+        Task<ResponseDto> GetProductByCompany(string companyName);
+        Task<ResponseDto> GetProductsSortedByPrice(string categoryName);
+        Task<ResponseDto> AddProductAsync(ProductDto productDto);
+        Task<ResponseDto> UpdateProductAsync(int id,ProductDto productDto);
+        Task<ResponseDto> DeleteProductAsync(int id);
         Task<ResponseDto> SearchProductAsync(string searchTerm); 
     }
 }

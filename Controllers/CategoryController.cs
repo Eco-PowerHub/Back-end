@@ -21,10 +21,8 @@ namespace EcoPowerHub.Controllers
             _unitOfWork = unitOfWork;
         }
 
-
-
         // GET: api/<CategoryController>
-        [HttpGet("GetAllCategories")]
+        [HttpGet("Categories")]
         public async Task<IActionResult> GetAllCategories()
         {
             if (!ModelState.IsValid)
@@ -36,7 +34,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET api/<CategoryController>/5
-        [HttpGet("GetCategoryById/{id}")]
+        [HttpGet("CategoryById/{id}")]
         [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> GetCategoryById(int id)
         {
@@ -48,8 +46,8 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET api/<CategoryController>/CategoryName
-        [HttpGet("GetCategoryByName/{name}")]
-        public async Task<IActionResult> GetCategoryByName(string name)
+        [HttpGet("CategoryByName")]
+        public async Task<IActionResult> GetCategoryByName([FromQuery] string name)
         {
             var response = await _unitOfWork.Categories.GetCategoryByName(name);
             if (response.IsSucceeded)

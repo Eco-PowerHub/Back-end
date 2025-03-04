@@ -19,15 +19,13 @@ namespace EcoPowerHub.Controllers
             _unitOfWork = unitOfWork;
         }
 
-
-
         // GET: api/<ProductController>
         [HttpGet("Products")]
         public async Task<IActionResult> GetAllProducts()
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Products.GetAllAsync();
+            var response = await _unitOfWork.Products.GetAllProductsAsync();
             if (response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
@@ -35,61 +33,60 @@ namespace EcoPowerHub.Controllers
 
         
         // GET api/<ProductController>/5
-        [HttpGet("ProductById{id}")]
+        [HttpGet("GetProductById/{id}")]
         [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult>  GetProductById(int id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Products.GetById(id);
+            var response = await _unitOfWork.Products.GetProductById(id);
             if (response.IsSucceeded)
                 return Ok(response);
 
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        [HttpGet("GetProductByName")]
-
-        public async Task<IActionResult> GetProductByName(string name)
+        [HttpGet("ProductByName")]
+        public async Task<IActionResult> GetProductByName([FromQuery]string name)
         {
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Products.GetByName(name);
+            var response = await _unitOfWork.Products.GetProductByName(name);
             if (response.IsSucceeded)
                 return Ok(response);
 
             return StatusCode(response.StatusCode, new { response.Message });
         }
-        [HttpGet("ProductsByCategoryId/{categoryId}")]
-        [Authorize(Policy = "Only Admin")]
-        public async Task<IActionResult> GetProductsByCategoryId(int categoryId)
+
+        [HttpGet("ProductsByCategory")]
+        public async Task<IActionResult> GetProductsByCategoryId([FromQuery]string categoryName)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response= await _unitOfWork.Products.GetByCategory(categoryId);
+            var response= await _unitOfWork.Products.GetProductByCategory(categoryName);
             if(response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        [HttpGet("GetProductsByCompanyId/{companyId}")]
-        [Authorize(Policy = "Only Admin")]
-        public async Task<IActionResult> GetProductsByCompanyId(int companyId)
+        [HttpGet("ProductsByCompany")]
+        public async Task<IActionResult> GetProductsByCompanyId([FromQuery] string companyName)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Products.GetByCompany(companyId);
+            var response = await _unitOfWork.Products.GetProductByCompany(companyName); 
             if(response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
+
         [HttpGet("SortProductByPrice")]
-        public async Task<IActionResult> GetProductsSortedByPrice(int categoryId)
+        public async Task<IActionResult> GetProductsSortedByPrice([FromQuery] string categoryName)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Products.GetProductsSortedByPrice(categoryId);
+            var response = await _unitOfWork.Products.GetProductsSortedByPrice(categoryName);
             if(response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
@@ -103,7 +100,7 @@ namespace EcoPowerHub.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response= await _unitOfWork.Products.AddAsync(productDto);
+            var response= await _unitOfWork.Products.AddProductAsync(productDto);
             if(response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
@@ -116,7 +113,7 @@ namespace EcoPowerHub.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Products.UpdateAsync(id,productDto);
+            var response = await _unitOfWork.Products.UpdateProductAsync(id,productDto);
             if (response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
@@ -129,15 +126,17 @@ namespace EcoPowerHub.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Products.DeleteAsync(id);
+            var response = await _unitOfWork.Products.DeleteProductAsync(id);
             if (response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
         [HttpGet("SearchProducts")]
-        public async Task<IActionResult> SearchProducts(string searchTerm)
+        public async Task<IActionResult> SearchProducts([FromQuery]string searchTerm)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
             var response = await _unitOfWork.Products.SearchProductAsync(searchTerm);
             if(response.IsSucceeded)
                 return Ok(response);

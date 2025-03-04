@@ -22,7 +22,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET: api/<PackageController>
-        [HttpGet("AllPackages")]
+        [HttpGet("Packages")]
         public async Task<IActionResult> GetAllPackages()
         {
             if (!ModelState.IsValid)
@@ -48,11 +48,10 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        [HttpGet("PackagesByCompanyId/{companyId}")]
-        [Authorize(Policy = "Only Admin")]
-        public async Task<IActionResult> GetPackagesByCompanyId(int companyId)
+        [HttpGet("PackagesByCompany")]
+        public async Task<IActionResult> GetPackagesByCompanyName([FromQuery]string companyName)
         {
-            var response = await _unitOfWork.Packages.GetPackagesByCompanyId(companyId);
+            var response = await _unitOfWork.Packages.GetPackagesByCompanyName(companyName);
             if (response.IsSucceeded)
                 return Ok(response);
 

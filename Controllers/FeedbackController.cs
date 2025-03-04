@@ -21,7 +21,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET: api/<FeedbackController>
-        [HttpGet("GetAllFeedbacks")]
+        [HttpGet("Feedbacks")]
         [Authorize(Policy = "Client and Admin")]
         public async Task<IActionResult> GetAllFeedbacks()
         {
@@ -34,7 +34,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET api/<FeedbackController>/5
-        [HttpGet("GetFeedbackById/{id}")]
+        [HttpGet("FeedbackById/{id}")]
         [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> GetFeedbackById(int id)
         {
