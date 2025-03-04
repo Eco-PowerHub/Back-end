@@ -19,7 +19,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET: api/<UserSupportController>
-        [HttpGet("GetAllSupports")]
+        [HttpGet("Supports")]
         [Authorize(Policy = "Company and Admin")]
         public async Task<IActionResult> GetAllSupports()
         {
@@ -32,7 +32,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET api/<UserSupportController>/5
-        [HttpGet("GetSupportById/{id}")]
+        [HttpGet("SupportById/{id}")]
         [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> GetSupportById(int id)
         {

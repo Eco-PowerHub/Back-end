@@ -129,10 +129,22 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
        
-        public async Task<ResponseDto> GetCompanyPackages(int companyId)
+        public async Task<ResponseDto> GetCompanyPackages(string companyName)
         {
 
-            var packages = await _context.Packages.Where(p => p.CompanyId == companyId).AsNoTracking().ToListAsync();
+            var company = await _context.Companies.FirstOrDefaultAsync(c=>c.Name == companyName);
+            if(company is null)
+            {
+                return new ResponseDto
+                {
+                    Message = "No company found with that name",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
+            }
+            var packages = await _context.Packages.Where(p => p.CompanyId == company.Id)
+                                                  .AsNoTracking()
+                                                  .ToListAsync();
                
             if(packages.Count == 0)
             {
@@ -153,10 +165,21 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public async Task<ResponseDto> GetCompanyProducts(int companyId)
+        public async Task<ResponseDto> GetCompanyProducts(string companyName)
         {
-
-            var products = await _context.Products.Where(p => p.CompanyId == companyId).AsNoTracking().ToListAsync();
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.Name == companyName);
+            if (company is null)
+            {
+                return new ResponseDto
+                {
+                    Message = "No company found with that name",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
+            }
+            var products = await _context.Products.Where(p => p.CompanyId == company.Id)
+                                                  .AsNoTracking()
+                                                  .ToListAsync();
             if(products.Count == 0)
             {
                 return new ResponseDto

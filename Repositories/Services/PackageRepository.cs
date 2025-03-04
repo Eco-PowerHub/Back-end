@@ -71,21 +71,19 @@ namespace EcoPowerHub.Repositories.Services
                 Data = packageDto
             };
         }
-        public async Task<ResponseDto> GetPackagesByCompanyId(int companyId)
+        public async Task<ResponseDto> GetPackagesByCompanyName(string companyName)
         {
-            if (companyId <= 0)
-            {
+           var company = await _context.Companies.FirstOrDefaultAsync(c=>c.Name == companyName);
+            if (company is null)
                 return new ResponseDto
                 {
-                    Message = "Invalid company id",
+                    Message = "No company found with that name",
                     IsSucceeded = false,
-                    StatusCode = 400,
-                    Data = null
+                    StatusCode = (int)HttpStatusCode.NotFound
                 };
-            }
             var packages = await _context.Packages.Include(c => c.Company)
                                                   .AsNoTracking()
-                                                  .Where(c => c.CompanyId == companyId)
+                                                  .Where(c => c.CompanyId == company.Id)
                                                   .ToListAsync();
             if (packages.Count == 0)
             {

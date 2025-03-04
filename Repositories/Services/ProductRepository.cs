@@ -20,16 +20,28 @@ namespace EcoPowerHub.Repositories.Services
             _mapper = mapper;
             _context= context;
         }
-        public async Task<ResponseDto> GetAllAsync()
+        public async Task<ResponseDto> GetAllProductsAsync()
         {
             var products = await _context.Products.AsNoTracking().ToListAsync();
-            return products.Any()
-                ? new ResponseDto { Message = "Products retrieved successfully", IsSucceeded = true, StatusCode = (int)HttpStatusCode.OK, Data = _mapper.Map<IEnumerable<ProductDto>>(products) }
-                :new ResponseDto { Message = "No Product Found", IsSucceeded = true, StatusCode = (int)HttpStatusCode.OK, Data = new List<ProductDto>()};
+            return products.Count == 0
+                ? new ResponseDto
+                {
+                    Message = "Products retrieved successfully", 
+                    IsSucceeded = true,
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Data = _mapper.Map<IEnumerable<ProductDto>>(products) 
+                }
+                :new ResponseDto
+                {
+                    Message = "No Product Found",
+                    IsSucceeded = true,
+                    StatusCode = (int)HttpStatusCode.OK, 
+                    Data = new List<ProductDto>()
+                };
 
         }
 
-        public async Task<ResponseDto> GetById(int id)
+        public async Task<ResponseDto> GetProductById(int id)
         {
             if (id <= 0)
             {
@@ -59,22 +71,54 @@ namespace EcoPowerHub.Repositories.Services
                 Data = productDto
             };
         }
-
-     
-        public async Task<ResponseDto> GetByCategory(int categoryId)
+        public async Task<ResponseDto> GetProductByName(string name)
         {
-            if (categoryId < 1)
+            if (string.IsNullOrWhiteSpace(name))
             {
                 return new ResponseDto
                 {
-                    Message = "Invalid Category Id",
+                    Message = "Invalid Product name",
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.BadRequest
                 };
             }
-            var products = await _context.Products
-                .Where(p => p.CategoryId == categoryId).AsNoTracking().ToListAsync();
-            if(products==null || !products.Any())
+            var product = await _context.Products
+                .Where(p => p.Name == name)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (product == null)
+            {
+                return new ResponseDto
+                {
+                    Message = "Product not found ",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
+            }
+            var productDto = _mapper.Map<ProductDto>(product);
+            return new ResponseDto
+            {
+                Message = "Product retrieved successfully! ",
+                IsSucceeded = true,
+                StatusCode = 200,
+                Data = productDto
+            };
+        }
+
+        public async Task<ResponseDto> GetProductByCategory(string categoryName)
+        {
+            var category = await _context.Categories.FirstOrDefaultAsync(c=>c.Name == categoryName);
+            if (category == null)
+                return new ResponseDto
+                {
+                    Message = "No category found with given name!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
+            var products = await _context.Products.Where(p => p.CategoryId == category.Id).ToListAsync();
+                
+            if(products.Count == 0)
             {
                 return new ResponseDto
                 {
@@ -93,20 +137,21 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public async Task<ResponseDto> GetByCompany(int companyId)
+        public async Task<ResponseDto> GetProductByCompany(string companyName)
         {
-            if(companyId < 1)
-            {
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.Name == companyName);
+            if (company == null)
                 return new ResponseDto
                 {
-                    Message = "Invalid Company Id ",
+                    Message = "No company found with that name!",
                     IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest
+                    StatusCode = (int)HttpStatusCode.NotFound
                 };
-            }
             var products = await _context.Products
-                .Where(p=>p.CompanyId== companyId).AsNoTracking().ToListAsync();
-            if(products==null || !products.Any())
+                .Where(p=>p.CompanyId== company.Id)
+                .AsNoTracking()
+                .ToListAsync();
+            if(products.Count == 0)
             {
                 return new ResponseDto
                 {
@@ -125,58 +170,25 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public async Task<ResponseDto> GetByName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return new ResponseDto
-                {
-                    Message = "Invalid Product name",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-            }
-            var product = await _context.Products
-                .Where(p => p.Name.ToLower() == name.ToLower())
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+     
 
-            if (product == null)
-            {
+        public async Task<ResponseDto> GetProductsSortedByPrice(string categoryName)
+        {
+             var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
+            if (category == null)
                 return new ResponseDto
                 {
-                    Message = "Product not found ",
+                    Message = "No category found with given name!",
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
-            }
-            var productDto= _mapper.Map<ProductDto>(product);
-            return new ResponseDto
-            {
-                Message = "Product retrieved successfully! ",
-                IsSucceeded = true,
-                StatusCode = 200,
-                Data = productDto
-            };
-        }
 
-        public async Task<ResponseDto> GetProductsSortedByPrice(int categoryId)
-        {
-            if(categoryId < 1)
-            {
-                return new ResponseDto
-                {
-                    Message = "Invalid category Id",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-            }
             var products = await _context.Products
-                .Where(p => p.CategoryId == categoryId)
+                .Where(p => p.CategoryId == category.Id)
                 .OrderBy(p => p.Price)
                 .AsNoTracking()
                 .ToListAsync();
-            if (products == null || !products.Any())
+            if (products.Count == 0)
             {
                 return new ResponseDto
                 {
@@ -195,7 +207,7 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public async Task<ResponseDto> AddAsync(ProductDto productDto)
+        public async Task<ResponseDto> AddProductAsync(ProductDto productDto)
         {
             if(productDto == null)
             {
@@ -232,7 +244,7 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public async Task<ResponseDto> UpdateAsync(int id, ProductDto productDto)
+        public async Task<ResponseDto> UpdateProductAsync(int id, ProductDto productDto)
         {
             if(productDto == null)
             {
@@ -265,7 +277,7 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public async Task<ResponseDto> DeleteAsync(int id)
+        public async Task<ResponseDto> DeleteProductAsync(int id)
         {
             if(id < 1)
             {
