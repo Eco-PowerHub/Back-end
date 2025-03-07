@@ -11,7 +11,7 @@
 
     public string RenderWelcomeEmail(string userName, string email, string role)
     {
-        var template = File.ReadAllText(@"F:\EcoPowerHub\Templates\WelcomeEmailTemplate.html");
+        var template = File.ReadAllText(@"./Templates/WelcomeEmailTemplate.html");
         template = template.Replace("{UserName}", userName);
         template = template.Replace("{Email}", email);
         template = template.Replace("{Role}", role);
