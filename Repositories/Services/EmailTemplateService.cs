@@ -11,8 +11,16 @@
 
     public string RenderWelcomeEmail(string userName, string email, string role)
     {
-        var template = File.ReadAllText(@"F:\EcoPowerHub\Templates\WelcomeEmailTemplate.html");
-        template = template.Replace("{UserName}", userName);
+            var fullTemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Templates", "WelcomeEmailTemplate.html");
+
+            Console.WriteLine($"Looking for template at: {fullTemplatePath}");
+
+            if (!File.Exists(fullTemplatePath))
+            {
+                throw new FileNotFoundException("Email template file not found.", fullTemplatePath);
+            }
+            var template = File.ReadAllText(fullTemplatePath);
+            template = template.Replace("{UserName}", userName);
         template = template.Replace("{Email}", email);
         template = template.Replace("{Role}", role);
 
