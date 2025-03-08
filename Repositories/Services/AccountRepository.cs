@@ -63,7 +63,11 @@ namespace EcoPowerHub.Repositories.Services
             {
                 Message = "OTP sent to your email. Please verify to complete registration.",
                 IsSucceeded = true,
-                StatusCode = (int)HttpStatusCode.OK
+                StatusCode = (int)HttpStatusCode.OK,
+                Data = new 
+                {
+                    otpExpiry = otpExpiry,
+                }
             };
         }
         
