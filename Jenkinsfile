@@ -22,6 +22,12 @@ pipeline {
             }    
         }
 
+        stage("Copy EmailService") {
+            steps {
+                sh 'cp /var/jenkins_home/ecofiles/EmailTemplateService.cs /var/jenkins_home/workspace/Eco-PowerHub/Backend-Dev/Repositories/Services/EmailTemplateService.cs'
+            }
+        }
+
         stage("Restore Dependencies") {
             steps {
                 sh 'dotnet restore'
