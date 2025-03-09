@@ -50,7 +50,7 @@ namespace EcoPowerHub.Repositories.Services
                 return new ResponseDto { Message = "Email or User Name already exists!!" };
 
             var otp = GeneratetOtp.GenerateOTP();
-            var otpExpiry = DateTime.UtcNow.AddMinutes(5);
+            var otpExpiry = DateTime.UtcNow.AddDays(1);
 
 
             _httpContextAccessor.HttpContext?.Session.SetString($"OTP_{registerDto.Email}", otp); // 1-store otp in session 
@@ -219,7 +219,7 @@ namespace EcoPowerHub.Repositories.Services
         }
         public async Task<ResponseDto> updateProfile(UserDto profileDto)
         {
-            var user = await _userManager.FindByEmailAsync(profileDto.Email);
+            var user = await _userManager.FindByEmailAsync(profileDto.Email!);
             if (user is null)
             {
                 return new ResponseDto
@@ -345,10 +345,16 @@ namespace EcoPowerHub.Repositories.Services
             var registerDto = JsonConvert.DeserializeObject<RegisterDto>(tempUserInfoJson);
             if (registerDto == null)
                 return new ResponseDto { Message = "Invalid session data. Please try again." };
+
             var user = _mapper.Map<ApplicationUser>(registerDto);
             var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded)
-                return new ResponseDto { Message = "Failed to create user. " + string.Join(", ", result.Errors.Select(e => e.Description)) };
+            {
+                var errors = string.Empty;
+                foreach (var error in result.Errors)
+                    errors += $"{error.Description},";
+            }    
+              
             await _userManager.AddToRoleAsync(user, registerDto.Role.ToString());
 
             // clear otp data
@@ -356,14 +362,14 @@ namespace EcoPowerHub.Repositories.Services
             session.Remove($"OTP_Expiry_{verifyOTP.Email}");
             session.Remove($"TempUserInfo_{verifyOTP.Email}");
             var emailBody = _emailTemplateService.RenderWelcomeEmail(
-                     user.UserName, 
-                     user.Email    ,
+                     user.UserName!, 
+                     user.Email! ,
                      user.Role.ToString()
                   );
 
             // Send the email
             await _emailService.SendEmailAsync(
-                user.Email,    
+                user.Email!,    
                 "Welcome to EcoPowerHub!",
                 emailBody      // Email body (HTML)
             );
@@ -374,9 +380,6 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = (int)HttpStatusCode.OK
             };
         }
-
-
-
         public async Task<bool> RevokeRefreshTokenAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
