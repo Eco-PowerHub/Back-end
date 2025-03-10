@@ -50,7 +50,7 @@ namespace EcoPowerHub.Repositories.Services
                 return new ResponseDto { Message = "Email or User Name already exists!!" };
 
             var otp = GeneratetOtp.GenerateOTP();
-            var otpExpiry = DateTime.UtcNow.AddDays(1);
+            var otpExpiry = DateTime.UtcNow.AddMinutes(5);
 
 
             _httpContextAccessor.HttpContext?.Session.SetString($"OTP_{registerDto.Email}", otp); // 1-store otp in session 
