@@ -53,9 +53,19 @@ namespace EcoPowerHub.Repositories.Services
             var otpExpiry = DateTime.UtcNow.AddMinutes(5);
 
 
-            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_{registerDto.Email}", otp); // 1-store otp in session 
-            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_Expiry_{registerDto.Email}", otpExpiry.ToString()); //2- store expire time 
-            _httpContextAccessor.HttpContext?.Session.SetString($"TempUserInfo_{registerDto.Email}", JsonConvert.SerializeObject(registerDto)); // 3- store user info temporary
+            // _httpContextAccessor.HttpContext?.Session.SetString($"OTP_{registerDto.Email}", otp); // 1-store otp in session 
+            // _httpContextAccessor.HttpContext?.Session.SetString($"OTP_Expiry_{registerDto.Email}", otpExpiry.ToString()); //2- store expire time 
+            // _httpContextAccessor.HttpContext?.Session.SetString($"TempUserInfo_{registerDto.Email}", JsonConvert.SerializeObject(registerDto)); // 3- store user info temporary
+
+    string sanitizedEmail = registerDto.Email.Replace("@", "_").Replace(".", "_");
+
+_httpContextAccessor.HttpContext?.Response.Cookies.Append($"OTP_{sanitizedEmail}", otp);
+_httpContextAccessor.HttpContext?.Response.Cookies.Append($"OTP_Expiry_{sanitizedEmail}", otpExpiry.ToString());
+_httpContextAccessor.HttpContext?.Response.Cookies.Append($"TempUserInfo_{sanitizedEmail}", otpExpiry.ToString());
+
+
+               Console.WriteLine("in Regisyer ",_httpContextAccessor.HttpContext?.Request.Cookies[$"OTP_{registerDto.Email}"]);
+                Console.WriteLine("Regisyer " ,_httpContextAccessor.HttpContext?.Request.Cookies[$"OTP_Expiry_{registerDto.Email}"]);
 
             await _emailService.SendEmailAsync(registerDto.Email, "Your OTP", $"Hi {registerDto.UserName}" +
                 $",Use the code below to log in to your Eco PowerHub account. Your OTP is {otp},This code expires in 5 minutes.");
@@ -309,9 +319,11 @@ namespace EcoPowerHub.Repositories.Services
             var otp = GeneratetOtp.GenerateOTP();
             var otpExpiry = DateTime.UtcNow.AddMinutes(5);
 
-            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_{email}", otp);
-            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_Expiry_{email}", otpExpiry.ToString());
+            _httpContextAccessor.HttpContext?.Response.Cookies.Append($"OTP_{email}", otp);
+            _httpContextAccessor.HttpContext?.Response.Cookies.Append($"OTP_Expiry_{email}", otpExpiry.ToString());
 
+                Console.WriteLine(_httpContextAccessor.HttpContext?.Request.Cookies[$"OTP_{email}"]);
+                Console.WriteLine(_httpContextAccessor.HttpContext?.Request.Cookies[$"OTP_Expiry_{email}"]);
             await _emailService.SendEmailAsync(email, "Your OTP Code", $"Your OTP code is {otp}. It expires in 5 minutes.");
             return new ResponseDto
             {
@@ -326,10 +338,12 @@ namespace EcoPowerHub.Repositories.Services
             var session = _httpContextAccessor.HttpContext?.Session;
             if (session == null)
                 return new ResponseDto { Message = "Session expired. Please request a new OTP." };
-            //get otp from current session
-            var storedOtp = session.GetString($"OTP_{verifyOTP.Email}");
-            var storedExpiry = session.GetString($"OTP_Expiry_{verifyOTP.Email}");
-            var tempUserInfoJson = session.GetString($"TempUserInfo_{verifyOTP.Email}");
+
+         string sanitizedEmail = verifyOTP.Email.Replace("@", "_").Replace(".", "_");
+
+     var storedOtp = _httpContextAccessor.HttpContext?.Request.Cookies[$"OTP_{sanitizedEmail}"];
+        var storedExpiry = _httpContextAccessor.HttpContext?.Request.Cookies[$"OTP_Expiry_{sanitizedEmail}"];
+        var tempUserInfoJson = _httpContextAccessor.HttpContext?.Request.Cookies[$"TempUserInfo_{sanitizedEmail}"];
 
             //check otp 
             if (string.IsNullOrEmpty(storedOtp) || string.IsNullOrEmpty(storedExpiry) || string.IsNullOrEmpty(tempUserInfoJson))

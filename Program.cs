@@ -30,6 +30,7 @@ namespace EcoPowerHub
 
             //Email config
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddSingleton<EmailTemplateService>(provider =>
             new EmailTemplateService(Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "WelcomeEmailTemplate.html")));
