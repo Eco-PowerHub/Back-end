@@ -27,8 +27,8 @@ namespace EcoPowerHub.DTO.UserDto
         public string ConfirmNewPassword { get; set; }
         [Required(ErrorMessage = "Role is required")]
         public Roles Role  { get; set; }
-        public string OTP { get; set; }
-        public DateTime? OTPExpiry { get; set; } = DateTime.UtcNow;
+        //public string OTP { get; set; }
+        //public DateTime? OTPExpiry { get; set; } = DateTime.UtcNow;
 
     }
 }
