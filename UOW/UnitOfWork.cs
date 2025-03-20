@@ -20,8 +20,6 @@ namespace EcoPowerHub.UOW
         //    ILogger<AccountRepository> _accountLogger;
         private readonly IEmailService _emailService;
         private readonly EmailTemplateService _emailTemplateService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        // private  ISession Session => _httpContextAccessor.HttpContext?.Session;
 
 
 
@@ -44,9 +42,8 @@ namespace EcoPowerHub.UOW
             //            _logger = logger;
             _emailService = emailService;
             _emailTemplateService = emailTemplateService;
-            _httpContextAccessor = httpContextAccessor;
 
-            Accounts = new AccountRepository(_context, _userManager, _mapper, _httpContextAccessor, _tokenService, _emailService, _emailTemplateService);
+            Accounts = new AccountRepository(_context, _userManager, _mapper, _tokenService, _emailService, _emailTemplateService);
             Packages = new PackageRepository(_context, _mapper);
             Company = new CompanyRepository(_context, _mapper);
 

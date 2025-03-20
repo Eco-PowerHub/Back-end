@@ -26,12 +26,10 @@ namespace EcoPowerHub.Repositories.Services
         //   private readonly ILogger<AccountRepository> _logger;
         private readonly IEmailService _emailService;
         private readonly EmailTemplateService _emailTemplateService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
 
         public AccountRepository(EcoPowerDbContext context, UserManager<ApplicationUser> userManager
            , IMapper mapper,
-              IHttpContextAccessor httpContextAccessor,
             ITokenService tokenService,//ILogger<AccountRepository> logger ,
             IEmailService emailService, EmailTemplateService emailTemplateService) : base(context)
         {
@@ -42,31 +40,46 @@ namespace EcoPowerHub.Repositories.Services
             //   _logger = logger;
             _emailService = emailService;
             _emailTemplateService = emailTemplateService;
-            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<ResponseDto> RegisterAsync(RegisterDto registerDto)
         {
-            if (await _userManager.FindByEmailAsync(registerDto.Email) is not null || await _userManager.FindByNameAsync(registerDto.UserName) is not null)
+            if (await _userManager.FindByEmailAsync(registerDto.Email) is not null
+             || await _userManager.FindByNameAsync(registerDto.UserName) is not null)
                 return new ResponseDto { Message = "Email or User Name already exists!!" };
 
             var otp = GeneratetOtp.GenerateOTP();
-            var otpExpiry = DateTime.UtcNow.AddMinutes(5);
+            var otpExpiry = DateTime.UtcNow.AddDays(1);
 
-
-            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_{registerDto.Email}", otp); // 1-store otp in session 
-            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_Expiry_{registerDto.Email}", otpExpiry.ToString()); //2- store expire time 
-            _httpContextAccessor.HttpContext?.Session.SetString($"TempUserInfo_{registerDto.Email}", JsonConvert.SerializeObject(registerDto)); // 3- store user info temporary
-
-            await _emailService.SendEmailAsync(registerDto.Email, "Your OTP", $"Hi {registerDto.UserName}" +
-                $",Use the code below to log in to your Eco PowerHub account. Your OTP is {otp},This code expires in 5 minutes.");
+            var user = _mapper.Map<ApplicationUser>(registerDto);
+            user.OTP = otp;
+            user.OTPExpiry = otpExpiry;
+            user.IsConfirmed = false;
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
+            if(!result.Succeeded)
+            {
+                var errors = string.Empty;
+                foreach (var error in result.Errors)
+                    errors += $"{error.Description},";
+                return new ResponseDto
+                {
+                    Message = errors,
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
+            await _userManager.AddToRoleAsync(user,registerDto.Role.ToString());
+         //   var token = _tokenService.GenerateToken(user);
+            await _emailService.SendEmailAsync(registerDto.Email, "OTP Email Verfication", $"Hi {registerDto.UserName}" +
+                $",Use the code below to verify your Eco PowerHub account. Your OTP is {otp}");
             return new ResponseDto
             {
                 Message = "OTP sent to your email. Please verify to complete registration.",
                 IsSucceeded = true,
+                IsConfirmed = false,
                 StatusCode = (int)HttpStatusCode.OK,
-                Data = new 
+                Data = new
                 {
-                    otpExpiry = otpExpiry,
+                    UserName = user.UserName!,
                 }
             };
         }
@@ -307,15 +320,16 @@ namespace EcoPowerHub.Repositories.Services
                 };
 
             var otp = GeneratetOtp.GenerateOTP();
-            var otpExpiry = DateTime.UtcNow.AddMinutes(5);
+            var otpExpiry = DateTime.UtcNow.AddMinutes(15);
+            user.OTP = otp;
+            user.OTPExpiry = otpExpiry;
+            await _userManager.UpdateAsync(user);
 
-            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_{email}", otp);
-            _httpContextAccessor.HttpContext?.Session.SetString($"OTP_Expiry_{email}", otpExpiry.ToString());
 
-            await _emailService.SendEmailAsync(email, "Your OTP Code", $"Your OTP code is {otp}. It expires in 5 minutes.");
+            await _emailService.SendEmailAsync(user.Email!, "OTP Resend", $"Your OTP code is {otp}. It expires in 15 minutes.");
             return new ResponseDto
             {
-                Message = "OTP sent successfully",
+                Message = "New OTP sent!",
                 IsSucceeded = true,
                 StatusCode = (int)HttpStatusCode.OK,
             };
@@ -323,60 +337,51 @@ namespace EcoPowerHub.Repositories.Services
 
         public async Task<ResponseDto> verifyOTPRequest(VerifyOTPRequest verifyOTP)
         {
-            var session = _httpContextAccessor.HttpContext?.Session;
-            if (session == null)
-                return new ResponseDto { Message = "Session expired. Please request a new OTP." };
-            //get otp from current session
-            var storedOtp = session.GetString($"OTP_{verifyOTP.Email}");
-            var storedExpiry = session.GetString($"OTP_Expiry_{verifyOTP.Email}");
-            var tempUserInfoJson = session.GetString($"TempUserInfo_{verifyOTP.Email}");
+            //check for user 
+            var user = await _userManager.FindByEmailAsync(verifyOTP.Email);
+            if(user is null)
+                return new ResponseDto
+                {
+                    Message = "User not found!",
+                    IsSucceeded = false
+                };
 
+            if (user.IsConfirmed)
+                return new ResponseDto
+                {
+                    Message = "User already verified!",
+                    IsSucceeded = false
+                };
             //check otp 
-            if (string.IsNullOrEmpty(storedOtp) || string.IsNullOrEmpty(storedExpiry) || string.IsNullOrEmpty(tempUserInfoJson))
-                return new ResponseDto { Message = "OTP expired or invalid. Please request a new OTP." };
+            if (user.OTP != verifyOTP.OTP || user.OTPExpiry < DateTime.UtcNow)
+                return new ResponseDto
+                {
+                    Message = "Invalid or expired OTP!",
+                    IsSucceeded = false
+                };
 
-            if (storedOtp != verifyOTP.OTP)
-                return new ResponseDto { Message = "Invalid OTP." };
-
-            if (DateTime.UtcNow > DateTime.Parse(storedExpiry))
-                return new ResponseDto { Message = "OTP expired. Please request a new OTP." };
-
-            // Deserialize
-            var registerDto = JsonConvert.DeserializeObject<RegisterDto>(tempUserInfoJson);
-            if (registerDto == null)
-                return new ResponseDto { Message = "Invalid session data. Please try again." };
-
-            var user = _mapper.Map<ApplicationUser>(registerDto);
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
-            if (!result.Succeeded)
-            {
-                var errors = string.Empty;
-                foreach (var error in result.Errors)
-                    errors += $"{error.Description},";
-            }    
-              
-            await _userManager.AddToRoleAsync(user, registerDto.Role.ToString());
-
-            // clear otp data
-            session.Remove($"OTP_{verifyOTP.Email}");
-            session.Remove($"OTP_Expiry_{verifyOTP.Email}");
-            session.Remove($"TempUserInfo_{verifyOTP.Email}");
+            user.IsConfirmed = true;
+            user.OTP = null;
+            user.OTPExpiry = null;  
+            await _userManager.UpdateAsync(user);
+          
             var emailBody = _emailTemplateService.RenderWelcomeEmail(
-                     user.UserName!, 
-                     user.Email! ,
+                     user.UserName!,
+                     user.Email!,
                      user.Role.ToString()
                   );
 
             // Send the email
             await _emailService.SendEmailAsync(
-                user.Email!,    
+                user.Email!,
                 "Welcome to EcoPowerHub!",
                 emailBody      // Email body (HTML)
             );
             return new ResponseDto
             {
-                Message = "User registered successfully.",
+                Message = "User verified successfully!",
                 IsSucceeded = true,
+                IsConfirmed = true,
                 StatusCode = (int)HttpStatusCode.OK
             };
         }
