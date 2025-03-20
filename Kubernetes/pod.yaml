@@ -13,7 +13,7 @@ spec:
         type: DirectoryOrCreate
   containers:
     - name: eco-backend
-      image: khaledmahmoud7/eco-back:12
+      image: khaledmahmoud7/eco-back:21
       env:
         - name: ASPNETCORE_HTTP_PORTS
           value: "80"
@@ -29,9 +29,9 @@ spec:
           mountPath: /tmp/ecoVolume
       ports:
         - containerPort: 80
-      livenessProbe:
-        httpGet:
-          path: /api
-          port: 80
-        initialDelaySeconds: 30
-        periodSeconds: 10
+      # livenessProbe:
+      #   httpGet:
+      #     path: /api
+      #     port: 80
+      #   initialDelaySeconds: 30
+      #   periodSeconds: 10

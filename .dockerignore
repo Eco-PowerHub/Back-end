@@ -6,3 +6,4 @@ Jenkinsfile
 Ansible/
 docker-compose.yaml
 Dockerfile
+Kubernetes/
