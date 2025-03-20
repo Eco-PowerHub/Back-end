@@ -121,14 +121,14 @@ namespace EcoPowerHub.Controllers
             return StatusCode(result.StatusCode, new { result.Message });
         }
         [HttpPost("verify-otp")]
-      //  [Authorize(Policy = "Client and Company")]
+        //  [Authorize(Policy = "Client and Company")]
         public async Task<IActionResult> VerifyOTP([FromBody] VerifyOTPRequest otpRequest)
         {
             var result = await _unitOfWork.Accounts.verifyOTPRequest(otpRequest);
-            if(result.IsSucceeded)
+            if (result.IsSucceeded)
                 return Ok(result);
 
-            return StatusCode(result.StatusCode , new {result.Message});
+            return StatusCode(result.StatusCode, new { result.Message });
         }
     }
 }

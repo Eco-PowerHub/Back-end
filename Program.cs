@@ -16,6 +16,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
+using Hangfire;
+using Hangfire.MySql;
+using System.Data;
+using System.Transactions;
 
 
 namespace EcoPowerHub
@@ -25,7 +29,7 @@ namespace EcoPowerHub
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+          
             // Add services to the container.
 
             //Email config
@@ -118,19 +122,10 @@ builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddTransient<IEmailService, EmailService>();
-            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            builder.Services.AddSession();
             builder.Services.AddLogging();
             builder.Logging.AddConsole();
 
             builder.Services.AddControllers();
-            builder.Services.AddDistributedMemoryCache();
-            builder.Services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            });
          
             builder.Services.AddCors(options =>
             {
@@ -142,7 +137,17 @@ builder.Services.AddHttpContextAccessor();
                               .AllowAnyMethod();
                     });
             });
-
+            builder.Services.AddScoped<BackgroundJobService>();
+            // Add Hangfire with MySQL storage
+            builder.Services.AddHangfire(config => config
+                .UseStorage(new MySqlStorage(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlStorageOptions
+                {
+                    TransactionIsolationLevel = System.Transactions.IsolationLevel.ReadCommitted,
+                    QueuePollInterval = TimeSpan.FromSeconds(15), // Adjust based on workload
+                    JobExpirationCheckInterval = TimeSpan.FromHours(1),
+                    TablesPrefix = "Hangfire_" // Prefix for Hangfire tables
+                }))
+            );
             //cloudinary DI
             builder.Services.AddSingleton(cloudinary);
             builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
@@ -160,7 +165,6 @@ builder.Services.AddHttpContextAccessor();
                 app.UseSwaggerUI();
 
             //   app.UseHttpsRedirection();
-            app.UseSession();
             app.UseRouting();
             app.UseAuthorization();
 
