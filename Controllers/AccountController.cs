@@ -1,5 +1,6 @@
 ﻿using EcoPowerHub.DTO;
 using EcoPowerHub.DTO.UserDto;
+using EcoPowerHub.DTO.UserDto.PasswordSettingDto;
 using EcoPowerHub.UOW;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -48,7 +49,7 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
         [HttpPost("ChangePassword")]
-        public async Task<IActionResult> ChangePassword([FromBody] PasswordSettingDto dto)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -57,8 +58,18 @@ namespace EcoPowerHub.Controllers
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
+        [HttpPost("ForgetPassword")]
+        public async Task<IActionResult> ForgetPassword([FromBody] string email)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var response = await _unitOfWork.Accounts.ForgetPasswordAsync(email);
+            if (response.IsSucceeded)
+                return Ok(response);
+            return StatusCode(response.StatusCode, new { response.Message });
+        }
         [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ResetPassword([FromBody] PasswordSettingDto dto)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EcoPowerHub.DTO;
 using EcoPowerHub.DTO.UserDto;
+using EcoPowerHub.DTO.UserDto.PasswordSettingDto;
 using EcoPowerHub.DTO.UserSupportDto;
 using EcoPowerHub.Models;
 
@@ -12,7 +13,8 @@ namespace EcoPowerHub.AutoMapper
         {
             CreateMap<LoginDto, ApplicationUser>().ReverseMap();
             CreateMap<RegisterDto, ApplicationUser>().ReverseMap();
-            CreateMap<PasswordSettingDto, ApplicationUser>().ReverseMap();
+            CreateMap<ResetPasswordDto, ApplicationUser>().ReverseMap();
+            CreateMap<ChangePasswordDto, ApplicationUser>().ReverseMap();
             CreateMap<UserDto, ApplicationUser>().ReverseMap();
             CreateMap<PackageDto, Package>().ReverseMap()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
