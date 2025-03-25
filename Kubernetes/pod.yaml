@@ -13,7 +13,8 @@ spec:
         type: DirectoryOrCreate
   containers:
     - name: eco-backend
-      image: khaledmahmoud7/eco-back:21
+      image: khaledmahmoud7/eco-back:22
+      imagePullPolicy: Never
       env:
         - name: ASPNETCORE_HTTP_PORTS
           value: "80"
@@ -35,3 +36,8 @@ spec:
       #     port: 80
       #   initialDelaySeconds: 30
       #   periodSeconds: 10
+
+
+
+
+

@@ -9,6 +9,20 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 80
-  # type: ClusterIP
-      nodePort: 30090
+  type: ClusterIP
+  #     nodePort: 30090
+  # type: NodePort
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 32100
   type: NodePort
