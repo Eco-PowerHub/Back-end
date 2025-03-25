@@ -58,33 +58,33 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        // POST api/<PackageController>
-        [HttpPost("AddPackage")]
-        [Authorize(Policy = "Company And Admin")]
-        public async Task<IActionResult> AddPackage([FromBody] PackageDto packageDto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var response = await _unitOfWork.Packages.AddPackageAsync(packageDto);
-            if (response.IsSucceeded)
-                return Ok(response);
+        //// POST api/<PackageController>
+        //[HttpPost("AddPackage")]
+        //[Authorize(Policy = "Company And Admin")]
+        //public async Task<IActionResult> AddPackage([FromBody] PackageDto packageDto)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var response = await _unitOfWork.Packages.AddPackageAsync(packageDto);
+        //    if (response.IsSucceeded)
+        //        return Ok(response);
 
-            return StatusCode(response.StatusCode, new { response.Message });
-        }
+        //    return StatusCode(response.StatusCode, new { response.Message });
+        //}
 
-        // PUT api/<PackageController>/5
-        [HttpPut("EditPackage/{id}")]
-        [Authorize(Policy = "Company and Admin")]
-        public async Task<IActionResult> EditPackage(int id, [FromBody] PackageDto packageDto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var response = await _unitOfWork.Packages.UpdatePackageAsync(id, packageDto);
-            if (response.IsSucceeded)
-                return Ok(response);
+        //// PUT api/<PackageController>/5
+        //[HttpPut("EditPackage/{id}")]
+        //[Authorize(Policy = "Company and Admin")]
+        //public async Task<IActionResult> EditPackage(int id, [FromBody] PackageDto packageDto)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var response = await _unitOfWork.Packages.UpdatePackageAsync(id, packageDto);
+        //    if (response.IsSucceeded)
+        //        return Ok(response);
 
-            return StatusCode(response.StatusCode, new { response.Message });
-        }
+        //    return StatusCode(response.StatusCode, new { response.Message });
+        //}
 
         // DELETE api/<PackageController>/5
         [HttpDelete("DeletePackage/{id}")]

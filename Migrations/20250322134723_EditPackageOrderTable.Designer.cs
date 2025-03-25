@@ -4,6 +4,7 @@ using EcoPowerHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoPowerHub.Migrations
 {
     [DbContext(typeof(EcoPowerDbContext))]
-    partial class EcoPowerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250322134723_EditPackageOrderTable")]
+    partial class EditPackageOrderTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,51 +119,6 @@ namespace EcoPowerHub.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("EcoPowerHub.Models.BasePackage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CompanyId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("EnergyInWatt")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    MySqlPropertyBuilderExtensions.HasCharSet(b.Property<string>("ImageUrl"), "utf8mb4");
-
-                    b.Property<string>("Inverter")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("PackageType")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<string>("SolarPanel")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
-
-                    b.ToTable("Packages");
-                });
-
             modelBuilder.Entity("EcoPowerHub.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -252,6 +210,41 @@ namespace EcoPowerHub.Migrations
                     b.ToTable("Orders");
                 });
 
+            modelBuilder.Entity("EcoPowerHub.Models.Package", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Details")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal>("EnergyInWatt")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    MySqlPropertyBuilderExtensions.HasCharSet(b.Property<string>("Image"), "utf8mb4");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("Packages");
+                });
+
             modelBuilder.Entity("EcoPowerHub.Models.PackageOrder", b =>
                 {
                     b.Property<int>("PackageId")
@@ -268,9 +261,6 @@ namespace EcoPowerHub.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
-
-                    b.Property<int>("Package")
-                        .HasColumnType("int");
 
                     b.Property<decimal>("PackagePrice")
                         .HasColumnType("decimal(12,2)");
@@ -361,37 +351,6 @@ namespace EcoPowerHub.Migrations
                     b.HasKey("PackageId", "ProductId");
 
                     b.ToTable("ProductPackages");
-                });
-
-            modelBuilder.Entity("EcoPowerHub.Models.RefreshToken", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("ExpiresOn")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime?>("RevokedOn")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("RefreshToken");
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.UserFeedBack", b =>
@@ -576,17 +535,6 @@ namespace EcoPowerHub.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("EcoPowerHub.Models.BasePackage", b =>
-                {
-                    b.HasOne("EcoPowerHub.Models.Company", "Company")
-                        .WithMany("Packages")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Company");
-                });
-
             modelBuilder.Entity("EcoPowerHub.Models.Order", b =>
                 {
                     b.HasOne("EcoPowerHub.Models.Company", "Company")
@@ -606,15 +554,15 @@ namespace EcoPowerHub.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EcoPowerHub.Models.PackageOrder", b =>
+            modelBuilder.Entity("EcoPowerHub.Models.Package", b =>
                 {
-                    b.HasOne("EcoPowerHub.Models.BasePackage", "package")
-                        .WithMany()
-                        .HasForeignKey("PackageId")
+                    b.HasOne("EcoPowerHub.Models.Company", "Company")
+                        .WithMany("Packages")
+                        .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("package");
+                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.Product", b =>
@@ -634,13 +582,6 @@ namespace EcoPowerHub.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Company");
-                });
-
-            modelBuilder.Entity("EcoPowerHub.Models.RefreshToken", b =>
-                {
-                    b.HasOne("EcoPowerHub.Models.ApplicationUser", null)
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("ApplicationUserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -697,8 +638,6 @@ namespace EcoPowerHub.Migrations
             modelBuilder.Entity("EcoPowerHub.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Orders");
-
-                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.Category", b =>

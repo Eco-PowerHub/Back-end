@@ -203,7 +203,7 @@ namespace EcoPowerHub.Repositories.Services
             var encodedToken = WebUtility.UrlEncode(Convert.ToBase64String(Encoding.UTF8.GetBytes(token)));
 
             // Generate reset link
-            var resetLink = $"http://157.175.182.159/signup?email={WebUtility.UrlEncode(email)}&token={encodedToken}";
+            var resetLink = $"http://157.175.182.159/forgetpassword?email={WebUtility.UrlEncode(email)}&token={encodedToken}";
 
             Console.WriteLine($"Generated Reset Link: {resetLink}"); // Debugging output
 
@@ -334,7 +334,7 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = 400,
                 };
             }
-            // var token = await _tokenService.GenerateToken(user);
+             var token = await _tokenService.GenerateToken(user);
             var refreshToken = _tokenService.GeneraterefreshToken();
             user.RefreshTokens.Add(refreshToken);
             await _userManager.UpdateAsync(user);
@@ -434,20 +434,19 @@ namespace EcoPowerHub.Repositories.Services
         public async Task<bool> RevokeRefreshTokenAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                return false;
-            }
 
+            if (user == null) return false;
+            
             var activeToken = user.RefreshTokens?.FirstOrDefault(t => t.IsActive);
-            if (activeToken != null && activeToken.IsActive) // Check for null before accessing IsActive
-            {
-                activeToken.RevokedOn = DateTime.UtcNow;
-                await _userManager.UpdateAsync(user);
-                return true;
-            }
 
-            return false;
+            if (activeToken is null) return false;  
+            
+           activeToken.RevokedOn = DateTime.UtcNow;
+           var result =  await _userManager.UpdateAsync(user);
+             if(result is null) return false;
+            
+
+            return true;
         }
 
        
