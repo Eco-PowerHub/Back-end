@@ -15,6 +15,7 @@ namespace EcoPowerHub.UOW
         public IProductRepository Products { get; }
         public IUserFeedbackRepository UserFeedbacks { get; }
         public ISupportRepository Supports { get; }
+        public IPropertyRepository Properties { get; }
         Task<bool> SaveCompleted();
     }
 }

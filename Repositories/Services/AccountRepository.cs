@@ -2,6 +2,7 @@
 using EcoPowerHub.Data;
 using EcoPowerHub.DTO;
 using EcoPowerHub.DTO.UserDto;
+using EcoPowerHub.DTO.UserDto.PasswordSettingDto;
 using EcoPowerHub.Helpers;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.GenericRepositories;
@@ -14,6 +15,7 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Principal;
+using System.Text;
 using HttpStatusCode = System.Net.HttpStatusCode;
 namespace EcoPowerHub.Repositories.Services
 {
@@ -145,51 +147,94 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public async Task<ResponseDto> ChangePasswordAsync(PasswordSettingDto dto)
+        public async Task<ResponseDto> ChangePasswordAsync(ChangePasswordDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
-            if (user is null)
+            if (user is null || !await _userManager.CheckPasswordAsync(user ,dto.currentPassword) )
                 return new ResponseDto
                 {
-                    Message = "User not found!",
+                    Message = "Invalid email or password.",
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
-            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+            var result = await _userManager.ChangePasswordAsync(user, dto.currentPassword, dto.newPassword);
             if (!result.Succeeded)
             {
                 return new ResponseDto
                 {
-                    Message = "Failed to change password , try agin",
+                    Message = string.Join(", ", result.Errors.Select(e => e.Description)),
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.BadRequest
                 };
             }
             return new ResponseDto
             {
-                Message = "Password has changed successfully",
+                Message = "Password changed successfully",
                 IsSucceeded = true,
                 StatusCode = (int)HttpStatusCode.OK
             };
         }
-        public async Task<ResponseDto> ResetPasswordAsync(PasswordSettingDto dto)
+        public async Task<ResponseDto> ForgetPasswordAsync(string email)
         {
+            var user = await _userManager.FindByEmailAsync(email);
 
+            if (user is null)
+            {
+                return new ResponseDto
+                {
+                    Message = "If the email is registered, a reset link will be sent.",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
+            }
+
+            // Generate password reset token
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            if (string.IsNullOrEmpty(token))
+            {
+                return new ResponseDto
+                {
+                    Message = "Failed to generate password reset token.",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+            // Encode token using Base64 to avoid corruption in URL
+            var encodedToken = WebUtility.UrlEncode(Convert.ToBase64String(Encoding.UTF8.GetBytes(token)));
+
+            // Generate reset link
+            var resetLink = $"http://157.175.182.159/forgetpassword?email={WebUtility.UrlEncode(email)}&token={encodedToken}";
+
+            Console.WriteLine($"Generated Reset Link: {resetLink}"); // Debugging output
+
+            // Generate email body and send email
+            var emailBody = _emailTemplateService.ResetPasswordEmail(email, resetLink);
+            await _emailService.SendEmailAsync(user.Email!, "Reset your password on Eco Power Hub", emailBody);
+
+            return new ResponseDto
+            {
+                Message = "If the email is registered, a reset link has been sent.",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK
+            };
+        }
+
+        public async Task<ResponseDto> ResetPasswordAsync(ResetPasswordDto dto)
+        {
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user is null)
                 return new ResponseDto
                 {
-                    Message = "User not found!",
+                    Message = "Invalid email or reset token.",
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var result = await _userManager.ResetPasswordAsync(user, token, dto.NewPassword);
+            var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
             if (!result.Succeeded)
             {
                 return new ResponseDto
                 {
-                    Message = "Failed to change password , try agin",
+                    Message = string.Join(", ", result.Errors.Select(e => e.Description)),
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.BadRequest
                 };
@@ -198,6 +243,7 @@ namespace EcoPowerHub.Repositories.Services
             {
                 Message = "Passwored reset successfully ",
                 IsSucceeded = true,
+                IsConfirmed = true,
                 StatusCode = (int)HttpStatusCode.OK
             };
         }
@@ -211,7 +257,7 @@ namespace EcoPowerHub.Repositories.Services
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
-            if (user.RefreshTokens?.Any() == true)
+            if (user.RefreshTokens.Any() == true)
                 user.RefreshTokens.Clear();
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
@@ -288,7 +334,7 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = 400,
                 };
             }
-            // var token = await _tokenService.GenerateToken(user);
+             var token = await _tokenService.GenerateToken(user);
             var refreshToken = _tokenService.GeneraterefreshToken();
             user.RefreshTokens.Add(refreshToken);
             await _userManager.UpdateAsync(user);
@@ -388,20 +434,21 @@ namespace EcoPowerHub.Repositories.Services
         public async Task<bool> RevokeRefreshTokenAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                return false;
-            }
 
+            if (user == null) return false;
+            
             var activeToken = user.RefreshTokens?.FirstOrDefault(t => t.IsActive);
-            if (activeToken != null && activeToken.IsActive) // Check for null before accessing IsActive
-            {
-                activeToken.RevokedOn = DateTime.UtcNow;
-                await _userManager.UpdateAsync(user);
-                return true;
-            }
 
-            return false;
+            if (activeToken is null) return false;  
+            
+           activeToken.RevokedOn = DateTime.UtcNow;
+           var result =  await _userManager.UpdateAsync(user);
+             if(result is null) return false;
+            
+
+            return true;
         }
+
+       
     }
 }

@@ -6,18 +6,33 @@ namespace EcoPowerHub.Data
 {
     public class EcoPowerDbContext :IdentityDbContext<ApplicationUser>
     {
+      //  public EcoPowerDbContext() { }
         public EcoPowerDbContext(DbContextOptions<EcoPowerDbContext> options) :base(options) { }
         
         public DbSet<Category> Categories { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductPackage> ProductPackages { get; set; }
-        public DbSet<Package> Packages { get; set; }
+        public DbSet<BasePackage> Packages { get; set; }   
         public DbSet<PackageOrder> PackageOrders { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<ProductOrder> ProductOreders { get; set; }
         public DbSet<UserFeedBack> UserFeedBacks { get; set; }
         public DbSet<UserSupport> UserSupport { get; set; }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        var configuration = new ConfigurationBuilder()
+        //            .SetBasePath(Directory.GetCurrentDirectory())
+        //            .AddJsonFile("appsettings.json")
+        //            .Build();
+
+        //        var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+        //        optionsBuilder.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 41)));
+        //    }
+        //}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -46,8 +61,6 @@ namespace EcoPowerHub.Data
 
             modelBuilder.Entity<Order>(entity=>
             {
-                entity.Property(c=>c.SurfaceArea).HasMaxLength(50).IsRequired();
-                entity.Property(c => c.Location).HasMaxLength(255).IsRequired();
                 entity.Property(o => o.OrderHistory).HasMaxLength(500);
                 entity.Property(o=>o.Price).HasColumnType("decimal(12,2)").IsRequired();
 
@@ -61,23 +74,25 @@ namespace EcoPowerHub.Data
                       .HasForeignKey(o => o.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
-            modelBuilder.Entity<Package>(entity =>
-            {
-                entity.Property(p=>p.Details).HasMaxLength(500).IsRequired();
-                entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
-                entity.Property(p => p.EnergyInWatt).HasColumnType("decimal(12,2)");
-                entity.Property(p => p.Image).IsRequired(); 
+            //modelBuilder.Entity<BasePackage>(entity =>
+            //{
+            //    entity.Property(p=>p.Details).HasMaxLength(500).IsRequired();
+            //    entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
+            //    entity.Property(p => p.EnergyInWatt).HasColumnType("decimal(12,2)");
+            //    entity.Property(p => p.Image).IsRequired(); 
 
-                entity.HasOne(p => p.Company)
-                      .WithMany(c => c.Packages) 
-                      .HasForeignKey(p => p.CompanyId)
-                      .OnDelete(DeleteBehavior.Cascade);
-            });
+            //    entity.HasOne(p => p.Company)
+            //          .WithMany(c => c.Packages) 
+            //          .HasForeignKey(p => p.CompanyId)
+            //          .OnDelete(DeleteBehavior.Cascade);
+            //});
 
             modelBuilder.Entity<PackageOrder>(entity =>
             {
                 entity.HasKey(p=> new {p.PackageId, p.OrderId}); //composite Pk
-                entity.Property(po => po.PackagePrice).HasColumnType("decimal(12,2)").IsRequired();
+                entity.Property(c => c.SurfaceArea).HasMaxLength(50).IsRequired();
+                entity.Property(c => c.Location).HasMaxLength(255).IsRequired();
+                entity.Property(po => po.PackagePrice).HasColumnType("decimal(12,2)");
                 entity.Property(p => p.TotalYearsGuarantee).IsRequired();
                 entity.Ignore(p=>p.SavingCost);
                 entity.Ignore(p => p.ROIYears);
@@ -116,14 +131,18 @@ namespace EcoPowerHub.Data
                       .HasColumnType("longtext")
                       .HasCharSet("utf8mb4");
             });
-            modelBuilder.Entity<Package>(entity =>
+            modelBuilder.Entity<BasePackage>(entity =>
             {
-                entity.Property(p => p.Image)
+                entity.Property(p => p.ImageUrl)
                       .IsRequired()
                       .HasColumnType("longtext")
                       .HasCharSet("utf8mb4");
             });
-          
+            //modelBuilder.Entity<BasePackage>()
+            //    .HasDiscriminator<string>("PackageType") // Add a discriminator column
+            //    .HasValue<OnGridPackage>("OnGrid")
+            //    .HasValue<OffGridPackage>("OffGrid");
+
         }
 
     }

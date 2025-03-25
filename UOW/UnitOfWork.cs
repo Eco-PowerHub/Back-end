@@ -51,6 +51,7 @@ namespace EcoPowerHub.UOW
             Products = new ProductRepository(_context, _mapper);
             UserFeedbacks = new UserFeedbackRepository(_context);
             Supports = new SupportRepository(_context, _mapper);
+            Properties = new PropertyRepository(_context, _mapper);
         }
         public IAccountRepository Accounts { get; private set; }
 
@@ -63,6 +64,7 @@ namespace EcoPowerHub.UOW
         public ICategoryRepository Categories {  get; private set; }
         public IUserFeedbackRepository UserFeedbacks { get; private set; }
         public ISupportRepository Supports { get; private set; }
+        public IPropertyRepository Properties { get; private set; }
         public async Task<bool> SaveCompleted()
         {
             return await _context.SaveChangesAsync() > 0;

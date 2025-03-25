@@ -10,7 +10,7 @@ using System.Net;
 
 namespace EcoPowerHub.Repositories.Services
 {
-    public class PackageRepository : GenericRepository<Package>, IPackageRepository
+    public class PackageRepository : GenericRepository<BasePackage>, IPackageRepository
     {
         private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
@@ -104,76 +104,76 @@ namespace EcoPowerHub.Repositories.Services
                 Data = packagesDto
             };
         }
-        public async Task<ResponseDto> AddPackageAsync(PackageDto packageDto)
-        {
-            if (packageDto == null)
-            {
-                return new ResponseDto
-                {
-                    Message = "Invalid Package Data",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-            }
+        //public async Task<ResponseDto> AddPackageAsync(PackageDto packageDto)
+        //{
+        //    if (packageDto == null)
+        //    {
+        //        return new ResponseDto
+        //        {
+        //            Message = "Invalid Package Data",
+        //            IsSucceeded = false,
+        //            StatusCode = (int)HttpStatusCode.BadRequest
+        //        };
+        //    }
 
-            // var package = _mapper.Map<Package>(packageDto);
-            var package = new Package
-            {
-                Id = packageDto.Id,
-                Price = packageDto.Price,
-                Image = packageDto.Image,
-                CompanyId = packageDto.CompanyId,
-                Details = packageDto.Details
-            };
-            await _context.Packages.AddAsync(package);
-            await _context.SaveChangesAsync();
+        //    // var package = _mapper.Map<Package>(packageDto);
+        //    //var package = new BasePackage
+        //    //{
+        //    //    Id = packageDto.Id,
+        //    //    Price = packageDto.Price,
+        //    //    Image = packageDto.Image,
+        //    //    CompanyId = packageDto.CompanyId,
+        //    // //   Details = packageDto.Details
+        //    //};
+        //    await _context.Packages.AddAsync(package);
+        //    await _context.SaveChangesAsync();
 
-            var resultDto = _mapper.Map<PackageDto>(package);
-            return new ResponseDto
-            {
-                Message = "Package added successfully!",
-                IsSucceeded = true,
-                StatusCode = 201,
-                Data = resultDto
-            };
-        }
-        public async Task<ResponseDto> UpdatePackageAsync(int id, PackageDto packageDto)
-        {
-            if (packageDto is null)
-            {
-                return new ResponseDto
-                {
-                    Message = "Invalid package data!",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-            }
-            var package = await _context.Packages.FindAsync(id);
-            if (package is null)
-            {
-                return new ResponseDto
-                {
-                    Message = "Package not found!",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound
-                };
-            }
-            // _mapper.Map(packageDto, package);
-            package.Details = packageDto.Details;
-            package.Price = packageDto.Price;
-            package.Image = packageDto.Image;
-            package.CompanyId = packageDto.CompanyId;
-            _context.Packages.Update(package);
-            await _context.SaveChangesAsync();
+        //    var resultDto = _mapper.Map<PackageDto>(package);
+        //    return new ResponseDto
+        //    {
+        //        Message = "Package added successfully!",
+        //        IsSucceeded = true,
+        //        StatusCode = 201,
+        //        Data = resultDto
+        //    };
+        //}
+        //public async Task<ResponseDto> UpdatePackageAsync(int id, PackageDto packageDto)
+        //{
+        //    if (packageDto is null)
+        //    {
+        //        return new ResponseDto
+        //        {
+        //            Message = "Invalid package data!",
+        //            IsSucceeded = false,
+        //            StatusCode = (int)HttpStatusCode.BadRequest
+        //        };
+        //    }
+        //    var package = await _context.Packages.FindAsync(id);
+        //    if (package is null)
+        //    {
+        //        return new ResponseDto
+        //        {
+        //            Message = "Package not found!",
+        //            IsSucceeded = false,
+        //            StatusCode = (int)HttpStatusCode.NotFound
+        //        };
+        //    }
+        //    // _mapper.Map(packageDto, package);
+        //    package.Details = packageDto.Details;
+        //    package.Price = packageDto.Price;
+        //    package.Image = packageDto.Image;
+        //    package.CompanyId = packageDto.CompanyId;
+        //    _context.Packages.Update(package);
+        //    await _context.SaveChangesAsync();
 
-            return new ResponseDto
-            {
-                Message = "Package updated successfully! ",
-                IsSucceeded = true,
-                StatusCode = 200,
-                Data = packageDto
-            };
-        }
+        //    return new ResponseDto
+        //    {
+        //        Message = "Package updated successfully! ",
+        //        IsSucceeded = true,
+        //        StatusCode = 200,
+        //        Data = packageDto
+        //    };
+        //}
         public async Task<ResponseDto> DeletePackageAsync(int id)
         {
             if (id <= 0)
