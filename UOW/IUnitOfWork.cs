@@ -6,7 +6,7 @@ namespace EcoPowerHub.UOW
 {
     public interface IUnitOfWork : IDisposable
     {
-
+        public  IUserRepository Users { get; }
         public IAccountRepository Accounts { get; }
         public ITokenService TokenService { get; }
         public IPackageRepository Packages { get; }

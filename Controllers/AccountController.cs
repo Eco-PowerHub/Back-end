@@ -59,11 +59,11 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
         [HttpPost("ForgetPassword")]
-        public async Task<IActionResult> ForgetPassword([FromBody] string email)
+        public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Accounts.ForgetPasswordAsync(email);
+            var response = await _unitOfWork.Accounts.ForgetPasswordAsync(dto);
             if (response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
