@@ -138,11 +138,15 @@ namespace EcoPowerHub.Data
                       .HasColumnType("longtext")
                       .HasCharSet("utf8mb4");
             });
-            //modelBuilder.Entity<BasePackage>()
-            //    .HasDiscriminator<string>("PackageType") // Add a discriminator column
-            //    .HasValue<OnGridPackage>("OnGrid")
-            //    .HasValue<OffGridPackage>("OffGrid");
+            modelBuilder.Entity<BasePackage>()
+              .HasDiscriminator<string>("PackageType")
+              .HasValue<OffGridPackage>("OffGrid")
+              .HasValue<OnGridPackage>("OnGrid");
 
+            modelBuilder.Entity<BasePackage>()
+                .HasOne(p => p.Company)
+                .WithMany(c => c.Packages)
+                .HasForeignKey(p => p.CompanyId);
         }
 
     }

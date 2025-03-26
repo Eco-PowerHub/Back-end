@@ -52,8 +52,10 @@ namespace EcoPowerHub.UOW
             UserFeedbacks = new UserFeedbackRepository(_context);
             Supports = new SupportRepository(_context, _mapper);
             Properties = new PropertyRepository(_context, _mapper);
+            Users = new UserRepository(_context);
         }
         public IAccountRepository Accounts { get; private set; }
+        public IUserRepository Users { get; private set; }
 
         public ITokenService TokenService { get; private set; }
 

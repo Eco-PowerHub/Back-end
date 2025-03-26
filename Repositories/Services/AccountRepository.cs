@@ -174,9 +174,9 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = (int)HttpStatusCode.OK
             };
         }
-        public async Task<ResponseDto> ForgetPasswordAsync(string email)
+        public async Task<ResponseDto> ForgetPasswordAsync(ForgetPasswordDto dto)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(dto.Email);
 
             if (user is null)
             {
@@ -203,12 +203,12 @@ namespace EcoPowerHub.Repositories.Services
             var encodedToken = WebUtility.UrlEncode(Convert.ToBase64String(Encoding.UTF8.GetBytes(token)));
 
             // Generate reset link
-            var resetLink = $"http://157.175.182.159/forgetpassword?email={WebUtility.UrlEncode(email)}&token={encodedToken}";
+            var resetLink = $"http://157.175.182.159/forgetpassword?email={WebUtility.UrlEncode(dto.Email)}&token={encodedToken}";
 
             Console.WriteLine($"Generated Reset Link: {resetLink}"); // Debugging output
 
             // Generate email body and send email
-            var emailBody = _emailTemplateService.ResetPasswordEmail(email, resetLink);
+            var emailBody = _emailTemplateService.ResetPasswordEmail(dto.Email, resetLink);
             await _emailService.SendEmailAsync(user.Email!, "Reset your password on Eco Power Hub", emailBody);
 
             return new ResponseDto
@@ -433,19 +433,21 @@ namespace EcoPowerHub.Repositories.Services
         }
         public async Task<bool> RevokeRefreshTokenAsync(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.Users
+                                        .Include(u => u.RefreshTokens)
+                                        .FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null) return false;
-            
+
             var activeToken = user.RefreshTokens?.FirstOrDefault(t => t.IsActive);
 
-            if (activeToken is null) return false;  
-            
-           activeToken.RevokedOn = DateTime.UtcNow;
-           var result =  await _userManager.UpdateAsync(user);
-             if(result is null) return false;
-            
+            if (activeToken is null) return false;
 
+            activeToken.RevokedOn = DateTime.UtcNow;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded) return false;
+            //     await _context.SaveChangesAsync();
             return true;
         }
 

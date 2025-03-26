@@ -1,12 +1,15 @@
-﻿namespace EcoPowerHub.DTO.UserDto
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EcoPowerHub.DTO.UserDto
 {
     public class UserDto
     {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? Email { get; set; }
-        public string? Password { get; set; }
-        public string? PhoneNumder { get; set; }
-        public string? Address { get; set; }
+        //[Key]
+        //public string UserId { get; set; }
+        public string Username { get; set; }
+        public string PhoneNumder { get; set; }
+        public string Email { get; set; }
+        public DateTime RegisterdAt { get; set; } = DateTime.UtcNow;
+
     }
 }
