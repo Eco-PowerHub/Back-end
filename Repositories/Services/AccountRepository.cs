@@ -203,7 +203,7 @@ namespace EcoPowerHub.Repositories.Services
             var encodedToken = WebUtility.UrlEncode(Convert.ToBase64String(Encoding.UTF8.GetBytes(token)));
 
             // Generate reset link
-            var resetLink = $"http://157.175.182.159/forgetpassword?email={WebUtility.UrlEncode(dto.Email)}&token={encodedToken}";
+            var resetLink = $"http://157.175.182.159/resetpassword ?email={WebUtility.UrlEncode(dto.Email)}&token={encodedToken}";
 
             Console.WriteLine($"Generated Reset Link: {resetLink}"); // Debugging output
 

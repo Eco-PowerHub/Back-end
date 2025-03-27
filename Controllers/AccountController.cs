@@ -99,7 +99,7 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
         [HttpPost("RefreshToken")]
-    //    [Authorize(Policy = "Only Admin")]
+        [Authorize(Policy = "Only Admin")]
 
         public async Task<IActionResult> NewRefreshToken([FromBody] string email)
         {
@@ -111,7 +111,7 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
         [HttpPost("RevokeRefreshToken")]
-     //   [Authorize(Policy = "Only Admin")]
+        [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> RevokeRefreshToken([FromBody] string email)
         {
             if (!ModelState.IsValid)
