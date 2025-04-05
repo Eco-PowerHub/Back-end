@@ -79,9 +79,10 @@ namespace EcoPowerHub.Repositories.Services
                 IsSucceeded = true,
                 IsConfirmed = false,
                 StatusCode = (int)HttpStatusCode.OK,
-                Data = new
+                Data = new 
                 {
-                    UserName = user.UserName!,
+                    otpExpiry = otpExpiry,
+                    UserName = user.UserName,
                 }
             };
         }

@@ -120,6 +120,7 @@ namespace EcoPowerHub
             builder.Services.AddScoped<IUnitOfWork , UnitOfWork>();
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+            builder.Services.AddScoped<ICloudinaryService , CloudinaryService>();
             builder.Services.AddTransient<IEmailService, EmailService>();
             builder.Services.AddLogging();
             builder.Logging.AddConsole();
@@ -148,14 +149,28 @@ namespace EcoPowerHub
                 }))
             );
             //cloudinary DI
+            //builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
+            //builder.Services.AddScoped<CloudinaryService>();
+            if (cloudinarySettings == null ||
+            string.IsNullOrEmpty(cloudinarySettings.CloudName) ||
+            string.IsNullOrEmpty(cloudinarySettings.ApiKey) ||
+            string.IsNullOrEmpty(cloudinarySettings.ApiSecret))
+            {
+                throw new InvalidOperationException("Cloudinary settings are not properly configured.");
+            }
+
+            // Create the Cloudinary account
+            var account = new CloudinaryDotNet.Account(
+                cloudinarySettings.CloudName,
+                cloudinarySettings.ApiKey,
+                cloudinarySettings.ApiSecret
+            );
             builder.Services.AddSingleton(cloudinary);
-            builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
-            builder.Services.AddScoped<CloudinaryService>();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddSingleton<CloudinaryService>();
             var app = builder.Build();
             app.UseCors("AllowAll");
             // Configure the HTTP request pipeline.

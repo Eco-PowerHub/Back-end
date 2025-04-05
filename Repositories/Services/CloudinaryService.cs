@@ -1,36 +1,44 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using EcoPowerHub.Models;
+using EcoPowerHub.Repositories.Interfaces;
 using Microsoft.Extensions.Options;
 
 namespace EcoPowerHub.Repositories.Services
 {
-    public class CloudinaryService
+    public class CloudinaryService : ICloudinaryService
     {
         private readonly Cloudinary _cloudinary;
-
-        public CloudinaryService(IOptions<CloudinarySettings> cloudinarySettings)
+        private readonly ILogger<CloudinaryService> _logger;
+        public CloudinaryService(Cloudinary cloudinary, ILogger<CloudinaryService> logger)
         {
-            var account = new Account(
-                cloudinarySettings.Value.CloudName,
-                cloudinarySettings.Value.ApiKey,
-                cloudinarySettings.Value.ApiSecret
-            );
-
-            _cloudinary = new Cloudinary(account);
+            _cloudinary = cloudinary;
+            _logger = logger;
         }
 
-        public async Task<(string imageUrl, string publicId)> UploadImageAsync(Stream fileStream, string fileName)
+        public async Task<string> UploadImageAsync(IFormFile file)
         {
+            if (file == null || file.Length == 0)
+                throw new ArgumentNullException("No file provided");
+
+            var allowedTypes = new List<string> { "image/jpeg", "image/png", "image/gif" };
+            if (!allowedTypes.Contains(file.ContentType))
+                throw new Exception("Unsupported file type. Only JPEG, PNG, and GIF are allowed.");
+
+            //  using to dispose file stream automatically after use
+            using var stream = file.OpenReadStream();
             var uploadParams = new ImageUploadParams
             {
-                File = new FileDescription(fileName, fileStream),
-                PublicId = Path.GetFileNameWithoutExtension(fileName), // حفظ public_id
-                Transformation = new Transformation().Quality(80).FetchFormat("jpg")
+                File = new FileDescription(file.FileName, stream),
+                Transformation = new Transformation().Width(500).Height(500).Crop("fill")
             };
 
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-            return (uploadResult.SecureUrl?.AbsoluteUri, uploadResult.PublicId);
+            if (uploadResult.Error != null)
+                throw new Exception($"Cloudinary upload failed :{uploadResult.Error.Message}");
+            _logger.LogInformation($"File uploaded successfully. Public URL: {uploadResult.SecureUrl}");
+
+            return uploadResult.SecureUrl.AbsoluteUri;
         }
 
         public async Task<bool> DeleteFileAsync(string publicId)
