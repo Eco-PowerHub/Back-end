@@ -13,6 +13,7 @@ namespace EcoPowerHub.DTO.UserDto
         [MinLength(3, ErrorMessage = "Username must be at least 3 characters long")]
         public string UserName { get; set; }
         public string? Address { get; set; }
+        public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email format")]

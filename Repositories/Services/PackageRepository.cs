@@ -71,39 +71,41 @@ namespace EcoPowerHub.Repositories.Services
                 Data = packageDto
             };
         }
-        public async Task<ResponseDto> GetPackagesByCompanyName(string companyName)
-        {
-           var company = await _context.Companies.FirstOrDefaultAsync(c=>c.Name == companyName);
-            if (company is null)
-                return new ResponseDto
-                {
-                    Message = "No company found with that name",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound
-                };
-            var packages = await _context.Packages.Include(c => c.Company)
-                                                  .AsNoTracking()
-                                                  .Where(c => c.CompanyId == company.Id)
-                                                  .ToListAsync();
-            if (packages.Count == 0)
-            {
-                return new ResponseDto
-                {
-                    Message = "No packages found for the given company",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null
-                };
-            }
-            var packagesDto = _mapper.Map<List<PackageDto>>(packages);
-            return new ResponseDto
-            {
-                Message = "Packages retrived  successfully",
-                IsSucceeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                Data = packagesDto
-            };
-        }
+        //public async Task<ResponseDto> GetPackagesByCompanyName(string companyName)
+        //{
+        //   var company = await _context.Companies.FirstOrDefaultAsync(c=>c.Name == companyName);
+        //    if (company is null)
+        //        return new ResponseDto
+        //        {
+        //            Message = "No company found with that name",
+        //            IsSucceeded = false,
+        //            StatusCode = (int)HttpStatusCode.NotFound
+        //        };
+        //    var packages = await _context.Packages.Include(c => c.Company)
+        //                                          .AsNoTracking()
+        //                                          .Where(c => c.CompanyId == company.Id)
+        //                                          .ToListAsync();
+        //    if (packages.Count == 0)
+        //    {
+        //        return new ResponseDto
+        //        {
+        //            Message = "No packages found for the given company",
+        //            IsSucceeded = false,
+        //            StatusCode = (int)HttpStatusCode.NotFound,
+        //            Data = null
+        //        };
+        //    }
+        //    var packagesDto = _mapper.Map<List<PackageDto>>(packages);
+        //    return new ResponseDto
+        //    {
+        //        Message = "Packages retrived  successfully",
+        //        IsSucceeded = true,
+        //        StatusCode = (int)HttpStatusCode.OK,
+        //        Data = packagesDto
+        //    };
+        //}
+
+
         //public async Task<ResponseDto> AddPackageAsync(PackageDto packageDto)
         //{
         //    if (packageDto == null)

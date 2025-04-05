@@ -31,18 +31,18 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        // GET api/<UserSupportController>/5
-        [HttpGet("SupportById/{id}")]
-        [Authorize(Policy = "Only Admin")]
-        public async Task<IActionResult> GetSupportById(int id)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var response = await _unitOfWork.Supports.GetSupportByIdAsync(id);
-            if (response.IsSucceeded)
-                return Ok(response);
-            return StatusCode(response.StatusCode, new { response.Message });
-        }
+        //// GET api/<UserSupportController>/5
+        //[HttpGet("SupportById/{id}")]
+        //[Authorize(Policy = "Only Admin")]
+        //public async Task<IActionResult> GetSupportById(int id)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var response = await _unitOfWork.Supports.GetSupportByIdAsync(id);
+        //    if (response.IsSucceeded)
+        //        return Ok(response);
+        //    return StatusCode(response.StatusCode, new { response.Message });
+        //}
 
         // POST api/<UserSupportController>
         [HttpPost("AddSupport")]
@@ -57,18 +57,18 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        // PUT api/<UserSupportController>/5
-        [HttpPut("AddResponse/{id}")]
-        [Authorize(Policy = "Only Admin")]
-        public async Task<IActionResult> AddResponse(int id, [FromBody] AddResponseDto responseDto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var response = await _unitOfWork.Supports.AddResponseAsync(id, responseDto);
-            if (response.IsSucceeded)
-                return Ok(response);
-            return StatusCode(response.StatusCode, new { response.Message });
-        }
+        //// PUT api/<UserSupportController>/5
+        //[HttpPut("AddResponse/{id}")]
+        //[Authorize(Policy = "Only Admin")]
+        //public async Task<IActionResult> AddResponse(int id, [FromBody] AddResponseDto responseDto)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var response = await _unitOfWork.Supports.AddResponseAsync(id, responseDto);
+        //    if (response.IsSucceeded)
+        //        return Ok(response);
+        //    return StatusCode(response.StatusCode, new { response.Message });
+        //}
 
         // DELETE api/<UserSupportController>/5
         [HttpDelete("DeleteSupport{id}")]

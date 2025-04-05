@@ -48,15 +48,15 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        [HttpGet("PackagesByCompany")]
-        public async Task<IActionResult> GetPackagesByCompanyName([FromQuery]string companyName)
-        {
-            var response = await _unitOfWork.Packages.GetPackagesByCompanyName(companyName);
-            if (response.IsSucceeded)
-                return Ok(response);
+        //[HttpGet("PackagesByCompany")]
+        //public async Task<IActionResult> GetPackagesByCompanyName([FromQuery]string companyName)
+        //{
+        //    var response = await _unitOfWork.Packages.GetPackagesByCompanyName(companyName);
+        //    if (response.IsSucceeded)
+        //        return Ok(response);
 
-            return StatusCode(response.StatusCode, response);
-        }
+        //    return StatusCode(response.StatusCode, response);
+        //}
 
         //// POST api/<PackageController>
         //[HttpPost("AddPackage")]

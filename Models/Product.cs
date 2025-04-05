@@ -10,6 +10,9 @@ namespace EcoPowerHub.Models
         public int Amount { get; set; }
         public string Image { get; set; }
         public decimal Price { get; set; }
+        public string Model { get; set; }
+        public decimal Efficiency { get; set; }
+        public int EstimatedPower { get; set; }
         public int CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         public Category Category { get; set; }

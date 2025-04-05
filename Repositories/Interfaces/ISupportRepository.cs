@@ -9,8 +9,8 @@ namespace EcoPowerHub.Repositories.Interfaces
     {
         Task<ResponseDto> AddSupportAsync(CreateUserSupportDto supportDto);
         Task<ResponseDto> GetAllSupportsAsync();
-        Task<ResponseDto> GetSupportByIdAsync(int id);
-        Task<ResponseDto> AddResponseAsync(int id, AddResponseDto responseDto);
+        //Task<ResponseDto> GetSupportByIdAsync(int id);
+        //Task<ResponseDto> AddResponseAsync(int id, AddResponseDto responseDto);
         Task<ResponseDto> DeleteSupportAsync(int id);
     }
 }

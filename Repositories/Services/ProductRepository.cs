@@ -23,22 +23,22 @@ namespace EcoPowerHub.Repositories.Services
         public async Task<ResponseDto> GetAllProductsAsync()
         {
             var products = await _context.Products.AsNoTracking().ToListAsync();
-            return products.Count == 0
-                ? new ResponseDto
+            if(products.Count == 0)
+                 return new ResponseDto
                 {
-                    Message = "Products retrieved successfully", 
-                    IsSucceeded = true,
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Data = _mapper.Map<IEnumerable<ProductDto>>(products) 
-                }
-                :new ResponseDto
-                {
-                    Message = "No Product Found",
+                    Message = "No Products Found!",
                     IsSucceeded = true,
                     StatusCode = (int)HttpStatusCode.OK, 
                     Data = new List<ProductDto>()
                 };
-
+            var productDto = _mapper.Map<List<ProductDto>>(products);
+            return new ResponseDto
+            {
+                Message = "Product retrived successfully",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK,
+                Data = productDto
+            };
         }
 
         public async Task<ResponseDto> GetProductById(int id)
@@ -137,75 +137,75 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public async Task<ResponseDto> GetProductByCompany(string companyName)
-        {
-            var company = await _context.Companies.FirstOrDefaultAsync(c => c.Name == companyName);
-            if (company == null)
-                return new ResponseDto
-                {
-                    Message = "No company found with that name!",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound
-                };
-            var products = await _context.Products
-                .Where(p=>p.CompanyId== company.Id)
-                .AsNoTracking()
-                .ToListAsync();
-            if(products.Count == 0)
-            {
-                return new ResponseDto
-                {
-                    Message = "No products found for the given company",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound
-                };
-            }
-            var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
-            return new ResponseDto
-            {
-                Message = "Products retrieved successfully! ",
-                IsSucceeded = true,
-                StatusCode = 200,
-                Data = productDtos
-            };
-        }
+        //public async Task<ResponseDto> GetProductByCompany(string companyName)
+        //{
+        //    var company = await _context.Companies.FirstOrDefaultAsync(c => c.Name == companyName);
+        //    if (company == null)
+        //        return new ResponseDto
+        //        {
+        //            Message = "No company found with that name!",
+        //            IsSucceeded = false,
+        //            StatusCode = (int)HttpStatusCode.NotFound
+        //        };
+        //    var products = await _context.Products
+        //        .Where(p=>p.CompanyId== company.Id)
+        //        .AsNoTracking()
+        //        .ToListAsync();
+        //    if(products.Count == 0)
+        //    {
+        //        return new ResponseDto
+        //        {
+        //            Message = "No products found for the given company",
+        //            IsSucceeded = false,
+        //            StatusCode = (int)HttpStatusCode.NotFound
+        //        };
+        //    }
+        //    var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
+        //    return new ResponseDto
+        //    {
+        //        Message = "Products retrieved successfully! ",
+        //        IsSucceeded = true,
+        //        StatusCode = 200,
+        //        Data = productDtos
+        //    };
+        //}
 
      
 
-        public async Task<ResponseDto> GetProductsSortedByPrice(string categoryName)
-        {
-             var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
-            if (category == null)
-                return new ResponseDto
-                {
-                    Message = "No category found with given name!",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound
-                };
+        //public async Task<ResponseDto> GetProductsSortedByPrice(string categoryName)
+        //{
+        //     var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
+        //    if (category == null)
+        //        return new ResponseDto
+        //        {
+        //            Message = "No category found with given name!",
+        //            IsSucceeded = false,
+        //            StatusCode = (int)HttpStatusCode.NotFound
+        //        };
 
-            var products = await _context.Products
-                .Where(p => p.CategoryId == category.Id)
-                .OrderBy(p => p.Price)
-                .AsNoTracking()
-                .ToListAsync();
-            if (products.Count == 0)
-            {
-                return new ResponseDto
-                {
-                    Message = "No products found for this category ",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound
-                };
-            }
-            var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
-            return new ResponseDto
-            {
-                Message = "Product sorted by price ",
-                IsSucceeded = true,
-                StatusCode = 200,
-                Data = productDtos
-            };
-        }
+        //    var products = await _context.Products
+        //        .Where(p => p.CategoryId == category.Id)
+        //        .OrderBy(p => p.Price)
+        //        .AsNoTracking()
+        //        .ToListAsync();
+        //    if (products.Count == 0)
+        //    {
+        //        return new ResponseDto
+        //        {
+        //            Message = "No products found for this category ",
+        //            IsSucceeded = false,
+        //            StatusCode = (int)HttpStatusCode.NotFound
+        //        };
+        //    }
+        //    var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
+        //    return new ResponseDto
+        //    {
+        //        Message = "Product sorted by price ",
+        //        IsSucceeded = true,
+        //        StatusCode = 200,
+        //        Data = productDtos
+        //    };
+        //}
 
         public async Task<ResponseDto> AddProductAsync(ProductDto productDto)
         {
