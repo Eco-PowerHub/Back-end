@@ -103,16 +103,6 @@ namespace EcoPowerHub
                 });
             });
 
-            //cloudinary
-            var cloudinarySettings = builder.Configuration.GetSection("Cloudinary").Get<CloudinarySettings>();
-            var cloudinaryAccount = new Account(
-                cloudinarySettings?.CloudName,
-                cloudinarySettings?.ApiKey,
-                cloudinarySettings?.ApiSecret
-            );
-
-            var cloudinary = new Cloudinary(cloudinaryAccount);
-
             //inject automapper
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
@@ -120,7 +110,6 @@ namespace EcoPowerHub
             builder.Services.AddScoped<IUnitOfWork , UnitOfWork>();
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-            builder.Services.AddScoped<ICloudinaryService , CloudinaryService>();
             builder.Services.AddTransient<IEmailService, EmailService>();
             builder.Services.AddLogging();
             builder.Logging.AddConsole();
@@ -149,23 +138,23 @@ namespace EcoPowerHub
                 }))
             );
             //cloudinary DI
-            //builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
-            //builder.Services.AddScoped<CloudinaryService>();
+            builder.Services.Configure<CloudinarySettings>(
+              builder.Configuration.GetSection("CloudinarySettings"));
+            var cloudinarySettings = builder.Configuration.GetSection("CloudinarySettings").Get<CloudinarySettings>();
             if (cloudinarySettings == null ||
-            string.IsNullOrEmpty(cloudinarySettings.CloudName) ||
-            string.IsNullOrEmpty(cloudinarySettings.ApiKey) ||
-            string.IsNullOrEmpty(cloudinarySettings.ApiSecret))
+                string.IsNullOrEmpty(cloudinarySettings.CloudName) ||
+                string.IsNullOrEmpty(cloudinarySettings.ApiKey) ||
+                string.IsNullOrEmpty(cloudinarySettings.ApiSecret))
             {
                 throw new InvalidOperationException("Cloudinary settings are not properly configured.");
             }
-
-            // Create the Cloudinary account
-            var account = new CloudinaryDotNet.Account(
-                cloudinarySettings.CloudName,
-                cloudinarySettings.ApiKey,
-                cloudinarySettings.ApiSecret
+            var account = new Account(
+            cloudinarySettings.CloudName, cloudinarySettings.ApiKey, cloudinarySettings.ApiSecret
             );
+            var cloudinary = new Cloudinary(account);
+
             builder.Services.AddSingleton(cloudinary);
+            builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

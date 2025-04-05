@@ -21,11 +21,12 @@ namespace EcoPowerHub.Repositories.Services
             if (file == null || file.Length == 0)
                 throw new ArgumentNullException("No file provided");
 
-            var allowedTypes = new List<string> { "image/jpeg", "image/png", "image/gif" };
-            if (!allowedTypes.Contains(file.ContentType))
+            var allowedExtensions = new List<string> { ".jpg", ".jpeg", ".png", ".gif" };
+            var fileExtension = Path.GetExtension(file.FileName).ToLower();
+
+            if (!allowedExtensions.Contains(fileExtension))
                 throw new Exception("Unsupported file type. Only JPEG, PNG, and GIF are allowed.");
 
-            //  using to dispose file stream automatically after use
             using var stream = file.OpenReadStream();
             var uploadParams = new ImageUploadParams
             {
@@ -35,9 +36,9 @@ namespace EcoPowerHub.Repositories.Services
 
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
             if (uploadResult.Error != null)
-                throw new Exception($"Cloudinary upload failed :{uploadResult.Error.Message}");
-            _logger.LogInformation($"File uploaded successfully. Public URL: {uploadResult.SecureUrl}");
+                throw new Exception($"Cloudinary upload failed: {uploadResult.Error.Message}");
 
+            _logger.LogInformation($"File uploaded successfully. Public URL: {uploadResult.SecureUrl}");
             return uploadResult.SecureUrl.AbsoluteUri;
         }
 
