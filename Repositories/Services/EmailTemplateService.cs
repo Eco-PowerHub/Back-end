@@ -12,7 +12,7 @@
     public string RenderWelcomeEmail(string userName, string email, string role)
     {
 
-            var fullTemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Templates", "WelcomeEmailTemplate.html");
+            var fullTemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "Templates", "WelcomeEmailTemplate.html");
 
             Console.WriteLine($"Looking for template at: {fullTemplatePath}");
 
