@@ -13,7 +13,9 @@ namespace EcoPowerHub.Data
         public DbSet<Company> Companies { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductPackage> ProductPackages { get; set; }
-        public DbSet<BasePackage> Packages { get; set; }   
+        // public DbSet<BasePackage> Packages { get; set; }
+        public DbSet<OffGridPackage> OffGridPackages { get; set; }
+        public DbSet<OnGridPackage> OnGridPackages { get; set; }
         public DbSet<PackageOrder> PackageOrders { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<ProductOrder> ProductOreders { get; set; }
@@ -105,7 +107,7 @@ namespace EcoPowerHub.Data
                 entity.Property(p => p.Name).IsRequired().HasMaxLength(200);
                 entity.Property(p => p.Stock).IsRequired();
                 entity.Property(p => p.Amount).IsRequired(); 
-                entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
+               // entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
                // entity.Property(p => p.Image).IsRequired(); 
 
                 entity.HasOne(p => p.Category)
@@ -143,10 +145,10 @@ namespace EcoPowerHub.Data
               .HasValue<OffGridPackage>("OffGrid")
               .HasValue<OnGridPackage>("OnGrid");
 
-            modelBuilder.Entity<BasePackage>()
-                .HasOne(p => p.Company)
-                .WithMany(c => c.Packages)
-                .HasForeignKey(p => p.CompanyId);
+            //modelBuilder.Entity<BasePackage>()
+            //    .HasOne(p => p.Company)
+            //    .WithMany(c => c.Packages)
+            //    .HasForeignKey(p => p.CompanyId);
         }
 
     }

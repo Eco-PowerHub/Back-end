@@ -6,7 +6,7 @@ namespace EcoPowerHub.Models
     public abstract  class BasePackage
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
   //      public PackageType PackageType { get; set; }
         public string ImageUrl { get; set; }
         public decimal Price { get; set; }

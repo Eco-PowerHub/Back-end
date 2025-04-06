@@ -4,6 +4,7 @@ using EcoPowerHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoPowerHub.Migrations
 {
     [DbContext(typeof(EcoPowerDbContext))]
-    partial class EcoPowerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250406175025_UpdatePackagesInheritance")]
+    partial class UpdatePackagesInheritance
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -321,13 +324,11 @@ namespace EcoPowerHub.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Efficiency")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<decimal>("Efficiency")
+                        .HasColumnType("decimal(65,30)");
 
-                    b.Property<string>("EstimatedPower")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("EstimatedPower")
+                        .HasColumnType("int");
 
                     b.Property<string>("Image")
                         .IsRequired()
@@ -344,9 +345,8 @@ namespace EcoPowerHub.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
-                    b.Property<string>("Price")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<int>("Stock")
                         .HasColumnType("int");

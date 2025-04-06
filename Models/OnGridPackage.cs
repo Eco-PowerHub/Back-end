@@ -2,6 +2,6 @@
 {
     public class OnGridPackage :BasePackage
     {
-        public string Name { get; set; }
+        public override string Name { get; set; }
     }
 }
