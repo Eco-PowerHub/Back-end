@@ -79,9 +79,10 @@ namespace EcoPowerHub.Repositories.Services
                 IsSucceeded = true,
                 IsConfirmed = false,
                 StatusCode = (int)HttpStatusCode.OK,
-                Data = new
+                Data = new 
                 {
-                    UserName = user.UserName!,
+                    otpExpiry = otpExpiry,
+                    UserName = user.UserName,
                 }
             };
         }
@@ -187,8 +188,6 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
-
-            // Generate password reset token
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             if (string.IsNullOrEmpty(token))
             {
@@ -199,15 +198,13 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
             }
-            // Encode token using Base64 to avoid corruption in URL
             var encodedToken = WebUtility.UrlEncode(Convert.ToBase64String(Encoding.UTF8.GetBytes(token)));
-
             // Generate reset link
-            var resetLink = $"http://157.175.182.159/forgetpassword?email={WebUtility.UrlEncode(dto.Email)}&token={encodedToken}";
+          //  var resetLink = $"http://157.175.182.159/forgetpassword?email={WebUtility.UrlEncode(dto.Email)}&token={encodedToken}";
+            var resetLink = $"http://157.175.182.159/resetpassword?email={WebUtility.UrlEncode(dto.Email)}&token={encodedToken}";
 
-            Console.WriteLine($"Generated Reset Link: {resetLink}"); // Debugging output
 
-            // Generate email body and send email
+            Console.WriteLine($"Generated Reset Link: {resetLink}"); 
             var emailBody = _emailTemplateService.ResetPasswordEmail(dto.Email, resetLink);
             await _emailService.SendEmailAsync(user.Email!, "Reset your password on Eco Power Hub", emailBody);
 

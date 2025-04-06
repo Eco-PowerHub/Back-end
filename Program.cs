@@ -104,16 +104,6 @@ builder.Services.AddHttpContextAccessor();
                 });
             });
 
-            //cloudinary
-            var cloudinarySettings = builder.Configuration.GetSection("Cloudinary").Get<CloudinarySettings>();
-            var cloudinaryAccount = new Account(
-                cloudinarySettings?.CloudName,
-                cloudinarySettings?.ApiKey,
-                cloudinarySettings?.ApiSecret
-            );
-
-            var cloudinary = new Cloudinary(cloudinaryAccount);
-
             //inject automapper
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
@@ -149,14 +139,28 @@ builder.Services.AddHttpContextAccessor();
                 }))
             );
             //cloudinary DI
+            builder.Services.Configure<CloudinarySettings>(
+              builder.Configuration.GetSection("CloudinarySettings"));
+            var cloudinarySettings = builder.Configuration.GetSection("CloudinarySettings").Get<CloudinarySettings>();
+            if (cloudinarySettings == null ||
+                string.IsNullOrEmpty(cloudinarySettings.CloudName) ||
+                string.IsNullOrEmpty(cloudinarySettings.ApiKey) ||
+                string.IsNullOrEmpty(cloudinarySettings.ApiSecret))
+            {
+                throw new InvalidOperationException("Cloudinary settings are not properly configured.");
+            }
+            var account = new Account(
+            cloudinarySettings.CloudName, cloudinarySettings.ApiKey, cloudinarySettings.ApiSecret
+            );
+            var cloudinary = new Cloudinary(account);
+
             builder.Services.AddSingleton(cloudinary);
-            builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
-            builder.Services.AddScoped<CloudinaryService>();
+            builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddSingleton<CloudinaryService>();
             var app = builder.Build();
             app.UseCors("AllowAll");
             // Configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
 ﻿using EcoPowerHub.UOW;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +16,7 @@ namespace EcoPowerHub.Controllers
         }
 
         [HttpGet("Users")]
+        [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> Get()
         {
             if(!ModelState.IsValid)

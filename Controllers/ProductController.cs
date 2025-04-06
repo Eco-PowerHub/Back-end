@@ -70,27 +70,27 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        [HttpGet("ProductsByCompany")]
-        public async Task<IActionResult> GetProductsByCompanyId([FromQuery] string companyName)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var response = await _unitOfWork.Products.GetProductByCompany(companyName); 
-            if(response.IsSucceeded)
-                return Ok(response);
-            return StatusCode(response.StatusCode, new { response.Message });
-        }
+        //[HttpGet("ProductsByCompany")]
+        //public async Task<IActionResult> GetProductsByCompanyId([FromQuery] string companyName)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var response = await _unitOfWork.Products.GetProductByCompany(companyName); 
+        //    if(response.IsSucceeded)
+        //        return Ok(response);
+        //    return StatusCode(response.StatusCode, new { response.Message });
+        //}
 
-        [HttpGet("SortProductByPrice")]
-        public async Task<IActionResult> GetProductsSortedByPrice([FromQuery] string categoryName)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var response = await _unitOfWork.Products.GetProductsSortedByPrice(categoryName);
-            if(response.IsSucceeded)
-                return Ok(response);
-            return StatusCode(response.StatusCode, new { response.Message });
-        }
+        //[HttpGet("SortProductByPrice")]
+        //public async Task<IActionResult> GetProductsSortedByPrice([FromQuery] string categoryName)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var response = await _unitOfWork.Products.GetProductsSortedByPrice(categoryName);
+        //    if(response.IsSucceeded)
+        //        return Ok(response);
+        //    return StatusCode(response.StatusCode, new { response.Message });
+        //}
 
 
         // POST api/<ProductController>

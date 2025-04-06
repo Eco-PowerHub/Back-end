@@ -58,7 +58,7 @@ namespace EcoPowerHub.Controllers
 
         // POST api/<CategoryController>
         [HttpPost("AddCategory")]
-        [Authorize(Policy = "Only Admin")]
+       // [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> AddCategory([FromBody] CategoryDto categoryDto)
         {
             if (!ModelState.IsValid)
