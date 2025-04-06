@@ -9,24 +9,80 @@
         _templatePath = templatePath;
     }
 
-    public string RenderWelcomeEmail(string userName, string email, string role)
+    public string RenderWelcomeEmail(string UserName, string Email, string Role)
     {
 
-            var fullTemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "Templates", "WelcomeEmailTemplate.html");
+        //     var fullTemplatePath = File.ReadAllText("/mnt/MyData/Courses/Projects/GrdPrj/Back-end/Templates/WelcomeEmailTemplate.html");
 
-            Console.WriteLine($"Looking for template at: {fullTemplatePath}");
+        //     Console.WriteLine($"Looking for template at: {fullTemplatePath}");
 
-            if (!File.Exists(fullTemplatePath))
-            {
-                throw new FileNotFoundException("Email template file not found.", fullTemplatePath);
-            }
-            var template = File.ReadAllText(fullTemplatePath); 
-        template = template.Replace("{UserName}", userName);
+        //     if (!File.Exists(fullTemplatePath))
+        //     {
+        //         throw new FileNotFoundException("Email template file not found.", fullTemplatePath);
+        //     }
+        //     var template = File.ReadAllText(fullTemplatePath); 
+        // template = template.Replace("{UserName}", userName);
 
-        template = template.Replace("{Email}", email);
-        template = template.Replace("{Role}", role);
+        // template = template.Replace("{Email}", email);
+        // template = template.Replace("{Role}", role);
 
-        return template;
+        return $@"<!DOCTYPE html>
+<html >
+<head>
+    <meta charset='UTF-8>
+    <meta name='viewport content='width=device-width, initial-scale=1.0>
+    <title>Welcome to EcoPowerHub</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }}
+        .container {{
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }}
+        h1 {{
+            color: #4CAF50;
+        }}
+        ul {{
+            list-style-type: none;
+            padding: 0;
+        }}
+        li {{
+            margin: 10px 0;
+        }}
+        .footer {{
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #888;
+        }}
+    </style>
+</head>
+<body>
+    <div class='container>
+        <h1>Welcome, {UserName}!</h1>
+        <p>Thank you for registering with us. We're excited to have you on board.</p>
+        <p>Your account has been successfully created with the following details:</p>
+        <ul>
+            <li><strong>Username:</strong>'{UserName}'</li>
+            <li><strong>Email:</strong>'{Email}</li>
+            <li><strong>Role:</strong>'{Role}</li>
+        </ul>
+        <p>If you have any questions, feel free to contact us.</p>
+            <div class='footer'>
+                Eco Power Hub, 123 Green Energy Street, Sustainable City, Earth <br>
+                <a href='http://157.175.182.159'>Privacy Policy</a> | 
+                <a href='http://157.175.182.159'>Terms & Conditions</a>
+            </div>
+    </div>
+</body>
+</html>";
     }
 
         public string ResetPasswordEmail(string email, string resetLink)
