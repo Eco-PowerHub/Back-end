@@ -14,7 +14,8 @@ namespace EcoPowerHub.Models
         public string? OTP { get; set; }
         public DateTime? OTPExpiry { get; set; } = DateTime.UtcNow;
         public bool IsConfirmed { get; set; } = false;
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<Order>? Orders { get; set; } = new List<Order>();
+         public virtual ICollection<Cart>? Carts { get; set; } = new List<Cart>();
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }

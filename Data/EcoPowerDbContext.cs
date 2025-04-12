@@ -21,6 +21,8 @@ namespace EcoPowerHub.Data
         public DbSet<ProductOrder> ProductOreders { get; set; }
         public DbSet<UserFeedBack> UserFeedBacks { get; set; }
         public DbSet<UserSupport> UserSupport { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
         //    if (!optionsBuilder.IsConfigured)
@@ -149,6 +151,23 @@ namespace EcoPowerHub.Data
             //    .HasOne(p => p.Company)
             //    .WithMany(c => c.Packages)
             //    .HasForeignKey(p => p.CompanyId);
+
+            modelBuilder.Entity<Cart>()
+                         .HasMany(t => t.CartItems) //one Cart has many CartItems, and each CartItem belongs to one Cart
+                         .WithOne(c => c.Cart)
+                         .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Cart>()
+                        .HasOne(c => c.Customer)
+                        .WithMany()
+                        .HasForeignKey(c => c.CustomerId)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CartItem>()
+                        .HasOne(p => p.Product)
+                        .WithMany()
+                        .HasForeignKey(p => p.ProductId)
+                        .OnDelete(DeleteBehavior.Restrict);
         }
 
     }

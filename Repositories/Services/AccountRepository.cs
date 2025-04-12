@@ -99,7 +99,14 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = 400
                 };
             }
-           
+            if (user.Role != loginDto.Role)
+                return new ResponseDto
+                {
+                    Message = "Role doesnt found or doesnt match,try again please",
+                    IsSucceeded = false,
+                    IsConfirmed = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
             var token = await _tokenService.GenerateToken(user);
             var refreshToken = string.Empty;
             DateTime refreshTokenExpiration;
