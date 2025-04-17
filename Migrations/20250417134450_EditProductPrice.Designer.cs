@@ -4,6 +4,7 @@ using EcoPowerHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoPowerHub.Migrations
 {
     [DbContext(typeof(EcoPowerDbContext))]
-    partial class EcoPowerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250417134450_EditProductPrice")]
+    partial class EditProductPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -342,9 +345,10 @@ namespace EcoPowerHub.Migrations
                     b.Property<decimal>("PackagePrice")
                         .HasColumnType("decimal(12,2)");
 
-                    b.Property<decimal>("SurfaceArea")
+                    b.Property<string>("SurfaceArea")
+                        .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<float>("TotalYearsGuarantee")
                         .HasColumnType("float");

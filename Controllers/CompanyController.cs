@@ -1,4 +1,4 @@
-﻿using EcoPowerHub.DTO;
+﻿using EcoPowerHub.DTO.CompanyDto;
 using EcoPowerHub.Models;
 using EcoPowerHub.UOW;
 using Microsoft.AspNetCore.Authorization;
@@ -56,7 +56,7 @@ namespace EcoPowerHub.Controllers
 
         [HttpPost("AddCompany")]
         [Authorize(Policy = "Only Admin")]
-        public async Task<IActionResult> AddCompany([FromBody]CompanyDto company)
+        public async Task<IActionResult> AddCompany([FromBody] AddCompanyDto company)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

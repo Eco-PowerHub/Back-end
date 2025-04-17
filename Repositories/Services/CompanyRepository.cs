@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EcoPowerHub.Data;
 using EcoPowerHub.DTO;
+using EcoPowerHub.DTO.CompanyDto;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
@@ -84,7 +85,7 @@ namespace EcoPowerHub.Repositories.Services
                 Data = retrivedCompany
             };
         }
-        public async Task<ResponseDto> AddCompany(CompanyDto company)
+        public async Task<ResponseDto> AddCompany(AddCompanyDto company)
         {
           bool newCompany = await _context.Companies.AnyAsync(c=>c.Name == company.Name);
             if(newCompany)

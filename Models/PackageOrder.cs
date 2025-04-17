@@ -8,7 +8,7 @@ namespace EcoPowerHub.Models
         public int PackageId { get; set; }
         public PropertyType Type { get; set; }
         public string Location { get; set; }
-        public string SurfaceArea { get; set; }
+        public decimal SurfaceArea { get; set; }
         public decimal PackagePrice { get; set; }
         public PackageType Package {  get; set; }
         public BasePackage package { get; set; }

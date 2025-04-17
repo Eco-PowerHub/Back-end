@@ -9,7 +9,7 @@ namespace EcoPowerHub.Models
         public int Stock {  get; set; }
         public int Amount { get; set; }
         public string Image { get; set; }
-        public string Price { get; set; }
+        public decimal Price { get; set; }
         public string Model { get; set; }
         public string Efficiency { get; set; }
         public string EstimatedPower { get; set; }

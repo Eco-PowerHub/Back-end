@@ -108,9 +108,9 @@ namespace EcoPowerHub.Data
             {
                 entity.Property(p => p.Name).IsRequired().HasMaxLength(200);
                 entity.Property(p => p.Stock).IsRequired();
-                entity.Property(p => p.Amount).IsRequired(); 
-               // entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
-               // entity.Property(p => p.Image).IsRequired(); 
+                entity.Property(p => p.Amount).IsRequired();
+                entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
+                entity.Property(p => p.Image).IsRequired();
 
                 entity.HasOne(p => p.Category)
                       .WithMany(c => c.Products)

@@ -265,8 +265,16 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
-            _mapper.Map(productDto, existingProduct);
-             _context.Products.Update(existingProduct);
+            // _mapper.Map(productDto, existingProduct);
+            //  _context.Products.Update(existingProduct);
+            existingProduct.Name = productDto.Name;
+            existingProduct.CategoryId = productDto.CategoryId;
+            existingProduct.Model = productDto.Model;
+            existingProduct.Efficiency = productDto.Efficiency;
+            existingProduct.Amount = productDto.Amount;
+            existingProduct.EstimatedPower = productDto.EstimatedPower;
+            existingProduct.Price = productDto.Price;
+            existingProduct.Image = productDto.Image;
             await _context.SaveChangesAsync();
             return new ResponseDto
             {

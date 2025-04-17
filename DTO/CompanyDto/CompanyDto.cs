@@ -3,7 +3,7 @@ using EcoPowerHub.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace EcoPowerHub.DTO
+namespace EcoPowerHub.DTO.CompanyDto
 {
     public class CompanyDto
     {
