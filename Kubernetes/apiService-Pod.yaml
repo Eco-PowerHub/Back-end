@@ -13,18 +13,18 @@ spec:
         type: DirectoryOrCreate
   containers:
     - name: eco-backend
-      image: khaledmahmoud7/eco-back:34
+      image: eco-backend:latest
       imagePullPolicy: Never
       env:
         - name: ASPNETCORE_HTTP_PORTS
           value: "80"
       resources:
         requests:
-          memory: "64Mi"
-          cpu: "250m"
-        limits:
-          memory: "128Mi"
+          memory: "256Mi"
           cpu: "500m"
+        limits:
+          memory: "512Mi"
+          cpu: "750m"
       volumeMounts:
         - name: eco-volume
           mountPath: /tmp/ecoVolume
