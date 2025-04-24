@@ -13,12 +13,16 @@ namespace EcoPowerHub.Data
         public DbSet<Company> Companies { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductPackage> ProductPackages { get; set; }
-        public DbSet<BasePackage> Packages { get; set; }   
+        // public DbSet<BasePackage> Packages { get; set; }
+        public DbSet<OffGridPackage> OffGridPackages { get; set; }
+        public DbSet<OnGridPackage> OnGridPackages { get; set; }
         public DbSet<PackageOrder> PackageOrders { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<ProductOrder> ProductOreders { get; set; }
         public DbSet<UserFeedBack> UserFeedBacks { get; set; }
         public DbSet<UserSupport> UserSupport { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
         //    if (!optionsBuilder.IsConfigured)
@@ -104,9 +108,9 @@ namespace EcoPowerHub.Data
             {
                 entity.Property(p => p.Name).IsRequired().HasMaxLength(200);
                 entity.Property(p => p.Stock).IsRequired();
-                entity.Property(p => p.Amount).IsRequired(); 
+                entity.Property(p => p.Amount).IsRequired();
                 entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
-               // entity.Property(p => p.Image).IsRequired(); 
+                entity.Property(p => p.Image).IsRequired();
 
                 entity.HasOne(p => p.Category)
                       .WithMany(c => c.Products)
@@ -143,10 +147,27 @@ namespace EcoPowerHub.Data
               .HasValue<OffGridPackage>("OffGrid")
               .HasValue<OnGridPackage>("OnGrid");
 
-            modelBuilder.Entity<BasePackage>()
-                .HasOne(p => p.Company)
-                .WithMany(c => c.Packages)
-                .HasForeignKey(p => p.CompanyId);
+            //modelBuilder.Entity<BasePackage>()
+            //    .HasOne(p => p.Company)
+            //    .WithMany(c => c.Packages)
+            //    .HasForeignKey(p => p.CompanyId);
+
+            modelBuilder.Entity<Cart>()
+                         .HasMany(t => t.CartItems) //one Cart has many CartItems, and each CartItem belongs to one Cart
+                         .WithOne(c => c.Cart)
+                         .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Cart>()
+                        .HasOne(c => c.Customer)
+                        .WithMany()
+                        .HasForeignKey(c => c.CustomerId)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CartItem>()
+                        .HasOne(p => p.Product)
+                        .WithMany()
+                        .HasForeignKey(p => p.ProductId)
+                        .OnDelete(DeleteBehavior.Restrict);
         }
 
     }

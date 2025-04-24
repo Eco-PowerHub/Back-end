@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using EcoPowerHub.DTO;
+using EcoPowerHub.DTO.CartDto;
+using EcoPowerHub.DTO.CompanyDto;
+using EcoPowerHub.DTO.PackageDto;
 using EcoPowerHub.DTO.UserDto;
 using EcoPowerHub.DTO.UserDto.PasswordSettingDto;
 using EcoPowerHub.DTO.UserPropertyDto;
@@ -17,19 +20,30 @@ namespace EcoPowerHub.AutoMapper
             CreateMap<ResetPasswordDto, ApplicationUser>().ReverseMap();
             CreateMap<ChangePasswordDto, ApplicationUser>().ReverseMap();
             CreateMap<UserDto, ApplicationUser>().ReverseMap();
-            CreateMap<PackageDto, BasePackage>().ReverseMap()
-                .ForMember(dest => dest.Id, opt => opt.Ignore());
+            //CreateMap<PackageDto, BasePackage>().ReverseMap()
+            //    .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<Company, CompanyDto>()
                 .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products))
-                .ForMember(dest => dest.Packages, opt => opt.MapFrom(src => src.Packages))
                 .ReverseMap();
-            CreateMap<Product, ProductDto>().ReverseMap();
+            CreateMap<AddCompanyDto, Company>().ReverseMap();
+            //    .ForMember(dest => dest.Packages, opt => opt.MapFrom(src => src.Packages))
+            //    .ReverseMap();
+            //   CreateMap<Product, ProductDto>().ReverseMap();
+            CreateMap<ProductDto, Product>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
+
             CreateMap<ProductDto, Product>().ReverseMap();
             CreateMap<CategoryDto, Category>().ReverseMap();
             CreateMap<CreateUserSupportDto, UserSupport>();
             CreateMap<UserSupport, GetUserSupportDto>();
             CreateMap<AddResponseDto, UserSupport>();
-            CreateMap<PackageOrderDto, PackageOrder>().ReverseMap();    
+            CreateMap<PackageOrderDto, PackageOrder>().ReverseMap();
+            CreateMap<OffGridPackageDto, OffGridPackage>().ReverseMap();  
+            CreateMap<OnGridPackageDto, OffGridPackage>().ReverseMap();
+            CreateMap<Cart,CartDto>().ReverseMap();
+            CreateMap<CartItem,CartItemDto>().ReverseMap();
+
+
 
         }
     }

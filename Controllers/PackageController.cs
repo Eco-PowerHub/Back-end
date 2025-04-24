@@ -22,31 +22,31 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET: api/<PackageController>
-        [HttpGet("Packages")]
-        public async Task<IActionResult> GetAllPackages()
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var response = await _unitOfWork.Packages.GetAllPackagesAsync();
-            if (response.IsSucceeded)
-                return Ok(response);
+        //[HttpGet("Packages")]
+        //public async Task<IActionResult> GetAllPackages()
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var response = await _unitOfWork.Packages.GetAllPackagesAsync();
+        //    if (response.IsSucceeded)
+        //        return Ok(response);
 
-            return StatusCode(response.StatusCode, new { response.Message });
-        }
+        //    return StatusCode(response.StatusCode, new { response.Message });
+        //}
 
-        // GET api/<PackageController>/5
-        [HttpGet("PackageById/{id}")]
-        [Authorize(Policy = "Only Admin")]
-        public async Task<IActionResult> GetPackageById(int id)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var response = await _unitOfWork.Packages.GetPackageById(id);
-            if (response.IsSucceeded)
-                return Ok(response);
+        //// GET api/<PackageController>/5
+        //[HttpGet("PackageById/{id}")]
+        //[Authorize(Policy = "Only Admin")]
+        //public async Task<IActionResult> GetPackageById(int id)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var response = await _unitOfWork.Packages.GetPackageById(id);
+        //    if (response.IsSucceeded)
+        //        return Ok(response);
 
-            return StatusCode(response.StatusCode, new { response.Message });
-        }
+        //    return StatusCode(response.StatusCode, new { response.Message });
+        //}
 
         //[HttpGet("PackagesByCompany")]
         //public async Task<IActionResult> GetPackagesByCompanyName([FromQuery]string companyName)
@@ -87,18 +87,18 @@ namespace EcoPowerHub.Controllers
         //}
 
         // DELETE api/<PackageController>/5
-        [HttpDelete("DeletePackage/{id}")]
-        [Authorize(Policy = "Company and Admin")]
-        public async Task<IActionResult> DeletePackage(int id)
-        {
+        //[HttpDelete("DeletePackage/{id}")]
+        //[Authorize(Policy = "Company and Admin")]
+        //public async Task<IActionResult> DeletePackage(int id)
+        //{
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var response = await _unitOfWork.Packages.DeletePackageAsync(id);
-            if (response.IsSucceeded)
-                return Ok(response);
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var response = await _unitOfWork.Packages.DeletePackageAsync(id);
+        //    if (response.IsSucceeded)
+        //        return Ok(response);
 
-            return StatusCode(response.StatusCode, new { response.Message });
-        }
+        //    return StatusCode(response.StatusCode, new { response.Message });
+        //}
     }
 }

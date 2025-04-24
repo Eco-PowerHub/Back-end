@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EcoPowerHub.Data;
 using EcoPowerHub.DTO;
+using EcoPowerHub.DTO.CompanyDto;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
@@ -21,7 +22,9 @@ namespace EcoPowerHub.Repositories.Services
         }
         public async Task<ResponseDto> GetAllCompany()
         {
-            List<Company> companies = await _context.Companies.AsNoTracking().ToListAsync();
+            List<Company> companies = await _context.Companies.AsNoTracking()
+                                                               .Include(p=>p.Products)
+                                                               .ToListAsync();
             if (companies.Count == 0)
             {
                 return new ResponseDto
@@ -82,7 +85,7 @@ namespace EcoPowerHub.Repositories.Services
                 Data = retrivedCompany
             };
         }
-        public async Task<ResponseDto> AddCompany(CompanyDto company)
+        public async Task<ResponseDto> AddCompany(AddCompanyDto company)
         {
           bool newCompany = await _context.Companies.AnyAsync(c=>c.Name == company.Name);
             if(newCompany)
@@ -129,41 +132,41 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
        
-        public async Task<ResponseDto> GetCompanyPackages(string companyName)
-        {
+        //public async Task<ResponseDto> GetCompanyPackages(string companyName)
+        //{
 
-            var company = await _context.Companies.FirstOrDefaultAsync(c=>c.Name == companyName);
-            if(company is null)
-            {
-                return new ResponseDto
-                {
-                    Message = "No company found with that name",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound
-                };
-            }
-            var packages = await _context.Packages.Where(p => p.CompanyId == company.Id)
-                                                  .AsNoTracking()
-                                                  .ToListAsync();
+        //    var company = await _context.Companies.FirstOrDefaultAsync(c=>c.Name == companyName);
+        //    if(company is null)
+        //    {
+        //        return new ResponseDto
+        //        {
+        //            Message = "No company found with that name",
+        //            IsSucceeded = false,
+        //            StatusCode = (int)HttpStatusCode.NotFound
+        //        };
+        //    }
+        //    var packages = await _context.Packages.Where(p => p.CompanyId == company.Id)
+        //                                          .AsNoTracking()
+        //                                          .ToListAsync();
                
-            if(packages.Count == 0)
-            {
-                return new ResponseDto
-                {
-                    Message = "No matched packages found!",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null
-                };
-            }
-            var packageDto = _mapper.Map<List<PackageDto>>(packages);
-            return new ResponseDto
-            {
-                IsSucceeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                Data = packageDto
-            };
-        }
+        //    if(packages.Count == 0)
+        //    {
+        //        return new ResponseDto
+        //        {
+        //            Message = "No matched packages found!",
+        //            IsSucceeded = false,
+        //            StatusCode = (int)HttpStatusCode.NotFound,
+        //            Data = null
+        //        };
+        //    }
+        //    var packageDto = _mapper.Map<List<PackageDto>>(packages);
+        //    return new ResponseDto
+        //    {
+        //        IsSucceeded = true,
+        //        StatusCode = (int)HttpStatusCode.OK,
+        //        Data = packageDto
+        //    };
+        //}
 
         public async Task<ResponseDto> GetCompanyProducts(string companyName)
         {

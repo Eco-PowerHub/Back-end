@@ -1,4 +1,4 @@
-﻿using EcoPowerHub.DTO;
+﻿using EcoPowerHub.DTO.CompanyDto;
 using EcoPowerHub.Models;
 using EcoPowerHub.UOW;
 using Microsoft.AspNetCore.Authorization;
@@ -56,7 +56,7 @@ namespace EcoPowerHub.Controllers
 
         [HttpPost("AddCompany")]
         [Authorize(Policy = "Only Admin")]
-        public async Task<IActionResult> AddCompany([FromBody]CompanyDto company)
+        public async Task<IActionResult> AddCompany([FromBody] AddCompanyDto company)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -98,15 +98,15 @@ namespace EcoPowerHub.Controllers
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
-        [HttpGet("CompanyPackages")]
-        public async Task<IActionResult> GetCompanyPackages([FromQuery]string companyName)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var response = await _unitOfWork.Company.GetCompanyPackages(companyName);
-            if (response.IsSucceeded)
-                return Ok(response);
-            return StatusCode(response.StatusCode, new { response.Message });
-        }
+        //[HttpGet("CompanyPackages")]
+        //public async Task<IActionResult> GetCompanyPackages([FromQuery]string companyName)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var response = await _unitOfWork.Company.GetCompanyPackages(companyName);
+        //    if (response.IsSucceeded)
+        //        return Ok(response);
+        //    return StatusCode(response.StatusCode, new { response.Message });
+        //}
     }
 }

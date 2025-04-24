@@ -22,7 +22,7 @@ namespace EcoPowerHub.Repositories.Services
         public async Task<ResponseDto> GetAllCategories()
         {
            
-           var categories = await _context.Categories.AsNoTracking().ToListAsync();
+           var categories = await _context.Categories.AsNoTracking().Include(p=>p.Products).ToListAsync();
            if(categories.Count == 0)
             {
                 return new ResponseDto

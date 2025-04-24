@@ -94,17 +94,68 @@
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         <title>Reset Your Password</title>
         <style>
-            body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }}
-            .container {{ width: 100%; max-width: 500px; margin: 20px auto; background-color: #ffffff; padding: 20px; 
-                        border-radius: 8px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); text-align: center; }}
-            .logo {{ margin-bottom: 20px; }}
-            .title {{ font-size: 22px; font-weight: bold; color: #333; }}
-            .message {{ font-size: 16px; color: #555; margin: 15px 0; }}
-            .btn {{ display: inline-block; padding: 12px 20px; background-color: #007bff; color: #ffffff; text-decoration: none;
-                    font-size: 16px; font-weight: bold; border-radius: 6px; margin: 20px 0; }}
-            .btn:hover {{ background-color: #0056b3; }}
-            .info {{ font-size: 14px; color: #666; margin-top: 10px; }}
-            .footer {{ margin-top: 20px; font-size: 12px; color: #999; }}
+                body
+                {{
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4; 
+                margin: 0; padding: 0;
+                }}
+            .container
+                {{
+                width: 100%; 
+                max-width: 500px;
+                margin: 20px auto;
+                background-color: #ffffff;
+                padding: 20px; 
+                border-radius: 8px; 
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                text-align: center;
+                }}
+            .logo 
+                {{
+                margin-bottom: 20px;
+                }}
+            .title 
+                {{ 
+                font-size: 22px;
+                font-weight: bold;
+                color: #333;
+                }}
+
+            .message 
+                {{
+                font-size: 16px;
+                color: #555;
+                margin: 15px 0; 
+                }}
+            .btn 
+                {{
+                display: inline-block;
+                padding: 12px 20px;
+                background-color: #f0f0f0;
+                color: #f0f0f0;
+                text-decoration: none;
+                font-size: 16px;
+                font-weight: bold;
+                border-radius: 6px;
+                margin: 20px 0;
+                }}
+            .btn:hover 
+                {{
+                background-color: #f0f0f0;
+                }}
+            .info 
+                {{ 
+                font-size: 14px;
+                color: #666;
+                margin-top: 10px;
+                }}
+            .footer
+                {{
+                margin-top: 20px; 
+                font-size: 12px;
+                color: #999;
+                }}
         </style>
     </head>
     <body>

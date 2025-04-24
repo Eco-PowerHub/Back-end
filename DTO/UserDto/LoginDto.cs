@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EcoPowerHub.Helpers;
+using System.ComponentModel.DataAnnotations;
 
 namespace EcoPowerHub.DTO.UserDto
 {
@@ -7,5 +8,6 @@ namespace EcoPowerHub.DTO.UserDto
         [Required,EmailAddress]
         public string Email { get; set; }
         public string Password { get; set; }
+        public Roles Role { get; set; }
     }
 }

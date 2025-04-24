@@ -1,8 +1,9 @@
-﻿using EcoPowerHub.Models;
+﻿using EcoPowerHub.DTO.PackageDto;
+using EcoPowerHub.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace EcoPowerHub.DTO
+namespace EcoPowerHub.DTO.CompanyDto
 {
     public class CompanyDto
     {
@@ -14,8 +15,9 @@ namespace EcoPowerHub.DTO
         public string Location { get; set; }
         public string PhoneNumber { get; set; }
         public string Image { get; set; }
-        public List<ProductDto>? Products { get; set; } 
-        public List<PackageDto>? Packages { get; set; } 
-
+        public List<ProductDto>? Products { get; set; }
+        //public List<PackageDto>? Packages { get; set; } 
+        public List<OffGridPackageDto> OffGridPackages { get; set; }
+        public List<OnGridPackageDto> OnGridPackages { get; set; }
     }
 }

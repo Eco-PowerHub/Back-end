@@ -9,12 +9,13 @@ namespace EcoPowerHub.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public Roles Role {  get; set; }
-        public string? Address { get; set; }
+        public string Address { get; set; }
         public DateTime RegisterdAt { get; set; } = DateTime.UtcNow;
         public string? OTP { get; set; }
         public DateTime? OTPExpiry { get; set; } = DateTime.UtcNow;
         public bool IsConfirmed { get; set; } = false;
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<Order>? Orders { get; set; } = new List<Order>();
+         public virtual ICollection<Cart>? Carts { get; set; } = new List<Cart>();
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }

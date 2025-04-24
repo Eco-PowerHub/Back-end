@@ -31,6 +31,7 @@ namespace EcoPowerHub.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
@@ -163,11 +164,64 @@ namespace EcoPowerHub.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Packages");
+                    b.ToTable("BasePackage");
 
                     b.HasDiscriminator<string>("PackageType").HasValue("BasePackage");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("EcoPowerHub.Models.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("EcoPowerHub.Models.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.Category", b =>
@@ -288,10 +342,9 @@ namespace EcoPowerHub.Migrations
                     b.Property<decimal>("PackagePrice")
                         .HasColumnType("decimal(12,2)");
 
-                    b.Property<string>("SurfaceArea")
-                        .IsRequired()
+                    b.Property<decimal>("SurfaceArea")
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<float>("TotalYearsGuarantee")
                         .HasColumnType("float");
@@ -321,11 +374,13 @@ namespace EcoPowerHub.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Efficiency")
-                        .HasColumnType("decimal(65,30)");
+                    b.Property<string>("Efficiency")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
-                    b.Property<int>("EstimatedPower")
-                        .HasColumnType("int");
+                    b.Property<string>("EstimatedPower")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Image")
                         .IsRequired()
@@ -630,6 +685,38 @@ namespace EcoPowerHub.Migrations
                     b.Navigation("Company");
                 });
 
+            modelBuilder.Entity("EcoPowerHub.Models.Cart", b =>
+                {
+                    b.HasOne("EcoPowerHub.Models.ApplicationUser", null)
+                        .WithMany("Carts")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("EcoPowerHub.Models.ApplicationUser", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("EcoPowerHub.Models.CartItem", b =>
+                {
+                    b.HasOne("EcoPowerHub.Models.Cart", "Cart")
+                        .WithMany("CartItems")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("EcoPowerHub.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("EcoPowerHub.Models.Order", b =>
                 {
                     b.HasOne("EcoPowerHub.Models.Company", "Company")
@@ -739,9 +826,16 @@ namespace EcoPowerHub.Migrations
 
             modelBuilder.Entity("EcoPowerHub.Models.ApplicationUser", b =>
                 {
+                    b.Navigation("Carts");
+
                     b.Navigation("Orders");
 
                     b.Navigation("RefreshTokens");
+                });
+
+            modelBuilder.Entity("EcoPowerHub.Models.Cart", b =>
+                {
+                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.Category", b =>

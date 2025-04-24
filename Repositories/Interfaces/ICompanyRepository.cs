@@ -1,4 +1,5 @@
 ﻿using EcoPowerHub.DTO;
+using EcoPowerHub.DTO.CompanyDto;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.GenericRepositories;
 
@@ -10,8 +11,8 @@ namespace EcoPowerHub.Repositories.Interfaces
         Task<ResponseDto> GetCompanybyId(int companyId);
         Task<ResponseDto> GetCompanybyName(string name);
         Task<ResponseDto> GetCompanyProducts(string companyName);
-        Task<ResponseDto> GetCompanyPackages(string companyName);
-        Task<ResponseDto> AddCompany(CompanyDto company);
+     //   Task<ResponseDto> GetCompanyPackages(string companyName);
+        Task<ResponseDto> AddCompany(AddCompanyDto company);
         Task<ResponseDto> UpdateCompany(int id , CompanyDto company);
         Task<ResponseDto> DeleteCompany(int id);
     }
