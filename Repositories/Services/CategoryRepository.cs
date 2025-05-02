@@ -113,7 +113,7 @@ namespace EcoPowerHub.Repositories.Services
             {
                 return new ResponseDto
                 {
-                    Message = "Invalid Category Data",
+                    Message = " Category Data is required",
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.BadRequest
                 };

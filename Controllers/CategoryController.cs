@@ -35,7 +35,7 @@ namespace EcoPowerHub.Controllers
 
         // GET api/<CategoryController>/5
         [HttpGet("CategoryById/{id}")]
-        [Authorize(Policy = "Only Admin")]
+   //     [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> GetCategoryById(int id)
         {
             var response = await _unitOfWork.Categories.GetCategoryById(id);

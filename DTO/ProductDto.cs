@@ -13,8 +13,8 @@ namespace EcoPowerHub.DTO
         public decimal Price { get; set; }
         public string Image { get; set; }
         public string Model { get; set; }
-        public string Efficiency { get; set; }
-        public string EstimatedPower { get; set; }
+        public decimal Efficiency { get; set; }
+        public decimal EstimatedPower { get; set; }
         public int CategoryId { get; set; }
          //public CompanyDto? Company { get; set; }
         public int CompanyId { get; set; }

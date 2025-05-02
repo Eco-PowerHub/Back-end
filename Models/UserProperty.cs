@@ -1,17 +1,19 @@
 ﻿using EcoPowerHub.Helpers;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EcoPowerHub.Models
 {
-    public class PackageOrder //Proprty
+    public class UserProperty //Proprty
     {
-        public int OrderId { get; set; }
-        public int PackageId { get; set; }
+        public int Id { get; set; }
         public PropertyType Type { get; set; }
         public string Location { get; set; }
         public decimal SurfaceArea { get; set; }
         public decimal PackagePrice { get; set; }
         public PackageType Package {  get; set; }
-        public BasePackage package { get; set; }
+        public int? PackageId { get; set; }
+        [ForeignKey("PackageId")]
+        public Package? package { get; set; }
         public decimal[] ElectricityUsage { get; set; } = new decimal[6];
 
         public decimal ElectricityUsageAverage => ElectricityUsage.Length > 0 ? ElectricityUsage.Average() : 0;

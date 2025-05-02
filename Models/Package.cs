@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EcoPowerHub.Models
 {
-    public abstract  class BasePackage
+    public  class Package
     {
         public int Id { get; set; }
-        public virtual string Name { get; set; }
-  //      public PackageType PackageType { get; set; }
-        public string ImageUrl { get; set; }
+        public  string Name { get; set; }
+        public PackageType PackageType { get; set; }
+        public string Image { get; set; }
         public decimal Price { get; set; }
         public decimal EnergyInWatt  { get; set; }
         public string SolarPanel { get; set; }
@@ -17,6 +17,14 @@ namespace EcoPowerHub.Models
         public int CompanyId { get; set; }
         [ForeignKey("CompanyId")]
         public Company Company { get; set; }
+
+        public decimal? BatteryCapacity { get; set; }
+        public decimal? BatteryEfficiency { get; set; }
+
+        public decimal PanelPrice { get; set; }
+        public decimal InverterPricePerKW { get; set; }
+        public decimal BatteryPrice { get; set; }
+
 
     }
 }

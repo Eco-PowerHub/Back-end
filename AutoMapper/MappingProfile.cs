@@ -37,13 +37,12 @@ namespace EcoPowerHub.AutoMapper
             CreateMap<CreateUserSupportDto, UserSupport>();
             CreateMap<UserSupport, GetUserSupportDto>();
             CreateMap<AddResponseDto, UserSupport>();
-            CreateMap<PackageOrderDto, PackageOrder>().ReverseMap();
-            CreateMap<OffGridPackageDto, OffGridPackage>().ReverseMap();  
-            CreateMap<OnGridPackageDto, OffGridPackage>().ReverseMap();
+            CreateMap<UserPropertyDto, UserProperty>().ReverseMap();
+            
             CreateMap<Cart,CartDto>().ReverseMap();
             CreateMap<CartItem,CartItemDto>().ReverseMap();
 
-
+            CreateMap<Package,PackageDto>().ReverseMap();   
 
         }
     }

@@ -14,16 +14,15 @@ namespace EcoPowerHub.Controllers
         {
             _unitOfWork = unitOfWork;
         }
-
         [HttpPost("AddProperty")]
-        public async Task<IActionResult> AddUserProerty(PackageOrderDto packageOrderDto)
+        public async Task<IActionResult> AddUserProerty(UserPropertyDto packageOrderDto)
         {
-            if(!ModelState.IsValid) 
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Properties.AddProperty(packageOrderDto);
-            if(response.IsSucceeded)
+            var response = await _unitOfWork.Properties.AddPropertyAndGetRecommendedPackages(packageOrderDto);
+            if (response.IsSucceeded)
                 return Ok(response);
-            return StatusCode(response.StatusCode,response.Data);
+            return StatusCode(response.StatusCode, response.Data);
         }
 
     }
