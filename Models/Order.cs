@@ -13,6 +13,9 @@ namespace EcoPowerHub.Models
         public Company Company { get; set; }
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
+
+        public int CartId { get; set; }
+        public Cart Cart { get; set; }
     }
 
 }

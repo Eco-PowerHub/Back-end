@@ -5,6 +5,7 @@ using EcoPowerHub.Repositories.GenericRepositories;
 
 using EcoPowerHub.Repositories.Interfaces;
 using EcoPowerHub.Repositories.Services;
+using MailKit.Search;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -55,6 +56,7 @@ namespace EcoPowerHub.UOW
             Users = new UserRepository(_context);
             Carts = new CartRepository(_context, _mapper,_userManager);
             CartItems = new CartItemRepository(_context, _mapper);
+            Orders = new OrderRepository(_context, _mapper, _emailService);
         }
         public IAccountRepository Accounts { get; private set; }
         public IUserRepository Users { get; private set; }
@@ -73,7 +75,7 @@ namespace EcoPowerHub.UOW
         public ICartRepository Carts {  get; private set; }
 
         public ICartItemRepository CartItems {  get; private set; }
-
+        public IOrderRepository Orders { get; private set; }
         public async Task<bool> SaveCompleted()
         {
             return await _context.SaveChangesAsync() > 0;

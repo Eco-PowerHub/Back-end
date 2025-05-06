@@ -45,6 +45,12 @@ namespace EcoPowerHub.Repositories.Services
                 int requiredPanels = CalculateNumberOfPanels(usageWatts, panelEstimatedPower);
                 decimal neededInverterPower = CalculateInverterPower(usageWatts);
 
+                decimal singlePanelArea = 2.0m;
+                decimal totalPanelArea = requiredPanels * singlePanelArea;
+
+                if (totalPanelArea > roofArea)
+                    continue;
+
                 int batteryCount = 0;
                 if (package.BatteryCapacity.HasValue && package.BatteryCapacity.Value > 0)
                 {
@@ -59,10 +65,13 @@ namespace EcoPowerHub.Repositories.Services
                     PackageId = package.Id,
                     PackageName = package.Name,
                     PackagePrice = totalPackagePrice,
+                    TotalPrice = totalPackagePrice,
                     RequiredPanels = requiredPanels,
                     RequiredBatteries = batteryCount,
                     PanelModel = package.SolarPanel,
                     InverterModel = package.Inverter,
+                    ElectricityUsage = UserPropertyDto.ElectricityUsage,
+                    TotalYearsGuarantee = UserPropertyDto.TotalYearsGuarantee
                 };
                 var roiYears = recommend.ROIYears;
                 var savingCost = recommend.SavingCost;
@@ -126,11 +135,18 @@ namespace EcoPowerHub.Repositories.Services
             return (int)Math.Ceiling(dailyUsage / dailyPanelOutput);
         }
 
-        private decimal CalculateTotalPackagePrice(int requiredPanels, decimal inverterKW, int batteryCount, Package package)
+        private decimal CalculateTotalPackagePrice(int requiredPanels, decimal inverterWatts, int batteryCount, Package package)
         {
-            decimal panelCost = requiredPanels * package.PanelPrice;
-            decimal inverterCost = inverterKW * package.InverterPricePerKW;
-            decimal batteryCost = batteryCount * package.BatteryPrice;
+        //    decimal panelCost = requiredPanels * package.PanelPrice;
+        //    decimal inverterCost = inverterKW * package.InverterPricePerKW;
+        //    decimal batteryCost = batteryCount * package.BatteryPrice;
+         decimal panelCost = requiredPanels * package.PanelPrice;
+
+        // تعديل هنا: تحويل الواط إلى كيلوواط قبل الضرب
+        decimal inverterKW = inverterWatts / 1000m;
+        decimal inverterCost = inverterKW * package.InverterPricePerKW;
+
+        decimal batteryCost = batteryCount * package.BatteryPrice;
 
             return panelCost + inverterCost + batteryCost;
         }

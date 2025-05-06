@@ -18,6 +18,7 @@ namespace EcoPowerHub.UOW
         public IPropertyRepository Properties { get; }
         public ICartRepository Carts { get; }
         public ICartItemRepository CartItems { get; }
+        public IOrderRepository Orders { get; }
         Task<bool> SaveCompleted();
     }
 }

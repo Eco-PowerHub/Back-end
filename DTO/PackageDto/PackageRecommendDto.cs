@@ -4,7 +4,7 @@
     {
         public int PackageId { get; set; }
         public string PackageName { get; set; }
-        public decimal SuggestedPrice { get; set; }
+        public decimal TotalPrice { get; set; }
         public int RequiredBatteries { get; set; }
         public int   RequiredPanels { get; set; }
         public string PanelModel { get; set; }
