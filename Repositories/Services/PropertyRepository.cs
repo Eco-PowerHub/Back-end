@@ -24,15 +24,15 @@ namespace EcoPowerHub.Repositories.Services
 
         public async Task<ResponseDto> AddPropertyAndGetRecommendedPackages(UserPropertyDto dto)
         {
+            
             decimal avgMonthlyCost = dto.ElectricityUsageAverage;
-            decimal pricePerKWh = 2.5m; 
+            decimal pricePerKWh = 1.95m;
             decimal monthlyUsageKWh = pricePerKWh > 0
                 ? avgMonthlyCost / pricePerKWh
                 : 0m;
-
-            decimal adjustedMonthlyUsageKWh = monthlyUsageKWh / GetUsageFactor(dto.Type);
-
+            decimal adjustedMonthlyUsageKWh = monthlyUsageKWh / pricePerKWh;
             decimal dailyUsageKWh = adjustedMonthlyUsageKWh / 30m;
+           
 
             var packages = await _context.Packages.AsNoTracking().ToListAsync();
             var recommendedPackages = new List<PackageRecommendDto>();
@@ -55,12 +55,9 @@ namespace EcoPowerHub.Repositories.Services
                 decimal inverterPowerW = Math.Ceiling(peakPowerKW * 1.3m * 1000m);
 
                 int batteryCount = 0;
-                if (pkg.BatteryCapacity.HasValue && pkg.BatteryCapacity.Value > 0)
+                if (avgMonthlyCost > 3000m && pkg.BatteryCapacity.HasValue && pkg.BatteryCapacity.Value > 0)
                 {
-                    decimal usableBatteryKWh = pkg.BatteryCapacity.Value * 0.8m;
-                    batteryCount = usableBatteryKWh > 0
-                        ? (int)Math.Ceiling((dailyUsageKWh * 2m) / usableBatteryKWh)
-                        : 0;
+                    batteryCount = (int)Math.Ceiling(dailyUsageKWh / pkg.BatteryCapacity.Value);
                 }
 
                 decimal panelCost = requiredPanels * pkg.PanelPrice;
@@ -104,17 +101,6 @@ namespace EcoPowerHub.Repositories.Services
                 Data = recommendedPackages,
                 IsSucceeded = true,
                 Message = "تم جلب الحزم الموصى بها بنجاح."
-            };
-        }
-
-        private decimal GetUsageFactor(PropertyType type)
-        {
-            return type switch
-            {
-                PropertyType.Residential => 1.5m,
-                PropertyType.Commercial => 1.2m,
-                PropertyType.Governmental => 1.0m,
-
             };
         }
     }

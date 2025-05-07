@@ -85,7 +85,7 @@ namespace EcoPowerHub.Data
             });
             modelBuilder.Entity<Package>(entity =>
             {
-                entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
+                //entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
                 entity.Property(p => p.EnergyInWatt).HasColumnType("decimal(12,2)");
                 entity.Property(p => p.Image).IsRequired();
 

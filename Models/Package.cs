@@ -9,7 +9,7 @@ namespace EcoPowerHub.Models
         public  string Name { get; set; }
         public PackageType PackageType { get; set; }
         public string Image { get; set; }
-        public decimal Price { get; set; }
+        //public decimal Price { get; set; }
         public decimal EnergyInWatt  { get; set; }
         public string SolarPanel { get; set; }
         public string Inverter {  get; set; }

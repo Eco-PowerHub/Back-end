@@ -10,8 +10,8 @@ namespace EcoPowerHub.DTO.OrderDto
         public string OrderHistory { get; set; }
 
         public string CompanyName { get; set; }
-        public string UserEmail { get; set; }
+        public string UserId { get; set; }
 
-        public List<CartItemDto> CartItems { get; set; }
+       // public List<CartItemDto> CartItems { get; set; }
     }
 }

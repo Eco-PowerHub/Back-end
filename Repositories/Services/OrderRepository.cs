@@ -61,13 +61,14 @@ namespace EcoPowerHub.Repositories.Services
                     $"- {item.Product.Name} (الكمية: {item.Quantity})"));
 
                 var emailBody = $@"
-                    <h2>تأكيد الطلب - رقم الطلب #{order.Id}</h2>
-                    <p>شكرًا لك على طلبك من EcoPowerHub!</p>
-                    <p><strong>تاريخ الطلب:</strong> {order.OrderDate:yyyy-MM-dd}</p>
-                    <p><strong>تفاصيل المنتجات:</strong><br/>{productsDetails}</p>
-                    <p><strong>السعر الإجمالي للطلب:</strong> {cart.TotalPrice:C}</p>
-                    <p>سنتواصل معك قريبًا لتأكيد عملية الشحن. شكرًا لثقتك بنا!</p>
-                ";
+                                    <h2>تأكيد الطلب - رقم الطلب #{order.Id}</h2>
+                                    <p>شكرًا لك على طلبك من EcoPowerHub!</p>
+                                    <p><strong>تاريخ الطلب:</strong> {order.OrderDate:yyyy-MM-dd}</p>
+                                    <p><strong>تفاصيل المنتجات:</strong><br/>{productsDetails}</p>
+                                    <p><strong>السعر الإجمالي للطلب:</strong> {cart.TotalPrice:N2} EGP</p>
+                                    <p>سنتواصل معك قريبًا لتأكيد عملية الشحن. شكرًا لثقتك بنا!</p>
+                                ";
+
 
                 Console.WriteLine("Preparing to send email...");
                 await _emailService.SendEmailAsync(user.Email, "تأكيد الطلب", emailBody);
@@ -205,7 +206,35 @@ namespace EcoPowerHub.Repositories.Services
                 Data = orderDtos
             };
         }
+        public async Task<ResponseDto> GetOrdersByCompanyName(string companyName)
+        {
+            var orders = await _context.Orders
+                .Include(o => o.Company)
+                .Include(o => o.User)
+                .Include(o => o.Cart)
+                    .ThenInclude(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product)
+                .Where(o => o.Company.Name == companyName)
+                .ToListAsync();
 
+            if (!orders.Any())
+            {
+                return new ResponseDto
+                {
+                    Message = $"No orders found for company '{companyName}'",
+                    IsSucceeded = false,
+                    StatusCode = 404
+                };
+            }
+
+            var orderDtos = _mapper.Map<List<OrderDto>>(orders);
+            return new ResponseDto
+            {
+                IsSucceeded = true,
+                StatusCode = 200,
+                Data = orderDtos
+            };
+        }
 
         public async Task<ResponseDto> GetOrdersByUserId(string userId)
         {

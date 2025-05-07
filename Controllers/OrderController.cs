@@ -1,5 +1,6 @@
 ﻿using EcoPowerHub.DTO.OrderDto;
 using EcoPowerHub.UOW;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -18,6 +19,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET: api/<OrderController>
+        [Authorize(Policy = "Only Admin")]
         [HttpGet("GetAllOrders")]
         public async Task<IActionResult> GetAllOrders()
         {
@@ -30,6 +32,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET api/<OrderController>/5
+        [Authorize(Policy = "Only Admin")]
         [HttpGet("GetOrderById/{id}")]
         public async Task<IActionResult> GetOrderById(int id)
         {
@@ -54,6 +57,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // DELETE api/<OrderController>/5
+        [Authorize(Policy = "Only Admin")]
         [HttpDelete("DeleteOrder/{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
@@ -65,6 +69,7 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
+        [Authorize(Policy = "Only Admin")]
         [HttpGet("GetOrderByCompanyId/{companyId}")]
         public async Task<IActionResult> GetOrderByCompanyId(int companyId)
         {
@@ -76,6 +81,19 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
+        [Authorize(Policy = "Only Admin")]
+        [HttpGet("GetOrderByCompanyName/{companyName}")]
+        public async Task<IActionResult> GetOrderByCompanyName(string companyName)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var response = await _unitOfWork.Orders.GetOrdersByCompanyName(companyName);
+            if (response.IsSucceeded)
+                return Ok(response);
+            return StatusCode(response.StatusCode, new { response.Message });
+        }
+
+        [Authorize(Policy = "Only Admin")]
         [HttpGet("GetOrderByUserId/{userId}")]
         public async Task<IActionResult> GetOrderByUserId(string userId)
         {
