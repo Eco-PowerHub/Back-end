@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EcoPowerHub.Migrations
 {
     [DbContext(typeof(EcoPowerDbContext))]
-    [Migration("20250502190705_EditPackage")]
-    partial class EditPackage
+    [Migration("20250509172650_InitialFiles")]
+    partial class InitialFiles
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -241,6 +241,9 @@ namespace EcoPowerHub.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CartId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("CompanyId")
                         .HasColumnType("integer");
 
@@ -260,6 +263,9 @@ namespace EcoPowerHub.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CartId")
+                        .IsUnique();
 
                     b.HasIndex("CompanyId");
 
@@ -314,9 +320,6 @@ namespace EcoPowerHub.Migrations
 
                     b.Property<decimal>("PanelPrice")
                         .HasColumnType("numeric");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(12,2)");
 
                     b.Property<string>("SolarPanel")
                         .IsRequired()
@@ -478,8 +481,7 @@ namespace EcoPowerHub.Migrations
 
                     b.Property<string>("Location")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("text");
 
                     b.Property<int>("Package")
                         .HasColumnType("integer");
@@ -491,7 +493,6 @@ namespace EcoPowerHub.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<decimal>("SurfaceArea")
-                        .HasMaxLength(50)
                         .HasColumnType("numeric");
 
                     b.Property<float>("TotalYearsGuarantee")
@@ -699,6 +700,12 @@ namespace EcoPowerHub.Migrations
 
             modelBuilder.Entity("EcoPowerHub.Models.Order", b =>
                 {
+                    b.HasOne("EcoPowerHub.Models.Cart", "Cart")
+                        .WithOne("Order")
+                        .HasForeignKey("EcoPowerHub.Models.Order", "CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("EcoPowerHub.Models.Company", "Company")
                         .WithMany("Orders")
                         .HasForeignKey("CompanyId")
@@ -710,6 +717,8 @@ namespace EcoPowerHub.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Cart");
 
                     b.Navigation("Company");
 
@@ -825,6 +834,9 @@ namespace EcoPowerHub.Migrations
             modelBuilder.Entity("EcoPowerHub.Models.Cart", b =>
                 {
                     b.Navigation("CartItems");
+
+                    b.Navigation("Order")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EcoPowerHub.Models.Category", b =>

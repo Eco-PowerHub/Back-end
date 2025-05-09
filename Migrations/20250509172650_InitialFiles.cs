@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EcoPowerHub.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialFiles : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -300,35 +300,6 @@ namespace EcoPowerHub.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Orders",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Price = table.Column<decimal>(type: "numeric(12,2)", nullable: false),
-                    OrderDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    OrderHistory = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    CompanyId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Orders_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Orders_Companies_CompanyId",
-                        column: x => x.CompanyId,
-                        principalTable: "Companies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Packages",
                 columns: table => new
                 {
@@ -337,14 +308,16 @@ namespace EcoPowerHub.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     PackageType = table.Column<int>(type: "integer", nullable: false),
                     Image = table.Column<string>(type: "text", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric(12,2)", nullable: false),
                     EnergyInWatt = table.Column<decimal>(type: "numeric(12,2)", nullable: false),
                     SolarPanel = table.Column<string>(type: "text", nullable: false),
                     Inverter = table.Column<string>(type: "text", nullable: false),
                     Data = table.Column<string>(type: "text", nullable: true),
                     CompanyId = table.Column<int>(type: "integer", nullable: false),
                     BatteryCapacity = table.Column<decimal>(type: "numeric", nullable: true),
-                    BatteryEfficiency = table.Column<decimal>(type: "numeric", nullable: true)
+                    BatteryEfficiency = table.Column<decimal>(type: "numeric", nullable: true),
+                    PanelPrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    InverterPricePerKW = table.Column<decimal>(type: "numeric", nullable: false),
+                    BatteryPrice = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -388,32 +361,68 @@ namespace EcoPowerHub.Migrations
                         column: x => x.CompanyId,
                         principalTable: "Companies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "PackageOrders",
+                name: "Orders",
                 columns: table => new
                 {
-                    OrderId = table.Column<int>(type: "integer", nullable: false),
-                    PackageId = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Price = table.Column<decimal>(type: "numeric(12,2)", nullable: false),
+                    OrderDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    OrderHistory = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    CompanyId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    CartId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Orders_Carts_CartId",
+                        column: x => x.CartId,
+                        principalTable: "Carts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Orders_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserProperties",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Type = table.Column<int>(type: "integer", nullable: false),
-                    Location = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    SurfaceArea = table.Column<decimal>(type: "numeric", maxLength: 50, nullable: false),
+                    Location = table.Column<string>(type: "text", nullable: false),
+                    SurfaceArea = table.Column<decimal>(type: "numeric", nullable: false),
                     PackagePrice = table.Column<decimal>(type: "numeric", nullable: false),
                     Package = table.Column<int>(type: "integer", nullable: false),
+                    PackageId = table.Column<int>(type: "integer", nullable: true),
                     ElectricityUsage = table.Column<decimal[]>(type: "numeric[]", nullable: false),
                     TotalYearsGuarantee = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PackageOrders", x => new { x.PackageId, x.OrderId });
+                    table.PrimaryKey("PK_UserProperties", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PackageOrders_Packages_PackageId",
+                        name: "FK_UserProperties_Packages_PackageId",
                         column: x => x.PackageId,
                         principalTable: "Packages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -501,6 +510,12 @@ namespace EcoPowerHub.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_CartId",
+                table: "Orders",
+                column: "CartId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Orders_CompanyId",
                 table: "Orders",
                 column: "CompanyId");
@@ -529,6 +544,11 @@ namespace EcoPowerHub.Migrations
                 name: "IX_RefreshToken_ApplicationUserId",
                 table: "RefreshToken",
                 column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserProperties_PackageId",
+                table: "UserProperties",
+                column: "PackageId");
         }
 
         /// <inheritdoc />
@@ -556,9 +576,6 @@ namespace EcoPowerHub.Migrations
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "PackageOrders");
-
-            migrationBuilder.DropTable(
                 name: "ProductOreders");
 
             migrationBuilder.DropTable(
@@ -571,25 +588,28 @@ namespace EcoPowerHub.Migrations
                 name: "UserFeedBacks");
 
             migrationBuilder.DropTable(
+                name: "UserProperties");
+
+            migrationBuilder.DropTable(
                 name: "UserSupport");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Carts");
+                name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "Carts");
 
             migrationBuilder.DropTable(
                 name: "Packages");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Companies");
