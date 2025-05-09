@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EcoPowerHub.Data;
+using EcoPowerHub.Helpers;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.GenericRepositories;
 
@@ -21,6 +22,7 @@ namespace EcoPowerHub.UOW
         //    ILogger<AccountRepository> _accountLogger;
         private readonly IEmailService _emailService;
         private readonly EmailTemplateService _emailTemplateService;
+    
 
 
 

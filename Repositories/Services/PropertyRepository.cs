@@ -16,66 +16,72 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
-        public PropertyRepository(EcoPowerDbContext context,IMapper mapper) :base(context) 
+
+
+        public PropertyRepository(EcoPowerDbContext context, IMapper mapper) : base(context)
         {
             _context = context;
             _mapper = mapper;
+
         }
 
-        public async Task<ResponseDto> AddPropertyAndGetRecommendedPackages(UserPropertyDto UserPropertyDto)
+        public async Task<ResponseDto> AddPropertyAndGetRecommendedPackages(UserPropertyDto dto)
         {
-            var addedProperty = _mapper.Map<UserProperty>(UserPropertyDto);
 
-            var packagesLoad = await _context.Packages.AsNoTracking().ToListAsync();
+            decimal avgMonthlyCost = dto.ElectricityUsageAverage;
+            decimal pricePerKWh = 1.95m;
+            decimal monthlyUsageKWh = pricePerKWh > 0
+                ? avgMonthlyCost / pricePerKWh
+                : 0m;
+            decimal adjustedMonthlyUsageKWh = monthlyUsageKWh / pricePerKWh;
+            decimal dailyUsageKWh = adjustedMonthlyUsageKWh / 30m;
 
+
+            var packages = await _context.Packages.AsNoTracking().ToListAsync();
             var recommendedPackages = new List<PackageRecommendDto>();
 
-            foreach (var package in packagesLoad)
+            foreach (var pkg in packages)
             {
-                decimal electricityUsageAverage = UserPropertyDto.ElectricityUsageAverage;
-                decimal roofArea = UserPropertyDto.SurfaceArea;
+                decimal panelKW = pkg.EnergyInWatt / 1000m;
+                decimal sunlightHours = 5.5m;
+                decimal dailyPanelOutputKWh = panelKW * sunlightHours;
+                int requiredPanels = dailyPanelOutputKWh > 0
+                    ? (int)Math.Ceiling(dailyUsageKWh / dailyPanelOutputKWh)
+                    : 0;
 
-               
-                decimal usageFactor = GetUsageFactor(UserPropertyDto.Type);
-                decimal usageWatts = (electricityUsageAverage / usageFactor) * 1000;
-
-                if (roofArea <= 0 || usageWatts <= 0) continue;
-
-                decimal panelEstimatedPower = package.EnergyInWatt;
-                int requiredPanels = CalculateNumberOfPanels(usageWatts, panelEstimatedPower);
-                decimal neededInverterPower = CalculateInverterPower(usageWatts);
-
-                decimal singlePanelArea = 2.0m;
-                decimal totalPanelArea = requiredPanels * singlePanelArea;
-
-                if (totalPanelArea > roofArea)
+                decimal totalPanelArea = requiredPanels * 2.0m;
+                if (totalPanelArea > dto.SurfaceArea)
                     continue;
 
+                decimal peakDayUsageKWh = dailyUsageKWh * 0.4m;
+                decimal peakPowerKW = peakDayUsageKWh / sunlightHours;
+                decimal inverterPowerW = Math.Ceiling(peakPowerKW * 1.3m * 1000m);
+
                 int batteryCount = 0;
-                if (package.BatteryCapacity.HasValue && package.BatteryCapacity.Value > 0)
+                if (avgMonthlyCost > 3000m && pkg.BatteryCapacity.HasValue && pkg.BatteryCapacity.Value > 0)
                 {
-                    batteryCount = CalculateBatteryCount(usageWatts, package.BatteryCapacity.Value);
+                    batteryCount = (int)Math.Ceiling(dailyUsageKWh / pkg.BatteryCapacity.Value);
                 }
 
-                decimal totalPackagePrice = CalculateTotalPackagePrice(requiredPanels, neededInverterPower, batteryCount, package);
+                decimal panelCost = requiredPanels * pkg.PanelPrice;
+                decimal inverterCost = (inverterPowerW / 1000m) * pkg.InverterPricePerKW;
+                decimal batteryCost = batteryCount * pkg.BatteryPrice;
+                decimal totalPrice = panelCost + inverterCost + batteryCost;
 
-
-                var recommend = new PackageRecommendDto
+                recommendedPackages.Add(new PackageRecommendDto
                 {
-                    PackageId = package.Id,
-                    PackageName = package.Name,
-                    PackagePrice = totalPackagePrice,
-                    TotalPrice = totalPackagePrice,
+                    PackageId = pkg.Id,
+                    PackageName = pkg.Name,
                     RequiredPanels = requiredPanels,
                     RequiredBatteries = batteryCount,
-                    PanelModel = package.SolarPanel,
-                    InverterModel = package.Inverter,
-                    ElectricityUsage = UserPropertyDto.ElectricityUsage,
-                    TotalYearsGuarantee = UserPropertyDto.TotalYearsGuarantee
-                };
-                var roiYears = recommend.ROIYears;
-                var savingCost = recommend.SavingCost;
-                recommendedPackages.Add(recommend);
+                    PackagePrice = totalPrice,
+                    TotalPrice = totalPrice,
+                    PanelModel = pkg.SolarPanel,
+                    InverterModel = pkg.Inverter,
+                    SurfaceArea = dto.SurfaceArea,
+                    ElectricityUsage = dto.ElectricityUsage,
+                    TotalYearsGuarantee = dto.TotalYearsGuarantee
+                });
             }
 
             if (!recommendedPackages.Any())
@@ -88,67 +94,18 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
 
-            addedProperty.PackageId = recommendedPackages.First().PackageId;
-            _context.UserProperties.Add(addedProperty);
+            var entity = _mapper.Map<UserProperty>(dto);
+            entity.PackageId = recommendedPackages.First().PackageId;
+            _context.UserProperties.Add(entity);
             await _context.SaveChangesAsync();
 
             return new ResponseDto
             {
                 Data = recommendedPackages,
                 IsSucceeded = true,
-                Message = "Recommended packages fetched successfully."
+                Message = "تم جلب الحزم الموصى بها بنجاح."
             };
-        }
-
-        
-        private decimal GetUsageFactor(PropertyType type)
-        {
-            return type switch
-            {
-                PropertyType.Residential => 1.5m,
-                PropertyType.Commercial => 1.2m,
-                PropertyType.Governmental => 1.0m,
-               
-            };
-        }
-        private decimal CalculateInverterPower(decimal monthlyUsageInWatts)
-        {
-            var sunlightHours = 5.5m;
-            var dailyUsage = monthlyUsageInWatts / 30;
-            var customerPowerConsumption = dailyUsage * sunlightHours;
-            var inverterCapacity = customerPowerConsumption * 1.3m;
-            return Math.Ceiling(inverterCapacity / 1000) * 1000;
-        }
-
-        private int CalculateBatteryCount(decimal monthlyUsageInWatts, decimal batteryCapacity)
-        {
-            var dailyUsage = monthlyUsageInWatts / 30;
-            var totalBatteryRequired = dailyUsage / batteryCapacity;
-            return (int)Math.Ceiling(totalBatteryRequired);
-        }
-
-        private int CalculateNumberOfPanels(decimal monthlyUsageInWatts, decimal panelCapacityWatts)
-        {
-            var sunlightHours = 5.5m;
-            var dailyPanelOutput = panelCapacityWatts * sunlightHours;
-            var dailyUsage = monthlyUsageInWatts / 30;
-            return (int)Math.Ceiling(dailyUsage / dailyPanelOutput);
-        }
-
-        private decimal CalculateTotalPackagePrice(int requiredPanels, decimal inverterWatts, int batteryCount, Package package)
-        {
-        //    decimal panelCost = requiredPanels * package.PanelPrice;
-        //    decimal inverterCost = inverterKW * package.InverterPricePerKW;
-        //    decimal batteryCost = batteryCount * package.BatteryPrice;
-         decimal panelCost = requiredPanels * package.PanelPrice;
-
-        // تعديل هنا: تحويل الواط إلى كيلوواط قبل الضرب
-        decimal inverterKW = inverterWatts / 1000m;
-        decimal inverterCost = inverterKW * package.InverterPricePerKW;
-
-        decimal batteryCost = batteryCount * package.BatteryPrice;
-
-            return panelCost + inverterCost + batteryCost;
         }
     }
-}
+    }
+   

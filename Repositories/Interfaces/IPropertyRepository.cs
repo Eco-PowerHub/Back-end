@@ -13,7 +13,7 @@ namespace EcoPowerHub.Repositories.Interfaces
 
         //Task<ResponseDto> GetRecommendedPackages();
 
-        Task<ResponseDto> AddPropertyAndGetRecommendedPackages(UserPropertyDto UserPropertyDto);
+        Task<ResponseDto> AddPropertyAndGetRecommendedPackages(UserPropertyDto dto);
 
     }
 }

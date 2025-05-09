@@ -22,7 +22,7 @@ namespace EcoPowerHub.Controllers
             var response = await _unitOfWork.Properties.AddPropertyAndGetRecommendedPackages(packageOrderDto);
             if (response.IsSucceeded)
                 return Ok(response);
-            return StatusCode(response.StatusCode, response.Data);
+            return StatusCode(response.StatusCode , new {response.Message} );
         }
 
     }

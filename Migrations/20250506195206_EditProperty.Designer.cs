@@ -3,6 +3,7 @@ using System;
 using EcoPowerHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EcoPowerHub.Migrations
 {
     [DbContext(typeof(EcoPowerDbContext))]
-    partial class EcoPowerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250506195206_EditProperty")]
+    partial class EditProperty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -318,6 +321,9 @@ namespace EcoPowerHub.Migrations
                     b.Property<decimal>("PanelPrice")
                         .HasColumnType("numeric");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(12,2)");
+
                     b.Property<string>("SolarPanel")
                         .IsRequired()
                         .HasColumnType("text");
@@ -480,20 +486,29 @@ namespace EcoPowerHub.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Package")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("PackageId")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("PackagePrice")
                         .HasColumnType("numeric");
 
+                    b.Property<int>("PackageType")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("PricePerYear")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ROIYears")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("SavingCost")
+                        .HasColumnType("numeric");
+
                     b.Property<decimal>("SurfaceArea")
                         .HasColumnType("numeric");
 
-                    b.Property<float>("TotalYearsGuarantee")
-                        .HasColumnType("real");
+                    b.Property<decimal>("TotalYearsGuarantee")
+                        .HasColumnType("numeric");
 
                     b.Property<int>("Type")
                         .HasColumnType("integer");
@@ -761,11 +776,11 @@ namespace EcoPowerHub.Migrations
 
             modelBuilder.Entity("EcoPowerHub.Models.UserProperty", b =>
                 {
-                    b.HasOne("EcoPowerHub.Models.Package", "package")
+                    b.HasOne("EcoPowerHub.Models.Package", "Package")
                         .WithMany()
                         .HasForeignKey("PackageId");
 
-                    b.Navigation("package");
+                    b.Navigation("Package");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

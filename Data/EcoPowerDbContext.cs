@@ -79,7 +79,7 @@ namespace EcoPowerHub.Data
             });
             modelBuilder.Entity<Package>(entity =>
             {
-                entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
+               // entity.Property(p => p.Price).HasColumnType("decimal(12,2)").IsRequired();
                 entity.Property(p => p.EnergyInWatt).HasColumnType("decimal(12,2)");
                 entity.Property(p => p.Image).IsRequired();
 
@@ -89,17 +89,17 @@ namespace EcoPowerHub.Data
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
-            modelBuilder.Entity<UserProperty>(entity =>
-            {
-                entity.Property(c => c.SurfaceArea).HasMaxLength(50).IsRequired();
-                entity.Property(c => c.Location).HasMaxLength(255).IsRequired();
-                // entity.Property(po => po.PackagePrice).HasColumnType("decimal(12,2)");
-                entity.Property(p => p.TotalYearsGuarantee).IsRequired();
-                entity.Ignore(p => p.SavingCost);
-                entity.Ignore(p => p.ROIYears);
-                entity.Ignore(p => p.PricePerYear);
-                entity.Ignore(p => p.ElectricityUsageAverage);
-            });
+            //modelBuilder.Entity<UserProperty>(entity =>
+            //{
+            //    entity.Property(c => c.SurfaceArea).HasMaxLength(50).IsRequired();
+            //    entity.Property(c => c.Location).HasMaxLength(255).IsRequired();
+            //    // entity.Property(po => po.PackagePrice).HasColumnType("decimal(12,2)");
+            //    entity.Property(p => p.TotalYearsGuarantee).IsRequired();
+            //    entity.Ignore(p => p.SavingCost);
+            //    entity.Ignore(p => p.ROIYears);
+            //    entity.Ignore(p => p.PricePerYear);
+            //    entity.Ignore(p => p.ElectricityUsageAverage);
+            //});
 
 
             modelBuilder.Entity<Product>(entity =>

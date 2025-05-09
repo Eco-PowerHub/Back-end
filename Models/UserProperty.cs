@@ -1,16 +1,17 @@
 ﻿using EcoPowerHub.Helpers;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace EcoPowerHub.Models
 {
-    public class UserProperty //Proprty
+    public class UserProperty // Property
     {
         public int Id { get; set; }
         public PropertyType Type { get; set; }
         public string Location { get; set; }
         public decimal SurfaceArea { get; set; }
         public decimal PackagePrice { get; set; }
-        public PackageType Package {  get; set; }
+        public PackageType Package { get; set; }
         public int? PackageId { get; set; }
         [ForeignKey("PackageId")]
         public Package? package { get; set; }
@@ -23,25 +24,5 @@ namespace EcoPowerHub.Models
         public float TotalYearsGuarantee { get; set; }
 
         public decimal SavingCost => TotalYearsGuarantee > ROIYears ? PricePerYear * ((decimal)TotalYearsGuarantee - (decimal)ROIYears) : 0;
-
-        //public void InputBills()
-        //{
-        //    Console.WriteLine("Enter the amount for last 6 months:");
-        //    for (int i = 0; i < ElectricityUsage.Length; i++)
-        //    {
-        //        decimal amount;
-        //        while (true)
-        //        {
-        //            Console.Write($"Month {i + 1}: ");
-        //            if (decimal.TryParse(Console.ReadLine(), out amount) && amount >= 0)
-        //            {
-        //                ElectricityUsage[i] = amount;
-        //                break;
-        //            }
-        //            Console.WriteLine("Please enter a valid positive number.");
-        //        }
-        //    }
-        //}
-
     }
 }
