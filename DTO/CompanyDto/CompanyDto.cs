@@ -16,8 +16,7 @@ namespace EcoPowerHub.DTO.CompanyDto
         public string PhoneNumber { get; set; }
         public string Image { get; set; }
         public List<ProductDto>? Products { get; set; }
-        //public List<PackageDto>? Packages { get; set; } 
-        public List<OffGridPackageDto> OffGridPackages { get; set; }
-        public List<OnGridPackageDto> OnGridPackages { get; set; }
+      //  public List<PackageDto>? Packages { get; set; } 
+
     }
 }

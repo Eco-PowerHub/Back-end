@@ -2,7 +2,7 @@
 {
     public enum PackageType
     {
-        WithBattery = 1, //OFFGrid
-        WithoutBattery = 2 //OnGrid
+        OffGrid  = 1, //withbattary
+        OnGrid = 2 //WithoutBattery
     }
 }

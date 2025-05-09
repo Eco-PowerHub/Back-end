@@ -2,6 +2,7 @@
 using EcoPowerHub.DTO;
 using EcoPowerHub.DTO.CartDto;
 using EcoPowerHub.DTO.CompanyDto;
+using EcoPowerHub.DTO.OrderDto;
 using EcoPowerHub.DTO.PackageDto;
 using EcoPowerHub.DTO.UserDto;
 using EcoPowerHub.DTO.UserDto.PasswordSettingDto;
@@ -37,13 +38,15 @@ namespace EcoPowerHub.AutoMapper
             CreateMap<CreateUserSupportDto, UserSupport>();
             CreateMap<UserSupport, GetUserSupportDto>();
             CreateMap<AddResponseDto, UserSupport>();
-            CreateMap<PackageOrderDto, PackageOrder>().ReverseMap();
-            CreateMap<OffGridPackageDto, OffGridPackage>().ReverseMap();  
-            CreateMap<OnGridPackageDto, OffGridPackage>().ReverseMap();
+            CreateMap<UserPropertyDto, UserProperty>().ReverseMap();
+            
             CreateMap<Cart,CartDto>().ReverseMap();
             CreateMap<CartItem,CartItemDto>().ReverseMap();
 
-
+            CreateMap<Package,PackageDto>().ReverseMap();
+            CreateMap<Order, OrderDto>()
+          .ForMember(d => d.CompanyName, o => o.MapFrom(s => s.Company.Name))
+          .ForMember(d => d.UserId, o => o.MapFrom(s => s.UserId));
 
         }
     }

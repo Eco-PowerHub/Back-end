@@ -39,12 +39,16 @@ builder.Services.AddHttpContextAccessor();
             builder.Services.AddSingleton<EmailTemplateService>(provider =>
             new EmailTemplateService(Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "WelcomeEmailTemplate.html")));
             //add ConnectionString 
-            builder.Services.AddDbContext<EcoPowerDbContext>(options =>
-                 options.UseMySql(
-                 builder.Configuration.GetConnectionString("DefaultConnection"),
-                 new MySqlServerVersion(new Version(8, 0, 41)) 
-                ));
+            //builder.Services.AddDbContext<EcoPowerDbContext>(options =>
+            //     options.UseMySql(
+            //     builder.Configuration.GetConnectionString("DefaultConnection"),
+            //     new MySqlServerVersion(new Version(8, 0, 41)) 
+            //    ));
 
+            //builder.Services.AddDbContext<EcoPowerDbContext>(options =>
+            //options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddDbContext<EcoPowerDbContext>(options =>
+           options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             //add identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
