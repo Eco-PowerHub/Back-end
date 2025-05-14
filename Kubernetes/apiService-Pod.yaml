@@ -13,18 +13,18 @@ spec:
         type: DirectoryOrCreate
   containers:
     - name: eco-backend
-      image: khaledmahmoud7/eco-back:22
+      image: eco-backend:latest
       imagePullPolicy: Never
       env:
         - name: ASPNETCORE_HTTP_PORTS
           value: "80"
       resources:
         requests:
-          memory: "64Mi"
-          cpu: "250m"
-        limits:
-          memory: "128Mi"
+          memory: "256Mi"
           cpu: "500m"
+        limits:
+          memory: "512Mi"
+          cpu: "750m"
       volumeMounts:
         - name: eco-volume
           mountPath: /tmp/ecoVolume
@@ -36,8 +36,21 @@ spec:
       #     port: 80
       #   initialDelaySeconds: 30
       #   periodSeconds: 10
-
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eco-backend-service
+spec:
+  selector:
+    app: eco-backend
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: ClusterIP
+      # nodePort: 30090
+      # type: NodePort
 
 
 
