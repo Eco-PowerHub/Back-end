@@ -13,22 +13,25 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly EcoPowerDbContext _context;
 
-        public UserFeedbackRepository(EcoPowerDbContext context) : base(context) 
+        #region Constructor
+        public UserFeedbackRepository(EcoPowerDbContext context) : base(context)
         {
             _context = context;
         }
 
+        #endregion
+        #region Service Implementation
         public async Task<ResponseDto> GetAllFeedbacksAsync()
         {
             var feedbacks = await _context.UserFeedBacks.AsNoTracking().ToListAsync();
-            if(!feedbacks.Any() || feedbacks==null)
+            if (!feedbacks.Any() || feedbacks == null)
             {
                 return new ResponseDto
                 {
-                    Message= "No Feedbacks found!",
-                    IsSucceeded=false,
-                    StatusCode=(int)HttpStatusCode.NotFound,
-                    Data= new List<UserFeedBack>()
+                    Message = "No Feedbacks found!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    Data = new List<UserFeedBack>()
                 };
             }
             return new ResponseDto
@@ -90,7 +93,7 @@ namespace EcoPowerHub.Repositories.Services
                 Data = feedback
             };
         }
-      
+
         public async Task<ResponseDto> DeleteFeedbackAsync(int feedbackId)
         {
 
@@ -121,7 +124,8 @@ namespace EcoPowerHub.Repositories.Services
                 IsSucceeded = true,
                 StatusCode = (int)HttpStatusCode.OK
             };
-        }
+        } 
+        #endregion
 
     }
 }

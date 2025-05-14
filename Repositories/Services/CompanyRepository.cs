@@ -15,15 +15,18 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
-        public CompanyRepository(EcoPowerDbContext context , IMapper mapper) :base(context)
+        #region Constructor
+        public CompanyRepository(EcoPowerDbContext context, IMapper mapper) : base(context)
         {
             _context = context;
             _mapper = mapper;
         }
+        #endregion
+        #region Service Implementation
         public async Task<ResponseDto> GetAllCompany()
         {
             List<Company> companies = await _context.Companies.AsNoTracking()
-                                                               .Include(p=>p.Products)
+                                                               .Include(p => p.Products)
                                                                .ToListAsync();
             if (companies.Count == 0)
             {
@@ -87,8 +90,8 @@ namespace EcoPowerHub.Repositories.Services
         }
         public async Task<ResponseDto> AddCompany(AddCompanyDto company)
         {
-          bool newCompany = await _context.Companies.AnyAsync(c=>c.Name == company.Name);
-            if(newCompany)
+            bool newCompany = await _context.Companies.AnyAsync(c => c.Name == company.Name);
+            if (newCompany)
             {
                 return new ResponseDto
                 {
@@ -103,10 +106,10 @@ namespace EcoPowerHub.Repositories.Services
             var addedCompany = _mapper.Map<CompanyDto>(companyDto);
             return new ResponseDto
             {
-               Message = "Company added successfully",
-               IsSucceeded = true,
-               StatusCode = (int)HttpStatusCode.Created,
-               Data = addedCompany
+                Message = "Company added successfully",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.Created,
+                Data = addedCompany
             };
         }
 
@@ -122,7 +125,7 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.BadRequest
                 };
             }
-             _context.Companies.Remove(company);
+            _context.Companies.Remove(company);
             await _context.SaveChangesAsync();
             return new ResponseDto
             {
@@ -131,7 +134,7 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = (int)HttpStatusCode.OK
             };
         }
-       
+
         //public async Task<ResponseDto> GetCompanyPackages(string companyName)
         //{
 
@@ -148,7 +151,7 @@ namespace EcoPowerHub.Repositories.Services
         //    var packages = await _context.Packages.Where(p => p.CompanyId == company.Id)
         //                                          .AsNoTracking()
         //                                          .ToListAsync();
-               
+
         //    if(packages.Count == 0)
         //    {
         //        return new ResponseDto
@@ -183,7 +186,7 @@ namespace EcoPowerHub.Repositories.Services
             var products = await _context.Products.Where(p => p.CompanyId == company.Id)
                                                   .AsNoTracking()
                                                   .ToListAsync();
-            if(products.Count == 0)
+            if (products.Count == 0)
             {
                 return new ResponseDto
                 {
@@ -204,15 +207,15 @@ namespace EcoPowerHub.Repositories.Services
 
         public async Task<ResponseDto> UpdateCompany(int id, CompanyDto company)
         {
-        //    if (company.id != id)
-        //    {
-        //        return new ResponseDto
-        //        {
-        //            Message = "Company ID in URL and body do not match!",
-        //            IsSucceeded = false,
-        //            StatusCode = (int)HttpStatusCode.BadRequest
-        //        };
-        //    }
+            //    if (company.id != id)
+            //    {
+            //        return new ResponseDto
+            //        {
+            //            Message = "Company ID in URL and body do not match!",
+            //            IsSucceeded = false,
+            //            StatusCode = (int)HttpStatusCode.BadRequest
+            //        };
+            //    }
             var updatedCompany = await _context.Companies.FindAsync(id);
             if (updatedCompany is null)
             {
@@ -220,7 +223,7 @@ namespace EcoPowerHub.Repositories.Services
                 {
                     Message = "Company not found!",
                     IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound 
+                    StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
             if (await _context.Companies.AnyAsync(c => c.Name == company.Name && c.Id != id))
@@ -245,7 +248,8 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = (int)HttpStatusCode.OK,
                 Data = updatedCompanyDto
             };
-        }
+        } 
+        #endregion
 
     }
     

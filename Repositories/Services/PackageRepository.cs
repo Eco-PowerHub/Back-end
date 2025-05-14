@@ -16,15 +16,18 @@ namespace EcoPowerHub.Repositories.Services
         private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
 
+        #region Constructor
         public PackageRepository(EcoPowerDbContext context, IMapper mapper) : base(context)
         {
             _mapper = mapper;
             _context = context;
         }
+        #endregion
+        #region Service Implementation
         public async Task<ResponseDto> GetAllPackagesAsync()
         {
             var packages = await _context.Packages.AsNoTracking().ToListAsync();
-            if (packages.Count == 0 )
+            if (packages.Count == 0)
             {
                 return new ResponseDto
                 {
@@ -131,7 +134,7 @@ namespace EcoPowerHub.Repositories.Services
         }
 
 
-       
+
         public async Task<ResponseDto> DeletePackageAsync(int id)
         {
             if (id <= 0)
@@ -184,22 +187,23 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
-            _mapper.Map(packageDto, existingPackage);  
+            _mapper.Map(packageDto, existingPackage);
 
 
             _context.Packages.Update(existingPackage);
             await _context.SaveChangesAsync();
 
-            
+
             var dto = _mapper.Map<PackageDto>(existingPackage);
 
             return new ResponseDto
             {
                 Message = "Package updated successfully",
                 IsSucceeded = true,
-                StatusCode = (int)HttpStatusCode.OK,  
+                StatusCode = (int)HttpStatusCode.OK,
                 Data = dto
             };
-        }
+        } 
+        #endregion
     }
 }

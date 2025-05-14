@@ -14,12 +14,16 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;
-        public TokenService(IConfiguration configuration,UserManager<ApplicationUser> userManager)
+
+        #region Constructor
+        public TokenService(IConfiguration configuration, UserManager<ApplicationUser> userManager)
         {
             _configuration = configuration;
             _userManager = userManager;
         }
+        #endregion
 
+        #region Service Implementation
         public RefreshToken GeneraterefreshToken()
         {
             byte[] randomNum = new byte[32];
@@ -68,6 +72,7 @@ namespace EcoPowerHub.Repositories.Services
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+        } 
+        #endregion
     }
 }

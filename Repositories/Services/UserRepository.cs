@@ -52,11 +52,12 @@ namespace EcoPowerHub.Repositories.Services
         //        IsSucceeded = true
         //    };
         //}
+        #region Service Implementation
         public async Task<ResponseDto> GetAllUsersAsync()
         {
             try
             {
-              
+
                 var users = await _context.Users
                     .Select(u => new
                     {
@@ -96,7 +97,8 @@ namespace EcoPowerHub.Repositories.Services
                     Message = $"Error retrieving users: {ex.Message}",
                     IsSucceeded = false
                 };
-            }
+            } 
+            #endregion
         }
     }
 }

@@ -14,13 +14,17 @@ namespace EcoPowerHub.Repositories.Services
         private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
         private readonly IEmailService _emailService;
+
+        #region Constructor
         public OrderRepository(EcoPowerDbContext context, IMapper mapper, IEmailService emailService) : base(context)
         {
             _context = context;
             _mapper = mapper;
             _emailService = emailService;
-        }
+        } 
+        #endregion
 
+        #region Service Implementation
 
         public async Task<ResponseDto> Checkout(CreateOrderDto dto)
         {
@@ -264,6 +268,7 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = 200,
                 Data = orderDtos
             };
-        }
+        } 
+        #endregion
     }
     }

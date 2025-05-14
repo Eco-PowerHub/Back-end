@@ -14,16 +14,20 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
+
+        #region Constructor
         public SupportRepository(EcoPowerDbContext context, IMapper mapper) : base(context)
         {
             _context = context;
             _mapper = mapper;
-        }
+        } 
+        #endregion
 
 
+        #region Service Implementation
         public async Task<ResponseDto> AddSupportAsync(CreateUserSupportDto supportDto)
         {
-            if(supportDto == null)
+            if (supportDto == null)
             {
                 return new ResponseDto
                 {
@@ -32,19 +36,19 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.BadRequest,
                 };
             }
-            var support =  _mapper.Map<UserSupport>(supportDto);
+            var support = _mapper.Map<UserSupport>(supportDto);
             support.CreatedAt = DateTime.UtcNow;
             await _context.UserSupport.AddAsync(support);
             support.Response ??= "No Response yet"; // تعيين قيمة افتراضية
 
             await _context.SaveChangesAsync();
-            var responseDto= _mapper.Map<GetUserSupportDto>(support);
+            var responseDto = _mapper.Map<GetUserSupportDto>(support);
             return new ResponseDto
             {
                 Message = "Support request send successfully! ",
                 IsSucceeded = true,
                 StatusCode = (int)HttpStatusCode.OK,
-                Data= responseDto
+                Data = responseDto
             };
         }
 
@@ -59,8 +63,8 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.BadRequest,
                 };
             }
-            var support= await _context.UserSupport.FindAsync(id);
-            if(support == null)
+            var support = await _context.UserSupport.FindAsync(id);
+            if (support == null)
             {
                 return new ResponseDto
                 {
@@ -83,17 +87,17 @@ namespace EcoPowerHub.Repositories.Services
         public async Task<ResponseDto> GetAllSupportsAsync()
         {
             var supports = await _context.UserSupport.AsNoTracking().ToListAsync();
-            if(supports == null|| !supports.Any())
+            if (!supports.Any())
             {
                 return new ResponseDto
                 {
                     Message = "No support requests found! ",
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.NotFound,
-                    Data= new List<GetUserSupportDto>()
+                    Data = new List<GetUserSupportDto>()
                 };
             }
-            var responseDto = _mapper.Map<List<GetUserSupportDto>>(supports);
+            var responseDto = _mapper.Map<List<CreateUserSupportDto>>(supports);
             return new ResponseDto
             {
                 Message = "Support requests retrieved successfully! ",
@@ -168,5 +172,6 @@ namespace EcoPowerHub.Repositories.Services
         //        Data = updatedSupportDto
         //    };
         //}
-    }
+    } 
+    #endregion
 }

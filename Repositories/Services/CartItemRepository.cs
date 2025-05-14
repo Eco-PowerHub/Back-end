@@ -14,13 +14,17 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
-       
+
+        #region Constructor
         public CartItemRepository(EcoPowerDbContext context, IMapper mapper) : base(context)
         {
             _context = context;
             _mapper = mapper;
         }
 
+        #endregion
+
+        #region Services implementation
         public async Task<ResponseDto> GetAllItems()
         {
             List<CartItem> cartItems = await _context.CartItems.AsNoTracking().Include(p => p.Product).ToListAsync();
@@ -133,6 +137,7 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-       
+        #endregion
+
     }
 }

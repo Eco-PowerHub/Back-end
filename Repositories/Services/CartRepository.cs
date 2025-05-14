@@ -15,13 +15,17 @@ namespace EcoPowerHub.Repositories.Services
         private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _usermanager;
-        public CartRepository(EcoPowerDbContext context,IMapper mapper,UserManager<ApplicationUser> userManager) :base(context)
+        #region Constructor
+        public CartRepository(EcoPowerDbContext context, IMapper mapper, UserManager<ApplicationUser> userManager) : base(context)
         {
             _context = context;
             _mapper = mapper;
             _usermanager = userManager;
         }
 
+        #endregion
+
+        #region Service Implementation
         public async Task<ResponseDto> GetAllCart()
         {
             List<Cart> carts = await _context.Carts.AsNoTracking().ToListAsync();
@@ -114,6 +118,7 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = 200,
                 Data = cartDto
             };
-        }
+        } 
+        #endregion
     }
 }

@@ -18,12 +18,16 @@ namespace EcoPowerHub.Repositories.Services
         private readonly IMapper _mapper;
 
 
+        #region Constructor
         public PropertyRepository(EcoPowerDbContext context, IMapper mapper) : base(context)
         {
             _context = context;
             _mapper = mapper;
 
         }
+
+        #endregion
+        #region Service Implementation
 
         public async Task<ResponseDto> AddPropertyAndGetRecommendedPackages(UserPropertyDto dto)
         {
@@ -105,7 +109,8 @@ namespace EcoPowerHub.Repositories.Services
                 IsSucceeded = true,
                 Message = "تم جلب الحزم الموصى بها بنجاح."
             };
-        }
+        } 
+        #endregion
     }
     }
    

@@ -30,10 +30,11 @@ namespace EcoPowerHub.Repositories.Services
         private readonly EmailTemplateService _emailTemplateService;
 
 
+        #region Constructor
         public AccountRepository(EcoPowerDbContext context, UserManager<ApplicationUser> userManager
-           , IMapper mapper,
-            ITokenService tokenService,//ILogger<AccountRepository> logger ,
-            IEmailService emailService, EmailTemplateService emailTemplateService) : base(context)
+         , IMapper mapper,
+          ITokenService tokenService,//ILogger<AccountRepository> logger ,
+          IEmailService emailService, EmailTemplateService emailTemplateService) : base(context)
         {
             _context = context;
             _userManager = userManager;
@@ -43,6 +44,9 @@ namespace EcoPowerHub.Repositories.Services
             _emailService = emailService;
             _emailTemplateService = emailTemplateService;
         }
+        #endregion
+
+        #region Services Implementation
         public async Task<ResponseDto> RegisterAsync(RegisterDto registerDto)
         {
             if (await _userManager.FindByEmailAsync(registerDto.Email) is not null
@@ -57,7 +61,7 @@ namespace EcoPowerHub.Repositories.Services
             user.OTPExpiry = otpExpiry;
             user.IsConfirmed = false;
             var result = await _userManager.CreateAsync(user, registerDto.Password);
-            if(!result.Succeeded)
+            if (!result.Succeeded)
             {
                 var errors = string.Empty;
                 foreach (var error in result.Errors)
@@ -69,8 +73,8 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.BadRequest
                 };
             }
-            await _userManager.AddToRoleAsync(user,registerDto.Role.ToString());
-         //   var token = _tokenService.GenerateToken(user);
+            await _userManager.AddToRoleAsync(user, registerDto.Role.ToString());
+            //   var token = _tokenService.GenerateToken(user);
             await _emailService.SendEmailAsync(registerDto.Email, "OTP Email Verfication", $"Hi {registerDto.UserName}" +
                 $",Use the code below to verify your Eco PowerHub account. Your OTP is {otp}");
             return new ResponseDto
@@ -79,14 +83,14 @@ namespace EcoPowerHub.Repositories.Services
                 IsSucceeded = true,
                 IsConfirmed = false,
                 StatusCode = (int)HttpStatusCode.OK,
-                Data = new 
+                Data = new
                 {
                     otpExpiry = otpExpiry,
                     UserName = user.UserName,
                 }
             };
         }
-        
+
         public async Task<ResponseDto> LoginAsync(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
@@ -158,7 +162,7 @@ namespace EcoPowerHub.Repositories.Services
         public async Task<ResponseDto> ChangePasswordAsync(ChangePasswordDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
-            if (user is null || !await _userManager.CheckPasswordAsync(user ,dto.currentPassword) )
+            if (user is null || !await _userManager.CheckPasswordAsync(user, dto.currentPassword))
                 return new ResponseDto
                 {
                     Message = "Invalid email or password.",
@@ -207,11 +211,12 @@ namespace EcoPowerHub.Repositories.Services
             }
             var encodedToken = WebUtility.UrlEncode(Convert.ToBase64String(Encoding.UTF8.GetBytes(token)));
             // Generate reset link
-          //  var resetLink = $"http://157.175.182.159/forgetpassword?email={WebUtility.UrlEncode(dto.Email)}&token={encodedToken}";
+            //  var resetLink = $"http://157.175.182.159/forgetpassword?email={WebUtility.UrlEncode(dto.Email)}&token={encodedToken}";
+
             var resetLink = $"http://157.175.182.159/resetpassword?email={WebUtility.UrlEncode(dto.Email)}&token={encodedToken}";
 
 
-            Console.WriteLine($"Generated Reset Link: {resetLink}"); 
+            Console.WriteLine($"Generated Reset Link: {resetLink}");
             var emailBody = _emailTemplateService.ResetPasswordEmail(dto.Email, resetLink);
             await _emailService.SendEmailAsync(user.Email!, "Reset your password on Eco Power Hub", emailBody);
 
@@ -338,7 +343,7 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = 400,
                 };
             }
-             var token = await _tokenService.GenerateToken(user);
+            var token = await _tokenService.GenerateToken(user);
             var refreshToken = _tokenService.GeneraterefreshToken();
             user.RefreshTokens.Add(refreshToken);
             await _userManager.UpdateAsync(user);
@@ -389,7 +394,7 @@ namespace EcoPowerHub.Repositories.Services
         {
             //check for user 
             var user = await _userManager.FindByEmailAsync(verifyOTP.Email);
-            if(user is null)
+            if (user is null)
                 return new ResponseDto
                 {
                     Message = "User not found!",
@@ -412,9 +417,9 @@ namespace EcoPowerHub.Repositories.Services
 
             user.IsConfirmed = true;
             user.OTP = null;
-            user.OTPExpiry = null;  
+            user.OTPExpiry = null;
             await _userManager.UpdateAsync(user);
-          
+
             var emailBody = _emailTemplateService.RenderWelcomeEmail(
                      user.UserName!,
                      user.Email!,
@@ -455,6 +460,7 @@ namespace EcoPowerHub.Repositories.Services
             return true;
         }
 
-       
+        #endregion
+
     }
 }

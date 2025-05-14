@@ -10,12 +10,15 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly Cloudinary _cloudinary;
         private readonly ILogger<CloudinaryService> _logger;
+        #region Constructor
         public CloudinaryService(Cloudinary cloudinary, ILogger<CloudinaryService> logger)
         {
             _cloudinary = cloudinary;
             _logger = logger;
         }
+        #endregion
 
+        #region Service Implementation
         public async Task<string> UploadImageAsync(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -47,6 +50,7 @@ namespace EcoPowerHub.Repositories.Services
             var deletionParams = new DeletionParams(publicId);
             var result = await _cloudinary.DestroyAsync(deletionParams);
             return result.Result == "ok";
-        }
+        } 
+        #endregion
     }
 }

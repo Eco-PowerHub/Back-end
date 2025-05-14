@@ -13,17 +13,22 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
+
+        #region Constructor
         public CategoryRepository(EcoPowerDbContext context, IMapper mapper) : base(context)
         {
             _context = context;
             _mapper = mapper;
         }
 
+        #endregion
+
+        #region Service Implementation
         public async Task<ResponseDto> GetAllCategories()
         {
-           
-           var categories = await _context.Categories.AsNoTracking().Include(p=>p.Products).ToListAsync();
-           if(categories.Count == 0)
+
+            var categories = await _context.Categories.AsNoTracking().Include(p => p.Products).ToListAsync();
+            if (categories.Count == 0)
             {
                 return new ResponseDto
                 {
@@ -33,7 +38,7 @@ namespace EcoPowerHub.Repositories.Services
                     Data = new List<Category>()
                 };
             }
-           var categoryDtos = _mapper.Map<IEnumerable<CategoryDto>>(categories);
+            var categoryDtos = _mapper.Map<IEnumerable<CategoryDto>>(categories);
             return new ResponseDto
             {
                 Message = "Categories retrieved successfully",
@@ -103,13 +108,13 @@ namespace EcoPowerHub.Repositories.Services
                 Message = "Category retrieved successfully.",
                 IsSucceeded = true,
                 StatusCode = 200,
-                Data = categoryDto  
+                Data = categoryDto
             };
         }
 
         public async Task<ResponseDto> AddCategoryAsync(CategoryDto categoryDto)
         {
-            if (categoryDto == null )
+            if (categoryDto == null)
             {
                 return new ResponseDto
                 {
@@ -200,7 +205,7 @@ namespace EcoPowerHub.Repositories.Services
             }
 
             var existingCategory = await _context.Categories
-                .Include(c => c.Products) 
+                .Include(c => c.Products)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (existingCategory == null)
@@ -212,7 +217,7 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
-            _mapper.Map( categoryDto,existingCategory);
+            _mapper.Map(categoryDto, existingCategory);
             _context.Categories.Update(existingCategory);
             await _context.SaveChangesAsync();
 
@@ -223,7 +228,8 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = 200,
                 Data = existingCategory
             };
-        }
+        } 
+        #endregion
 
     }
 }

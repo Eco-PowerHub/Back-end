@@ -14,21 +14,25 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly IMapper _mapper;
         private readonly EcoPowerDbContext _context;
+        #region Constructor
 
-        public ProductRepository(  EcoPowerDbContext context, IMapper mapper) :base(context)
+        public ProductRepository(EcoPowerDbContext context, IMapper mapper) : base(context)
         {
             _mapper = mapper;
-            _context= context;
+            _context = context;
         }
+        #endregion
+
+        #region Service Implementation
         public async Task<ResponseDto> GetAllProductsAsync()
         {
             var products = await _context.Products.AsNoTracking().ToListAsync();
-            if(products.Count == 0)
-                 return new ResponseDto
+            if (products.Count == 0)
+                return new ResponseDto
                 {
                     Message = "No Products Found!",
                     IsSucceeded = true,
-                    StatusCode = (int)HttpStatusCode.OK, 
+                    StatusCode = (int)HttpStatusCode.OK,
                     Data = new List<ProductDto>()
                 };
             var productDto = _mapper.Map<List<ProductDto>>(products);
@@ -61,8 +65,8 @@ namespace EcoPowerHub.Repositories.Services
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
-            } 
-            var productDto =  _mapper.Map<ProductDto>(product);
+            }
+            var productDto = _mapper.Map<ProductDto>(product);
             return new ResponseDto
             {
                 Message = "Product retrieved successfully!",
@@ -108,7 +112,7 @@ namespace EcoPowerHub.Repositories.Services
 
         public async Task<ResponseDto> GetProductByCategory(string categoryName)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(c=>c.Name == categoryName);
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
             if (category == null)
                 return new ResponseDto
                 {
@@ -117,8 +121,8 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             var products = await _context.Products.Where(p => p.CategoryId == category.Id).ToListAsync();
-                
-            if(products.Count == 0)
+
+            if (products.Count == 0)
             {
                 return new ResponseDto
                 {
@@ -170,7 +174,7 @@ namespace EcoPowerHub.Repositories.Services
         //    };
         //}
 
-     
+
 
         //public async Task<ResponseDto> GetProductsSortedByPrice(string categoryName)
         //{
@@ -209,7 +213,7 @@ namespace EcoPowerHub.Repositories.Services
 
         public async Task<ResponseDto> AddProductAsync(ProductDto productDto)
         {
-            if(productDto == null)
+            if (productDto == null)
             {
                 return new ResponseDto
                 {
@@ -246,7 +250,7 @@ namespace EcoPowerHub.Repositories.Services
 
         public async Task<ResponseDto> UpdateProductAsync(int id, ProductDto productDto)
         {
-            if(productDto == null)
+            if (productDto == null)
             {
                 return new ResponseDto
                 {
@@ -256,7 +260,7 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
             var existingProduct = await _context.Products.FindAsync(id);
-            if(existingProduct == null)
+            if (existingProduct == null)
             {
                 return new ResponseDto
                 {
@@ -287,7 +291,7 @@ namespace EcoPowerHub.Repositories.Services
 
         public async Task<ResponseDto> DeleteProductAsync(int id)
         {
-            if(id < 1)
+            if (id < 1)
             {
                 return new ResponseDto
                 {
@@ -297,7 +301,7 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
             var product = await _context.Products.FindAsync(id);
-            if(product == null)
+            if (product == null)
             {
                 return new ResponseDto
                 {
@@ -306,7 +310,7 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
-             _context.Products.Remove(product);
+            _context.Products.Remove(product);
             await _context.SaveChangesAsync();
             return new ResponseDto
             {
@@ -340,7 +344,7 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
-            var productDtos= _mapper.Map<IEnumerable<ProductDto>>(products);
+            var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
             return new ResponseDto
             {
                 Message = "Products retrieved successfully! ",
@@ -348,6 +352,7 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = 200,
                 Data = productDtos
             };
-        }
+        } 
+        #endregion
     }
 }
