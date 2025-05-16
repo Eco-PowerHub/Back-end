@@ -42,13 +42,13 @@ namespace EcoPowerHub.Repositories.Services
             support.Response ??= "No Response yet"; // تعيين قيمة افتراضية
 
             await _context.SaveChangesAsync();
-            var responseDto = _mapper.Map<GetUserSupportDto>(support);
+            var dto = _mapper.Map<CreateUserSupportDto>(support);
             return new ResponseDto
             {
                 Message = "Support request send successfully! ",
                 IsSucceeded = true,
                 StatusCode = (int)HttpStatusCode.OK,
-                Data = responseDto
+                Data = dto
             };
         }
 
