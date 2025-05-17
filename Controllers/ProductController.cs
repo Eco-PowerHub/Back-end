@@ -34,7 +34,7 @@ namespace EcoPowerHub.Controllers
         
         // GET api/<ProductController>/5
         [HttpGet("GetProductById/{id}")]
-        [Authorize(Policy = "Only Admin")]
+       // [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult>  GetProductById(int id)
         {
             if (!ModelState.IsValid)
@@ -95,7 +95,7 @@ namespace EcoPowerHub.Controllers
 
         // POST api/<ProductController>
         [HttpPost("AddProduct")]
-        [Authorize(Policy = "Only Admin")]
+ //       [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> AddProduct([FromBody] ProductDto productDto)
         {
             if(!ModelState.IsValid)
@@ -108,7 +108,7 @@ namespace EcoPowerHub.Controllers
 
         // PUT api/<ProductController>/5
         [HttpPut("EditProduct/{id}")]
-        [Authorize(Policy = "Company and Admin")]
+     //   [Authorize(Policy = "Company and Admin")]
         public async Task<IActionResult> EditProduct(int id,[FromBody] ProductDto productDto)
         {
             if (!ModelState.IsValid)
@@ -121,7 +121,7 @@ namespace EcoPowerHub.Controllers
 
         // DELETE api/<ProductController>/5
         [HttpDelete("DeleteProduct/{id}")]
-        [Authorize(Policy = "Only Admin")]
+     //   [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             if (!ModelState.IsValid)

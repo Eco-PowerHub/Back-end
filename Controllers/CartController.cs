@@ -16,7 +16,7 @@ namespace EcoPowerHub.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = "Only Admin")]
+  //      [Authorize(Policy = "Only Admin")]
         [HttpGet("Carts")]
         public async Task<IActionResult> GetCarts()
         {
@@ -57,7 +57,7 @@ namespace EcoPowerHub.Controllers
             return BadRequest(ModelState);
         }
 
-        [Authorize(Policy = "Only Admin")]
+ //       [Authorize(Policy = "Only Admin")]
         [HttpDelete("DeleteCart/{id}")]
         public async Task<IActionResult> DeleteCart(int id)
         {

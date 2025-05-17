@@ -17,5 +17,7 @@ namespace EcoPowerHub.Models
         public ICollection<Order>? Orders { get; set; } = new List<Order>();
          public virtual ICollection<Cart>? Carts { get; set; } = new List<Cart>();
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+        public ICollection<UserSupport>? UserSupports { get; set; } = new List<UserSupport>();
+
     }
 }

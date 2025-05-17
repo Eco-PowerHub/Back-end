@@ -22,7 +22,8 @@ namespace EcoPowerHub.UOW
         //    ILogger<AccountRepository> _accountLogger;
         private readonly IEmailService _emailService;
         private readonly EmailTemplateService _emailTemplateService;
-    
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
 
 
 
@@ -45,6 +46,7 @@ namespace EcoPowerHub.UOW
             //            _logger = logger;
             _emailService = emailService;
             _emailTemplateService = emailTemplateService;
+            _httpContextAccessor = httpContextAccessor;
 
             Accounts = new AccountRepository(_context, _userManager, _mapper, _tokenService, _emailService, _emailTemplateService);
             Packages = new PackageRepository(_context, _mapper);
@@ -53,7 +55,7 @@ namespace EcoPowerHub.UOW
             Categories = new CategoryRepository(_context, _mapper);
             Products = new ProductRepository(_context, _mapper);
             UserFeedbacks = new UserFeedbackRepository(_context);
-            Supports = new SupportRepository(_context, _mapper);
+            Supports = new SupportRepository(_context, _mapper,_userManager, _httpContextAccessor);
             Properties = new PropertyRepository(_context, _mapper);
             Users = new UserRepository(_context);
             Carts = new CartRepository(_context, _mapper,_userManager);

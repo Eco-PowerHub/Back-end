@@ -19,8 +19,8 @@ namespace EcoPowerHub.Controllers
         }
       
         //<OrderController>
-        [Authorize(Policy = "Only Admin")]
-        [HttpGet("GetAllOrders")]
+ //       [Authorize(Policy = "Only Admin")]
+        [HttpGet("Orders")]
         public async Task<IActionResult> GetAllOrders()
         {
             if (!ModelState.IsValid)
@@ -32,8 +32,8 @@ namespace EcoPowerHub.Controllers
         }
 
         // GET api/<OrderController>/5
-        [Authorize(Policy = "Only Admin")]
-        [HttpGet("GetOrderById/{id}")]
+   //     [Authorize(Policy = "Only Admin")]
+        [HttpGet("OrderById/{id}")]
         public async Task<IActionResult> GetOrderById(int id)
         {
             if (!ModelState.IsValid)
@@ -57,7 +57,7 @@ namespace EcoPowerHub.Controllers
         }
 
         // DELETE api/<OrderController>/5
-        [Authorize(Policy = "Only Admin")]
+     //   [Authorize(Policy = "Only Admin")]
         [HttpDelete("DeleteOrder/{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
@@ -69,8 +69,8 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        [Authorize(Policy = "Only Admin")]
-        [HttpGet("GetOrderByCompanyId/{id}")]
+  //      [Authorize(Policy = "Only Admin")]
+        [HttpGet("OrderByCompanyId/{id}")]
         public async Task<IActionResult> GetOrderByCompanyId(int id)
         {
             if (!ModelState.IsValid)
@@ -93,8 +93,8 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        [Authorize(Policy = "Only Admin")]
-        [HttpGet("GetOrderByUserId/{userId}")]
+     //   [Authorize(Policy = "Only Admin")]
+        [HttpGet("OrderByUserId/{userId}")]
         public async Task<IActionResult> GetOrderByUserId(string userId)
         {
             if (!ModelState.IsValid)

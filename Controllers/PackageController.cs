@@ -36,7 +36,7 @@ namespace EcoPowerHub.Controllers
         }
 
         [HttpGet("PackageById/{id}")]
-        [Authorize(Policy = "Only Admin")]
+    //    [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> GetPackageById(int id)
         {
             if (!ModelState.IsValid)
@@ -60,7 +60,7 @@ namespace EcoPowerHub.Controllers
 
 
         [HttpPost("AddPackage")]
-        [Authorize(Policy = "Company And Admin")]
+   //     [Authorize(Policy = "Company And Admin")]
         public async Task<IActionResult> AddPackage([FromBody] PackageDto packageDto)
         {
             if (!ModelState.IsValid)
@@ -73,7 +73,7 @@ namespace EcoPowerHub.Controllers
         }
 
         [HttpPut("EditPackage/{id}")]
-        [Authorize(Policy = "Company and Admin")]
+   //     [Authorize(Policy = "Company and Admin")]
         public async Task<IActionResult> EditPackage(int id, [FromBody] PackageDto packageDto)
         {
             if (!ModelState.IsValid)
@@ -87,7 +87,7 @@ namespace EcoPowerHub.Controllers
 
 
         [HttpDelete("DeletePackage/{id}")]
-        [Authorize(Policy = "Company and Admin")]
+    //    [Authorize(Policy = "Company and Admin")]
         public async Task<IActionResult> DeletePackage(int id)
         {
 

@@ -19,7 +19,7 @@ namespace EcoPowerHub.Controllers
         }
 
         [HttpGet("Companies")]
-        [Authorize(Policy = "Only Admin")]
+       // [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> GetAllCompanies()
         {
             if(!ModelState.IsValid)
@@ -31,7 +31,7 @@ namespace EcoPowerHub.Controllers
         }
 
         [HttpGet("CompanyById/{id}")]
-        [Authorize(Policy = "Only Admin")]
+   //     [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> GetCompanybyId(int id)
         {
             if (!ModelState.IsValid)
@@ -43,7 +43,7 @@ namespace EcoPowerHub.Controllers
         }
 
         [HttpGet("CompanybyName")]
-        [Authorize(Policy = "Client and Admin")]
+  //      [Authorize(Policy = "Client and Admin")]
         public async Task<IActionResult> CompanybyName([FromQuery] string name)
         {
             if (!ModelState.IsValid)
@@ -55,7 +55,7 @@ namespace EcoPowerHub.Controllers
         }
 
         [HttpPost("AddCompany")]
-        [Authorize(Policy = "Only Admin")]
+ //       [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> AddCompany([FromBody] AddCompanyDto company)
         {
             if (!ModelState.IsValid)
@@ -67,7 +67,7 @@ namespace EcoPowerHub.Controllers
         }
 
         [HttpPut("EditCompany/{id}")]
-        [Authorize(Policy = "Company and Admin")]
+    //    [Authorize(Policy = "Company and Admin")]
         public async Task<IActionResult> EditCompany(int id ,[FromBody]CompanyDto company)
         {
             if (!ModelState.IsValid)
@@ -78,7 +78,7 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
         [HttpDelete("DeleteCompany/{id}")]
-        [Authorize(Policy = "Only Admin")]
+   //     [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> DeleteCompany( int id)
         {
             if (!ModelState.IsValid)

@@ -35,7 +35,7 @@ namespace EcoPowerHub.AutoMapper
 
             CreateMap<ProductDto, Product>().ReverseMap();
             CreateMap<CategoryDto, Category>().ReverseMap();
-            CreateMap<CreateUserSupportDto, UserSupport>();
+            CreateMap<CreateUserSupportDto, UserSupport>().ReverseMap();
             CreateMap<UserSupport, GetUserSupportDto>();
             CreateMap<AddResponseDto, UserSupport>();
             CreateMap<UserPropertyDto, UserProperty>().ReverseMap();
@@ -47,6 +47,10 @@ namespace EcoPowerHub.AutoMapper
             CreateMap<Order, OrderDto>()
           .ForMember(d => d.CompanyName, o => o.MapFrom(s => s.Company.Name))
           .ForMember(d => d.UserId, o => o.MapFrom(s => s.UserId));
+
+            CreateMap<UserSupport, GetUserSupportDto>()
+    .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+    .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
 
         }
     }

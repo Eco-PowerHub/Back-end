@@ -22,7 +22,7 @@ namespace EcoPowerHub.Controllers
 
         // GET: api/<FeedbackController>
         [HttpGet("Feedbacks")]
-        [Authorize(Policy = "Client and Admin")]
+    //    [Authorize(Policy = "Client and Admin")]
         public async Task<IActionResult> GetAllFeedbacks()
         {
             if(!ModelState.IsValid) 
@@ -35,7 +35,7 @@ namespace EcoPowerHub.Controllers
 
         // GET api/<FeedbackController>/5
         [HttpGet("FeedbackById/{id}")]
-        [Authorize(Policy = "Only Admin")]
+    //    [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> GetFeedbackById(int id)
         {
             if (!ModelState.IsValid)
@@ -48,7 +48,7 @@ namespace EcoPowerHub.Controllers
 
         // POST api/<FeedbackController>
         [HttpPost("AddFeedback")]
-        [Authorize(Policy = "Only Client")]
+   //     [Authorize(Policy = "Only Client")]
         public async Task<IActionResult> AddFeedback([FromBody] UserFeedBack userFeedBack)
         {
             if (!ModelState.IsValid)
@@ -62,7 +62,7 @@ namespace EcoPowerHub.Controllers
 
         // DELETE api/<FeedbackController>/5
         [HttpDelete("DeleteFeedback/{id}")]
-        [Authorize(Policy = "Only Admin")]
+    //    [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> DeleteFeedback(int id)
         {
             if (!ModelState.IsValid)

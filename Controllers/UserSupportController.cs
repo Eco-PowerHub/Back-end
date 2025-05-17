@@ -20,7 +20,7 @@ namespace EcoPowerHub.Controllers
 
         // GET: api/<UserSupportController>
         [HttpGet("Supports")]
-        [Authorize(Policy = "Company and Admin")]
+   //     [Authorize(Policy = "Company and Admin")]
         public async Task<IActionResult> GetAllSupports()
         {
             if (!ModelState.IsValid)
@@ -46,7 +46,7 @@ namespace EcoPowerHub.Controllers
 
         // POST api/<UserSupportController>
         [HttpPost("AddSupport")]
-        [Authorize(Policy = "Only Client")]
+     //   [Authorize(Policy = "Only Client")]
         public async Task<IActionResult> AddSupport([FromBody] CreateUserSupportDto supportDto)
         {
             if (!ModelState.IsValid)
@@ -72,7 +72,7 @@ namespace EcoPowerHub.Controllers
 
         // DELETE api/<UserSupportController>/5
         [HttpDelete("DeleteSupport{id}")]
-        [Authorize(Policy = "Only Admin")]
+   //     [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> DeleteSupport(int id)
         {
             if (!ModelState.IsValid)

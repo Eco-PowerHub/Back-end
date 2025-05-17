@@ -18,7 +18,7 @@ namespace EcoPowerHub.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = "Only Admin")]
+  //      [Authorize(Policy = "Only Admin")]
         [HttpGet("Items")]
         public async Task<IActionResult> GetItems()
         {
@@ -52,7 +52,7 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
-        [Authorize(Policy = "Only Admin")]
+//        [Authorize(Policy = "Only Admin")]
         [HttpDelete("DeleteItem/{id}")]
         public async Task<IActionResult> DeleteItem(int id)
         {

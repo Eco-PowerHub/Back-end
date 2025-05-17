@@ -78,7 +78,7 @@ namespace EcoPowerHub.Controllers
 
         // PUT api/<CategoryController>/5
         [HttpPut("EditCategory/{id}")]
-        [Authorize(Policy = "Only Admin")]
+   //     [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> EditCategory(int id, [FromBody] CategoryDto categoryDto)
         {
             if (!ModelState.IsValid)
@@ -98,7 +98,7 @@ namespace EcoPowerHub.Controllers
 
         // DELETE api/<CategoryController>/5
         [HttpDelete("DeleteCategory/{id}")]
-        [Authorize(Policy = "Only Admin")]
+  //      [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             var response = await _unitOfWork.Categories.DeleteCategoryAsync(id);

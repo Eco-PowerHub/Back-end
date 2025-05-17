@@ -16,7 +16,7 @@ namespace EcoPowerHub.Controllers
         }
 
         [HttpGet("Users")]
-        [Authorize(Policy = "Only Admin")]
+     //   [Authorize(Policy = "Only Admin")]
         public async Task<IActionResult> Get()
         {
             if(!ModelState.IsValid)

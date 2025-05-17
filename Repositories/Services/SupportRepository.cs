@@ -5,8 +5,10 @@ using EcoPowerHub.DTO.UserSupportDto;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Security.Claims;
 
 namespace EcoPowerHub.Repositories.Services
 {
@@ -14,41 +16,69 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         #region Constructor
-        public SupportRepository(EcoPowerDbContext context, IMapper mapper) : base(context)
+        public SupportRepository(EcoPowerDbContext context, IMapper mapper,UserManager<ApplicationUser> userManager,IHttpContextAccessor httpContextAccessor) : base(context)
         {
             _context = context;
             _mapper = mapper;
-        } 
+            _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
+        }
         #endregion
 
 
         #region Service Implementation
         public async Task<ResponseDto> AddSupportAsync(CreateUserSupportDto supportDto)
         {
-            if (supportDto == null)
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (supportDto == null || string.IsNullOrEmpty(userId))
             {
                 return new ResponseDto
                 {
-                    Message = "Invalid support data! ",
+                    Message = "Invalid support data!",
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.BadRequest,
                 };
             }
-            var support = _mapper.Map<UserSupport>(supportDto);
-            support.CreatedAt = DateTime.UtcNow;
-            await _context.UserSupport.AddAsync(support);
-            support.Response ??= "No Response yet"; // تعيين قيمة افتراضية
 
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new ResponseDto
+                {
+                    Message = "User not found!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                };
+            }
+            var support = _mapper.Map<UserSupport>(supportDto);
+            support.UserId = userId;  
+            support.Response = "No Response yet";  
+            support.CreatedAt = DateTime.UtcNow;
+
+            await _context.UserSupport.AddAsync(support);
             await _context.SaveChangesAsync();
-            var dto = _mapper.Map<CreateUserSupportDto>(support);
+
+            var resultDto = new GetUserSupportDto
+            {
+                Subject = support.Subject,
+                Response = support.Response,
+                CreatedAt = support.CreatedAt,
+                UserName = user.UserName!,
+                Email = user.Email!,
+                PhoneNumber = user.PhoneNumber!
+            };
+
             return new ResponseDto
             {
-                Message = "Support request send successfully! ",
+                Message = "Support request sent successfully!",
                 IsSucceeded = true,
                 StatusCode = (int)HttpStatusCode.OK,
-                Data = dto
+                Data = resultDto
             };
         }
 
@@ -86,8 +116,10 @@ namespace EcoPowerHub.Repositories.Services
 
         public async Task<ResponseDto> GetAllSupportsAsync()
         {
-            var supports = await _context.UserSupport.AsNoTracking().ToListAsync();
-            if (!supports.Any())
+            var supports = await _context.UserSupport
+                        .Include(s => s.User)
+                        .ToListAsync();
+            if(supports.Count == 0)
             {
                 return new ResponseDto
                 {
@@ -97,10 +129,18 @@ namespace EcoPowerHub.Repositories.Services
                     Data = new List<GetUserSupportDto>()
                 };
             }
-            var responseDto = _mapper.Map<List<CreateUserSupportDto>>(supports);
+            var responseDto = supports.Select(s => new GetUserSupportDto
+            {
+                Subject = s.Subject,
+                CreatedAt = s.CreatedAt,
+                UserName = s.User.UserName!,
+                Email = s.User.Email!,
+                PhoneNumber = s.User.PhoneNumber!,
+            });
+
             return new ResponseDto
             {
-                Message = "Support requests retrieved successfully! ",
+                Message = "Supports fetched successfully!",
                 IsSucceeded = true,
                 StatusCode = (int)HttpStatusCode.OK,
                 Data = responseDto
