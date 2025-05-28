@@ -7,8 +7,8 @@ namespace EcoPowerHub.DTO.CompanyDto
 {
     public class CompanyDto
     {
-        [JsonIgnore]
-        public int id { get; set; }
+        //[JsonIgnore]
+        public int Id { get; set; }
         [Required]
         public string Name { get; set; }
         public float Rate { get; set; }

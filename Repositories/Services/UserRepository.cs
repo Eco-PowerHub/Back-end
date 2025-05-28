@@ -1,20 +1,27 @@
 ﻿using AutoMapper;
 using EcoPowerHub.Data;
 using EcoPowerHub.DTO;
+using EcoPowerHub.DTO.UserDto;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace EcoPowerHub.Repositories.Services
 {
     public class UserRepository : GenericRepository<ApplicationUser>, IUserRepository
     {
         private readonly EcoPowerDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserRepository(EcoPowerDbContext context) : base(context)
+        public UserRepository(EcoPowerDbContext context ,IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager ) : base(context)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
 
         }
         private string GetSafeString(object value)
@@ -99,6 +106,48 @@ namespace EcoPowerHub.Repositories.Services
                 };
             } 
             #endregion
+        }
+
+        public async Task<ResponseDto> GetCurrentUserAsync()
+        {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return new ResponseDto
+                {
+                    Message = "Unauthorized",
+                    IsSucceeded = false,
+                    StatusCode = 401
+                };
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new ResponseDto
+                {
+                    Message = "User not found",
+                    IsSucceeded = false,
+                    StatusCode = 404
+                };
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var userDto = new UserDataDto
+            {
+                UserId = user.Id, 
+                Username = user.UserName!,    
+                Email = user.Email!,
+                ProfilePicture = user.ProfilePicture ?? "",
+                Role = user.Role
+            };
+
+            return new ResponseDto
+            {
+                Message = "User data retrieved successfully",
+                IsSucceeded = true,
+                StatusCode = 200,
+                Data = userDto
+            };
         }
     }
 }

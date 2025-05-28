@@ -21,8 +21,7 @@ namespace EcoPowerHub.Models
         public decimal PricePerYear => ElectricityUsageAverage * 12;
 
         public float ROIYears => PricePerYear > 0 ? (float)(PackagePrice / PricePerYear) : 0;
-        public float TotalYearsGuarantee { get; set; }
+        public decimal SavingCost => ROIYears > 0 ? PricePerYear *(30 - (decimal)ROIYears) : 0;
 
-        public decimal SavingCost => TotalYearsGuarantee > ROIYears ? PricePerYear * ((decimal)TotalYearsGuarantee - (decimal)ROIYears) : 0;
     }
 }

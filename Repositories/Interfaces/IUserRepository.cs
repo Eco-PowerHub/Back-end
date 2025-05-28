@@ -7,5 +7,6 @@ namespace EcoPowerHub.Repositories.Interfaces
     public interface IUserRepository :IGenericRepository<ApplicationUser>
     {
         Task<ResponseDto> GetAllUsersAsync();
+        Task<ResponseDto> GetCurrentUserAsync();
     }
 }

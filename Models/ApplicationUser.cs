@@ -10,6 +10,7 @@ namespace EcoPowerHub.Models
         public string LastName { get; set; }
         public Roles Role {  get; set; }
         public string Address { get; set; }
+        public string? ProfilePicture {  get; set; }
         public DateTime RegisterdAt { get; set; } = DateTime.UtcNow;
         public string? OTP { get; set; }
         public DateTime? OTPExpiry { get; set; } = DateTime.UtcNow;

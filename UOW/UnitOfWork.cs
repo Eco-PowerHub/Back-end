@@ -57,7 +57,7 @@ namespace EcoPowerHub.UOW
             UserFeedbacks = new UserFeedbackRepository(_context);
             Supports = new SupportRepository(_context, _mapper,_userManager, _httpContextAccessor);
             Properties = new PropertyRepository(_context, _mapper);
-            Users = new UserRepository(_context);
+            Users = new UserRepository(_context,_httpContextAccessor,_userManager);
             Carts = new CartRepository(_context, _mapper,_userManager);
             CartItems = new CartItemRepository(_context, _mapper);
             Orders = new OrderRepository(_context, _mapper, _emailService);

@@ -34,12 +34,11 @@ namespace EcoPowerHub.Repositories.Services
         public async Task<ResponseDto> AddSupportAsync(CreateUserSupportDto supportDto)
         {
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (supportDto == null || string.IsNullOrEmpty(userId))
+            if (supportDto == null || string.IsNullOrWhiteSpace(userId))
             {
                 return new ResponseDto
                 {
-                    Message = "Invalid support data!",
+                    Message = "Invalid support data.",
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.BadRequest,
                 };
@@ -50,15 +49,17 @@ namespace EcoPowerHub.Repositories.Services
             {
                 return new ResponseDto
                 {
-                    Message = "User not found!",
+                    Message = "User not found.",
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.NotFound,
                 };
             }
+
             var support = _mapper.Map<UserSupport>(supportDto);
-            support.UserId = userId;  
-            support.Response = "No Response yet";  
+            support.UserId = userId;
+            support.Response = "No Response yet";
             support.CreatedAt = DateTime.UtcNow;
+
 
             await _context.UserSupport.AddAsync(support);
             await _context.SaveChangesAsync();
@@ -68,14 +69,15 @@ namespace EcoPowerHub.Repositories.Services
                 Subject = support.Subject,
                 Response = support.Response,
                 CreatedAt = support.CreatedAt,
-                UserName = user.UserName!,
-                Email = user.Email!,
+                UserId = user.Id,
+                UserName = user.UserName! ,
+                Email = user.Email! ,
                 PhoneNumber = user.PhoneNumber!
             };
 
             return new ResponseDto
             {
-                Message = "Support request sent successfully!",
+                Message = "Support request submitted successfully.",
                 IsSucceeded = true,
                 StatusCode = (int)HttpStatusCode.OK,
                 Data = resultDto
@@ -117,35 +119,39 @@ namespace EcoPowerHub.Repositories.Services
         public async Task<ResponseDto> GetAllSupportsAsync()
         {
             var supports = await _context.UserSupport
-                        .Include(s => s.User)
-                        .ToListAsync();
-            if(supports.Count == 0)
+                .Include(s => s.User)
+                .OrderByDescending(s => s.CreatedAt)
+                .ToListAsync();
+
+            if (supports.Count == 0)
             {
                 return new ResponseDto
                 {
-                    Message = "No support requests found! ",
+                    Message = "No support requests found!",
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.NotFound,
                     Data = new List<GetUserSupportDto>()
                 };
             }
+
             var responseDto = supports.Select(s => new GetUserSupportDto
             {
                 Subject = s.Subject,
+                Response = s.Response,
                 CreatedAt = s.CreatedAt,
+                UserId = s.UserId,
                 UserName = s.User.UserName!,
                 Email = s.User.Email!,
-                PhoneNumber = s.User.PhoneNumber!,
-            });
+                PhoneNumber = s.User.PhoneNumber!
+            }).ToList();
 
             return new ResponseDto
             {
-                Message = "Supports fetched successfully!",
+                Message = "Support requests fetched successfully!",
                 IsSucceeded = true,
                 StatusCode = (int)HttpStatusCode.OK,
                 Data = responseDto
             };
-
         }
 
         //public async Task<ResponseDto> GetSupportByIdAsync(int id)
@@ -212,6 +218,6 @@ namespace EcoPowerHub.Repositories.Services
         //        Data = updatedSupportDto
         //    };
         //}
-    } 
+    }
     #endregion
 }

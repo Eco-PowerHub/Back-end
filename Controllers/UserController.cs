@@ -7,10 +7,10 @@ namespace EcoPowerHub.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AdminController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        public AdminController(IUnitOfWork unitOfWork)
+        public UserController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
@@ -25,6 +25,19 @@ namespace EcoPowerHub.Controllers
             if(reponse.IsSucceeded)
                 return Ok(reponse);
             return StatusCode(reponse.StatusCode,reponse.Message);
+        }
+
+
+        [HttpGet("Me")]
+        //   [Authorize(Policy = "Only Admin")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var reponse = await _unitOfWork.Users.GetCurrentUserAsync();
+            if (reponse.IsSucceeded)
+                return Ok(reponse);
+            return StatusCode(reponse.StatusCode, reponse.Message);
         }
     }
 }
