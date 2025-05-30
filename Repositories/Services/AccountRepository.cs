@@ -138,7 +138,11 @@ namespace EcoPowerHub.Repositories.Services
                     RefreshToken = refreshToken,
                     RefreshTokenExpiration = refreshTokenExpiration,
                     UserName = user.UserName,
-                    Email = user.Email
+                    Email = user.Email,
+                    Role = user.Role,
+                    ProfilePicture = user.ProfilePicture ?? "",
+
+
                 }
             };
         }
