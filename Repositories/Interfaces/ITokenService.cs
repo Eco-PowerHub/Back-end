@@ -6,5 +6,6 @@ namespace EcoPowerHub.Repositories.Interfaces
     {
          Task<string> GenerateToken(ApplicationUser user);
          RefreshToken GeneraterefreshToken();
+        Task RevokeRefreshTokenAsync(string UserId);
     }
 }

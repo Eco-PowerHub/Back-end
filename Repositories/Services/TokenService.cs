@@ -72,7 +72,18 @@ namespace EcoPowerHub.Repositories.Services
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        } 
+        }
+
+        public async Task RevokeRefreshTokenAsync(string UserId)
+        {
+            var user = await _userManager.FindByIdAsync(UserId);
+            if (user != null)
+            {
+                user.RefreshTokens = null;
+                await _userManager.UpdateAsync(user);
+            }
+        }
+    }
         #endregion
     }
-}
+

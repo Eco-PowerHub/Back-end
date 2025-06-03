@@ -48,7 +48,7 @@ namespace EcoPowerHub.UOW
             _emailTemplateService = emailTemplateService;
             _httpContextAccessor = httpContextAccessor;
 
-            Accounts = new AccountRepository(_context, _userManager, _mapper, _tokenService, _emailService, _emailTemplateService);
+            Accounts = new AccountRepository(_context, _userManager, _mapper, _tokenService, _emailService, _emailTemplateService, _httpContextAccessor);
             Packages = new PackageRepository(_context, _mapper);
             Company = new CompanyRepository(_context, _mapper);
 

@@ -12,8 +12,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using HttpStatusCode = System.Net.HttpStatusCode;
@@ -28,13 +30,13 @@ namespace EcoPowerHub.Repositories.Services
         //   private readonly ILogger<AccountRepository> _logger;
         private readonly IEmailService _emailService;
         private readonly EmailTemplateService _emailTemplateService;
-
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         #region Constructor
         public AccountRepository(EcoPowerDbContext context, UserManager<ApplicationUser> userManager
          , IMapper mapper,
           ITokenService tokenService,//ILogger<AccountRepository> logger ,
-          IEmailService emailService, EmailTemplateService emailTemplateService) : base(context)
+          IEmailService emailService, EmailTemplateService emailTemplateService, IHttpContextAccessor httpContextAccessor) : base(context)
         {
             _context = context;
             _userManager = userManager;
@@ -43,6 +45,7 @@ namespace EcoPowerHub.Repositories.Services
             //   _logger = logger;
             _emailService = emailService;
             _emailTemplateService = emailTemplateService;
+            _httpContextAccessor = httpContextAccessor;
         }
         #endregion
 
@@ -146,18 +149,22 @@ namespace EcoPowerHub.Repositories.Services
                 }
             };
         }
-        public async Task<ResponseDto> Logout(LoginDto logoutDto)
+        public async Task<ResponseDto> Logout()
         {
-            var user = await _userManager.FindByEmailAsync(logoutDto.Email);
-            if (user == null)
-                return new ResponseDto { Message = "User not found!" };
+           
+            var userId = _httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return new ResponseDto
+                {
+                    Message = "user not authorized!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.Unauthorized,
+                };
 
-            if (user.RefreshTokens?.Any() == true)
-                user.RefreshTokens.Clear();
-            await _userManager.UpdateAsync(user);
+            await _tokenService.RevokeRefreshTokenAsync(userId);
             return new ResponseDto
             {
-                Message = "Logged out successfully.",
+                Message = "Logout successful.",
                 IsSucceeded = true,
                 StatusCode = (int)HttpStatusCode.OK,
             };
@@ -193,7 +200,6 @@ namespace EcoPowerHub.Repositories.Services
         public async Task<ResponseDto> ForgetPasswordAsync(ForgetPasswordDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
-
             if (user is null)
             {
                 return new ResponseDto
@@ -203,24 +209,14 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
+
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            if (string.IsNullOrEmpty(token))
-            {
-                return new ResponseDto
-                {
-                    Message = "Failed to generate password reset token.",
-                    IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.InternalServerError
-                };
-            }
-            var encodedToken = WebUtility.UrlEncode(Convert.ToBase64String(Encoding.UTF8.GetBytes(token)));
-            // Generate reset link
-            //  var resetLink = $"http://157.175.182.159/forgetpassword?email={WebUtility.UrlEncode(dto.Email)}&token={encodedToken}";
+
+            // ✅ ONLY UrlEncode
+            var encodedToken = WebUtility.UrlEncode(token);
 
             var resetLink = $"http://157.175.182.159/resetpassword?email={WebUtility.UrlEncode(dto.Email)}&token={encodedToken}";
 
-
-            Console.WriteLine($"Generated Reset Link: {resetLink}");
             var emailBody = _emailTemplateService.ResetPasswordEmail(dto.Email, resetLink);
             await _emailService.SendEmailAsync(user.Email!, "Reset your password on Eco Power Hub", emailBody);
 
@@ -232,34 +228,45 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
+
         public async Task<ResponseDto> ResetPasswordAsync(ResetPasswordDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user is null)
+            {
                 return new ResponseDto
                 {
                     Message = "Invalid email or reset token.",
                     IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound
+                    StatusCode = (int)HttpStatusCode.BadRequest
                 };
-            var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+            }
+
+            // ✅ UrlDecode to get the original token
+            var decodedToken = WebUtility.UrlDecode(dto.Token);
+
+            var result = await _userManager.ResetPasswordAsync(user, decodedToken, dto.NewPassword);
+
             if (!result.Succeeded)
             {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 return new ResponseDto
                 {
-                    Message = string.Join(", ", result.Errors.Select(e => e.Description)),
+                    Message = errors,
                     IsSucceeded = false,
                     StatusCode = (int)HttpStatusCode.BadRequest
                 };
             }
+
             return new ResponseDto
             {
-                Message = "Passwored reset successfully ",
+                Message = "Password reset successfully.",
                 IsSucceeded = true,
                 IsConfirmed = true,
                 StatusCode = (int)HttpStatusCode.OK
             };
         }
+
         public async Task<ResponseDto> DeleteProfileAsync(LoginDto account)
         {
             var user = await _userManager.FindByEmailAsync(account.Email);
@@ -305,15 +312,13 @@ namespace EcoPowerHub.Repositories.Services
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
+                var errorMassage = string.Join(" , ", result.Errors.Select(e=>e.Description));
+                return new ResponseDto
                 {
-                    return new ResponseDto
-                    {
-                        Message = "User not found!",
-                        IsSucceeded = false,
-                        StatusCode = (int)HttpStatusCode.NotFound
-                    };
-                }
+                    Message = $"Update failed: {errorMassage}",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
             }
             var updatedUser = _mapper.Map<UserDto>(user);
             return new ResponseDto
@@ -444,25 +449,33 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = (int)HttpStatusCode.OK
             };
         }
-        public async Task<bool> RevokeRefreshTokenAsync(string email)
-        {
-            var user = await _userManager.Users
-                                        .Include(u => u.RefreshTokens)
-                                        .FirstOrDefaultAsync(u => u.Email == email);
+        //public async Task<bool> RevokeRefreshTokenAsync(string UserId)
+        //{
+        //    //var user = await _userManager.Users
+        //    //                            .Include(u => u.RefreshTokens)
+        //    //                            .FirstOrDefaultAsync(u => u.Email == email);
 
-            if (user == null) return false;
+        //    //if (user == null) return false;
 
-            var activeToken = user.RefreshTokens?.FirstOrDefault(t => t.IsActive);
+        //    //var activeToken = user.RefreshTokens?.FirstOrDefault(t => t.IsActive);
 
-            if (activeToken is null) return false;
+        //    //if (activeToken is null) return false;
 
-            activeToken.RevokedOn = DateTime.UtcNow;
+        //    //activeToken.RevokedOn = DateTime.UtcNow;
 
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded) return false;
-            //     await _context.SaveChangesAsync();
-            return true;
-        }
+        //    //var result = await _userManager.UpdateAsync(user);
+        //    //if (!result.Succeeded) return false;
+        //    ////     await _context.SaveChangesAsync();
+        //    //return true;
+
+        //    var user = await _userManager.FindByIdAsync(UserId);
+        //    if(user is not null )
+        //    {
+        //        user.RefreshTokens = null;
+        //        await _userManager.UpdateAsync(user);
+        //    }
+        //    return true;
+        //}
 
         #endregion
 
