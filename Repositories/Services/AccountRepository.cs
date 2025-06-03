@@ -212,7 +212,7 @@ namespace EcoPowerHub.Repositories.Services
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            // ✅ ONLY UrlEncode
+           
             var encodedToken = WebUtility.UrlEncode(token);
 
             var resetLink = $"http://157.175.182.159/resetpassword?email={WebUtility.UrlEncode(dto.Email)}&token={encodedToken}";
@@ -242,7 +242,6 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
 
-            // ✅ UrlDecode to get the original token
             var decodedToken = WebUtility.UrlDecode(dto.Token);
 
             var result = await _userManager.ResetPasswordAsync(user, decodedToken, dto.NewPassword);

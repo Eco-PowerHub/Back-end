@@ -43,13 +43,33 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
 
+            foreach (var item in cart.CartItems)
+            {
+                var product = item.Product;
+                if (product != null)
+                {
+                    if (product.Stock < item.Quantity)
+                    {
+                        return new ResponseDto
+                        {
+                            Message = $"Insufficient stock for product: {product.Name}",
+                            IsSucceeded = false,
+                            StatusCode = 400
+                        };
+                    }
+
+                    product.Stock -= item.Quantity;
+                    product.Amount -= item.Quantity; 
+                }
+            }
+
             var order = new Order
             {
                 UserId = dto.UserId,
                 Price = cart.TotalPrice,
                 OrderDate = DateTime.UtcNow,
                 OrderHistory = "Pending",
-                CompanyId = dto.CompanyId,
+          //      CompanyId = dto.CompanyId,
                 CartId = cart.Id
             };
 
@@ -74,7 +94,7 @@ namespace EcoPowerHub.Repositories.Services
 
 
                 Console.WriteLine("Preparing to send email...");
-                await _emailService.SendEmailAsync(user.Email, "تأكيد الطلب", emailBody);
+                await _emailService.SendEmailAsync(user.Email!, "تأكيد الطلب", emailBody);
                 Console.WriteLine("Email sent.");
             }
 

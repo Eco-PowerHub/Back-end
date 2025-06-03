@@ -204,10 +204,9 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
 
-            var existingCategory = await _context.Categories
-                .Include(c => c.Products)
-                .FirstOrDefaultAsync(c => c.Id == id);
-
+            var existingCategory = await _context.Categories.FirstOrDefaultAsync(c=>c.Id == id);
+                //.Include(c => c.Products)
+               
             if (existingCategory == null)
             {
                 return new ResponseDto
