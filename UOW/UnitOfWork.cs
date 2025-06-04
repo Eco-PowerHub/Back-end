@@ -60,7 +60,7 @@ namespace EcoPowerHub.UOW
             Users = new UserRepository(_context,_httpContextAccessor,_userManager);
             Carts = new CartRepository(_context, _mapper,_userManager,_httpContextAccessor);
             CartItems = new CartItemRepository(_context, _mapper);
-            Orders = new OrderRepository(_context, _mapper, _emailService);
+            Orders = new OrderRepository(_context, _mapper, _emailService,_httpContextAccessor,_emailTemplateService);
         }
         public IAccountRepository Accounts { get; private set; }
         public IUserRepository Users { get; private set; }

@@ -64,7 +64,7 @@ namespace EcoPowerHub.Data
 
             modelBuilder.Entity<Order>(entity =>
             {
-                entity.Property(o => o.OrderHistory).HasMaxLength(500);
+                //entity.Property(o => o.OrderHistory).HasMaxLength(500);
                 entity.Property(o => o.Price).HasColumnType("decimal(12,2)").IsRequired();
 
                 entity.HasOne(o => o.Company)
