@@ -11,14 +11,14 @@ namespace EcoPowerHub.Repositories.Interfaces
     {
         Task<ResponseDto> RegisterAsync(RegisterDto registerDto);
         Task<ResponseDto> LoginAsync(LoginDto loginDto);
-        Task<ResponseDto> Logout(LoginDto logoutDto);
+        Task<ResponseDto> Logout();
         Task<ResponseDto> updateProfile(UserDto  profileDto);
         Task<ResponseDto> DeleteProfileAsync(LoginDto account);
         Task<ResponseDto> ChangePasswordAsync(ChangePasswordDto dto);
         Task<ResponseDto> ForgetPasswordAsync(ForgetPasswordDto dto);
         Task<ResponseDto> ResetPasswordAsync(ResetPasswordDto dto);
         Task<ResponseDto> GetRefreshTokenAsync(string email);
-         Task<bool>  RevokeRefreshTokenAsync(string email);
+   //      Task<bool>  RevokeRefreshTokenAsync(string UserId);
         Task<ResponseDto> SendOTPAsync(string email);
         Task<ResponseDto> verifyOTPRequest(VerifyOTPRequest verifyOTP);
 

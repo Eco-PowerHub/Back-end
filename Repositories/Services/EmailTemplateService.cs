@@ -1,32 +1,34 @@
-﻿namespace EcoPowerHub.Repositories.Services
+﻿using EcoPowerHub.Models;
+
+namespace EcoPowerHub.Repositories.Services
 {
     public class EmailTemplateService
     {
-         private readonly string _templatePath;
+        private readonly string _templatePath;
 
-    public EmailTemplateService(string templatePath)
-    {
-        _templatePath = templatePath;
-    }
+        public EmailTemplateService(string templatePath)
+        {
+            _templatePath = templatePath;
+        }
 
-    public string RenderWelcomeEmail(string UserName, string Email, string Role)
-    {
+        public string RenderWelcomeEmail(string UserName, string Email, string Role)
+        {
 
-        //     var fullTemplatePath = File.ReadAllText("/mnt/MyData/Courses/Projects/GrdPrj/Back-end/Templates/WelcomeEmailTemplate.html");
+            //     var fullTemplatePath = File.ReadAllText("/mnt/MyData/Courses/Projects/GrdPrj/Back-end/Templates/WelcomeEmailTemplate.html");
 
-        //     Console.WriteLine($"Looking for template at: {fullTemplatePath}");
+            //     Console.WriteLine($"Looking for template at: {fullTemplatePath}");
 
-        //     if (!File.Exists(fullTemplatePath))
-        //     {
-        //         throw new FileNotFoundException("Email template file not found.", fullTemplatePath);
-        //     }
-        //     var template = File.ReadAllText(fullTemplatePath); 
-        // template = template.Replace("{UserName}", userName);
+            //     if (!File.Exists(fullTemplatePath))
+            //     {
+            //         throw new FileNotFoundException("Email template file not found.", fullTemplatePath);
+            //     }
+            //     var template = File.ReadAllText(fullTemplatePath); 
+            // template = template.Replace("{UserName}", userName);
 
-        // template = template.Replace("{Email}", email);
-        // template = template.Replace("{Role}", role);
+            // template = template.Replace("{Email}", email);
+            // template = template.Replace("{Role}", role);
 
-        return $@"<!DOCTYPE html>
+            return $@"<!DOCTYPE html>
 <html >
 <head>
     <meta charset='UTF-8>
@@ -83,7 +85,7 @@
     </div>
 </body>
 </html>";
-    }
+        }
 
         public string ResetPasswordEmail(string email, string resetLink)
         {
@@ -180,5 +182,67 @@
     </html>";
         }
 
+    public string OrderConfirmationEmail(Order order)
+        {
+            return $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Order Confirmation</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }}
+        .container {{
+            max-width: 500px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }}
+        h2 {{
+            color: #333;
+        }}
+        p {{
+            color: #555;
+        }}
+        a.button {{
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }}
+        .footer {{
+            font-size: 14px;
+            color: #888;
+            margin-top: 30px;
+        }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <h2>Your Order Has Been Confirmed!</h2>
+        <p>Thank you for choosing Eco Power Hub 🌞</p>
+        <p>Order ID: <strong>{order.Id}</strong></p>
+        <p>Order Date: {order.OrderDate.ToString("yyyy-MM-dd HH:mm")}</p>
+        <p>Total Price: <strong>{order.Price} EGP</strong></p>
+        <a href='http://157.175.182.159/{order.Id}' class='button'>View Order</a>
+        <p class='footer'>If you didn’t place this order, please contact support immediately.</p>
+        <p>Thank you for choosing Eco Power Hub 🌞</p>
+    </div>
+</body>
+</html>
+";
+        }
     }
-}
+    }

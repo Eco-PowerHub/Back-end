@@ -32,11 +32,11 @@ namespace EcoPowerHub.Controllers
         }
 
         [HttpPost("AddCart")]
-        public async Task<IActionResult> AddCart(string customerId)
+        public async Task<IActionResult> AddCart()
         {
             if (ModelState.IsValid)
             {
-                var response = await _unitOfWork.Carts.AddCart(customerId);
+                var response = await _unitOfWork.Carts.AddCart();
                 if (response.IsSucceeded)
                     return Ok(response);
                 return StatusCode(response.StatusCode, response.Message);

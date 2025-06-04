@@ -3,6 +3,7 @@ using System;
 using EcoPowerHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EcoPowerHub.Migrations
 {
     [DbContext(typeof(EcoPowerDbContext))]
-    partial class EcoPowerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250604203110_EditOrderTable2")]
+    partial class EditOrderTable2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

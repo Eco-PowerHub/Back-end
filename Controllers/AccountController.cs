@@ -39,11 +39,11 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
         [HttpPost("Logout")]
-        public async Task<IActionResult> Logout([FromBody] LoginDto Dto)
+        public async Task<IActionResult> Logout()
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Accounts.Logout(Dto);
+            var response = await _unitOfWork.Accounts.Logout();
             if (response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
@@ -110,17 +110,17 @@ namespace EcoPowerHub.Controllers
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
-        [HttpPost("RevokeRefreshToken")]
-        [Authorize(Policy = "Only Admin")]
-        public async Task<IActionResult> RevokeRefreshToken([FromBody] string email)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var token = await _unitOfWork.Accounts.RevokeRefreshTokenAsync(email);
-            if (!token)
-                return NotFound("User or token not found!");
-            return Ok("Token revoked successfully");
-        }
+        //[HttpPost("RevokeRefreshToken")]
+        //[Authorize(Policy = "Only Admin")]
+        //public async Task<IActionResult> RevokeRefreshToken([FromBody] string email)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var token = await _unitOfWork.Accounts.RevokeRefreshTokenAsync(email);
+        //    if (!token)
+        //        return NotFound("User or token not found!");
+        //    return Ok("Token revoked successfully");
+        //}
 
         [HttpPost("send-otp")]
         [Authorize(Policy = "Only Admin")]

@@ -7,6 +7,7 @@ using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace EcoPowerHub.Repositories.Services
 {
@@ -15,12 +16,14 @@ namespace EcoPowerHub.Repositories.Services
         private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _usermanager;
+        private readonly IHttpContextAccessor _contextAccessor;
         #region Constructor
-        public CartRepository(EcoPowerDbContext context, IMapper mapper, UserManager<ApplicationUser> userManager) : base(context)
+        public CartRepository(EcoPowerDbContext context, IMapper mapper, UserManager<ApplicationUser> userManager,IHttpContextAccessor httpContextAccessor) : base(context)
         {
             _context = context;
             _mapper = mapper;
             _usermanager = userManager;
+            _contextAccessor = httpContextAccessor;
         }
 
         #endregion
@@ -47,10 +50,10 @@ namespace EcoPowerHub.Repositories.Services
                 Data = dto
             };
         }
-        public async Task<ResponseDto> AddCart(string customerId)
+        public async Task<ResponseDto> AddCart()
         {
-            var existingUser = await _context.Users.AnyAsync(u => u.Id == customerId);
-            if (!existingUser)
+            var userId = _contextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
             {
                 return new ResponseDto
                 {
@@ -59,19 +62,23 @@ namespace EcoPowerHub.Repositories.Services
                     StatusCode = 404
                 };
             }
-            CartDto dto = new()
+
+            var newCart = new Cart
             {
-                CustomerId = customerId,
+                CustomerId = userId
             };
-            var newCart = _mapper.Map<Cart>(dto);
-            await _context.AddAsync(newCart);
+
+            await _context.Carts.AddAsync(newCart);
             await _context.SaveChangesAsync();
-            var updatedCart = _mapper.Map<CartDto>(newCart);
+
+            var cartDto = _mapper.Map<CartDto>(newCart);
+
             return new ResponseDto
             {
                 Message = "New cart added successfully!",
                 IsSucceeded = true,
-                StatusCode = 201
+                StatusCode = 201,
+                Data = cartDto 
             };
         }
 

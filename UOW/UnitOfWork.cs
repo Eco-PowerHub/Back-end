@@ -48,7 +48,7 @@ namespace EcoPowerHub.UOW
             _emailTemplateService = emailTemplateService;
             _httpContextAccessor = httpContextAccessor;
 
-            Accounts = new AccountRepository(_context, _userManager, _mapper, _tokenService, _emailService, _emailTemplateService);
+            Accounts = new AccountRepository(_context, _userManager, _mapper, _tokenService, _emailService, _emailTemplateService, _httpContextAccessor);
             Packages = new PackageRepository(_context, _mapper);
             Company = new CompanyRepository(_context, _mapper);
 
@@ -58,9 +58,9 @@ namespace EcoPowerHub.UOW
             Supports = new SupportRepository(_context, _mapper,_userManager, _httpContextAccessor);
             Properties = new PropertyRepository(_context, _mapper);
             Users = new UserRepository(_context,_httpContextAccessor,_userManager);
-            Carts = new CartRepository(_context, _mapper,_userManager);
+            Carts = new CartRepository(_context, _mapper,_userManager,_httpContextAccessor);
             CartItems = new CartItemRepository(_context, _mapper);
-            Orders = new OrderRepository(_context, _mapper, _emailService);
+            Orders = new OrderRepository(_context, _mapper, _emailService,_httpContextAccessor,_emailTemplateService);
         }
         public IAccountRepository Accounts { get; private set; }
         public IUserRepository Users { get; private set; }
