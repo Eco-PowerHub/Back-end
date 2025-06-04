@@ -195,6 +195,10 @@ namespace EcoPowerHub
             app.UseAuthorization();
             app.MapControllers();
             // Prometheus Exporter to collect Metrcis from /metrics Endpoint
+
+
+
+            
             app.UseHttpMetrics();      // Tracks HTTP request metrics
             app.UseMetricServer();     // Exposes the /metrics endpoint
 
