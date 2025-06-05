@@ -26,7 +26,9 @@ namespace EcoPowerHub.Repositories.Services
         #region Service Implementation
         public async Task<ResponseDto> GetAllProductsAsync()
         {
-            var products = await _context.Products.AsNoTracking().ToListAsync();
+            var products = await _context.Products
+                .Include(c=>c.Company)
+                .AsNoTracking().ToListAsync();
             if (products.Count == 0)
                 return new ResponseDto
                 {
