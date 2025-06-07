@@ -19,7 +19,7 @@ Eco Powerhub is a backend application designed to provide energy solutions and r
 - ASP.NET Core Web API
 - Entity Framework Core for database operations
 - AutoMapper for object mapping
-- SQL Server Database
+- PostgresSQL Server Database
 - Docker support for containerization
 - Kubernetes for orchestration
 - Jenkins for CI/CD
