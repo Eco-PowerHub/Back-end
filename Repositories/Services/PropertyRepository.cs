@@ -33,7 +33,7 @@ namespace EcoPowerHub.Repositories.Services
         {
 
             decimal avgMonthlyCost = dto.ElectricityUsageAverage;
-            decimal pricePerKWh = 1.95m;
+            decimal pricePerKWh = 1.95m;        // motnthlyUsage = 641 KWh -> dialyUsage = 21.37
             decimal monthlyUsageKWh = pricePerKWh > 0
                 ? avgMonthlyCost / pricePerKWh
                 : 0m;
@@ -46,20 +46,18 @@ namespace EcoPowerHub.Repositories.Services
 
             foreach (var pkg in packages)
             {
-                decimal panelKW = pkg.EnergyInWatt / 1000m;
+                decimal panelKW = pkg.EnergyInWatt / 1000m; 
                 decimal sunlightHours = 5.5m;
                 decimal dailyPanelOutputKWh = panelKW * sunlightHours;
-                int requiredPanels = dailyPanelOutputKWh > 0
-                    ? (int)Math.Ceiling(dailyUsageKWh / dailyPanelOutputKWh)
-                    : 0;
+                int requiredPanels = ((int)Math.Ceiling(dailyUsageKWh / dailyPanelOutputKWh)) * 2;
 
                 decimal totalPanelArea = requiredPanels * 2.0m;
                 if (totalPanelArea > dto.SurfaceArea)
                     continue;
 
                 decimal peakDayUsageKWh = dailyUsageKWh * 0.4m;
-                decimal peakPowerKW = peakDayUsageKWh / sunlightHours;
-                decimal inverterPowerW = Math.Ceiling(peakPowerKW * 1.3m * 1000m);
+                // decimal peakPowerKW = peakDayUsageKWh / sunlightHours;
+                decimal inverterPowerW = Math.Ceiling(peakDayUsageKWh * 1.3m * 1000m);
 
                 int batteryCount = 0;
                 if (avgMonthlyCost > 3000m && pkg.BatteryCapacity.HasValue && pkg.BatteryCapacity.Value > 0)
