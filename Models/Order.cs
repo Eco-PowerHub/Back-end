@@ -8,7 +8,7 @@ namespace EcoPowerHub.Models
         public int Id { get; set; }
         public decimal Price { get; set; }
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
-        public string OrderStatus { get; set; } = "Confirmed";
+        public string OrderStatus { get; set; } = "Pending";
         public int? CompanyId { get; set; }
         public Company? Company { get; set; }
         public string UserId { get; set; }

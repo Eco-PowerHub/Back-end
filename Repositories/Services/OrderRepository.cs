@@ -255,9 +255,34 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-        public Task<ResponseDto> GetAllOrders()
+        public async Task<ResponseDto> GetAllOrders()
         {
-            throw new NotImplementedException();
+            var orders = await _context.Orders
+                .Include(o => o.Company)
+                .Include(o => o.User)
+                .Include(o => o.Cart)
+                    .ThenInclude(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product)
+                .ToListAsync();
+
+            if (!orders.Any())
+            {
+                return new ResponseDto
+                {
+                    Message = "No orders found",
+                    IsSucceeded = false,
+                    StatusCode = 404
+                };
+            }
+
+            var orderDtos = _mapper.Map<List<OrderDto>>(orders);
+
+            return new ResponseDto
+            {
+                IsSucceeded = true,
+                StatusCode = 200,
+                Data = orderDtos
+            };
         }
         #endregion
     }

@@ -7,7 +7,7 @@ namespace EcoPowerHub.DTO.OrderDto
         public int Id { get; set; }
         public decimal Price { get; set; }
         public DateTime OrderDate { get; set; }
-        public string OrderHistory { get; set; }
+        public string OrderStatus { get; set; } = "Pending";
 
         public string CompanyName { get; set; }
         public string UserId { get; set; }
