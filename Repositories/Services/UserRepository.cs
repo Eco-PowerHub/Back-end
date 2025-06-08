@@ -131,14 +131,14 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
             var roles = await _userManager.GetRolesAsync(user);
-
             var userDto = new UserDataDto
             {
                 UserId = user.Id, 
                 Username = user.UserName!,    
                 Email = user.Email!,
                 ProfilePicture = user.ProfilePicture ?? "",
-                Role = user.Role
+                Role = user.Role,
+               
             };
 
             return new ResponseDto

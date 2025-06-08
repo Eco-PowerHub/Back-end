@@ -35,7 +35,7 @@ namespace EcoPowerHub.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.CartItems.AddItem(cartItem);
+            var response = await _unitOfWork.CartItems.AddToCart(cartItem);
             if (response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });

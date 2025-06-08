@@ -5,7 +5,7 @@ namespace EcoPowerHub.DTO
 {
     public class ProductDto
     {
-        [JsonIgnore]
+       // [JsonIgnore]
         public int Id { get; set; }
         public string Name { get; set; }
         public int Stock { get; set; }

@@ -30,19 +30,31 @@ namespace EcoPowerHub.Controllers
             return BadRequest(ModelState);
 
         }
-
-        [HttpPost("AddCart")]
-        public async Task<IActionResult> AddCart()
+        [HttpGet("UserCart")]
+        public async Task<IActionResult> GetUserCart(int cartId)
         {
             if (ModelState.IsValid)
             {
-                var response = await _unitOfWork.Carts.AddCart();
+                var response = await _unitOfWork.Carts.GetUserCart(cartId);
                 if (response.IsSucceeded)
                     return Ok(response);
                 return StatusCode(response.StatusCode, response.Message);
             }
             return BadRequest(ModelState);
+
         }
+        //[HttpPost("AddCart")]
+        //public async Task<IActionResult> AddCart()
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var response = await _unitOfWork.Carts.AddCart();
+        //        if (response.IsSucceeded)
+        //            return Ok(response);
+        //        return StatusCode(response.StatusCode, response.Message);
+        //    }
+        //    return BadRequest(ModelState);
+        //}
 
         [HttpPut("UpdateCart")]
         public async Task<IActionResult> UpdateCart(int id, CartDto cart)

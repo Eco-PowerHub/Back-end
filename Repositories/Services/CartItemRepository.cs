@@ -27,7 +27,11 @@ namespace EcoPowerHub.Repositories.Services
         #region Services implementation
         public async Task<ResponseDto> GetAllItems()
         {
-            List<CartItem> cartItems = await _context.CartItems.AsNoTracking().Include(p => p.Product).ToListAsync();
+            List<CartItem> cartItems = await _context.CartItems
+                .Include(p => p.Product)
+                .AsNoTracking()
+                .ToListAsync();
+
             if (!cartItems.Any())
             {
                 return new ResponseDto
@@ -35,51 +39,69 @@ namespace EcoPowerHub.Repositories.Services
                     Message = "Items not found!!",
                     IsSucceeded = false,
                     StatusCode = 404,
-                    Data = new List<CartItem>()
+                    Data = new List<CartItemDto>()
                 };
             }
-            var CartList = _mapper.Map<List<CartItemDto>>(cartItems);
+
+            var cartList = _mapper.Map<List<CartItemDto>>(cartItems);
+
             return new ResponseDto
             {
                 IsSucceeded = true,
                 StatusCode = 200,
-                Data = CartList
+                Data = cartList
             };
         }
-        public async Task<ResponseDto> AddItem(CartItemDto item)
+
+        public async Task<ResponseDto> AddToCart(CartItemDto dto)
         {
-            var cartExists = await _context.Carts.AnyAsync(c => c.Id == item.CartId);
-            if (!cartExists)
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.Id == dto.CartId);
+            if (cart == null)
+                return new ResponseDto { IsSucceeded = false, Message = "Cart not found", StatusCode = 404 };
+
+            var product = await _context.Products.FindAsync(dto.ProductId);
+            if (product == null)
+                return new ResponseDto { IsSucceeded = false, Message = "Product not found", StatusCode = 404 };
+
+            var cartItem = new CartItem
             {
-                return new ResponseDto
-                {
-                    Message = "Cart not found!",
-                    IsSucceeded = false,
-                    StatusCode = 404
-                };
-            }
-            var productExists = await _context.Products.AnyAsync(p => p.Id == item.ProductId);
-            if (!productExists)
-            {
-                return new ResponseDto
-                {
-                    Message = "product you try to add doesn't exist!",
-                    IsSucceeded = false,
-                    StatusCode = 404
-                };
-            }
-            var addedItem = _mapper.Map<CartItem>(item);
-            _context.CartItems.Add(addedItem);
+                CartId = cart.Id,
+                ProductId = product.Id,
+                Quantity = dto.Quantity
+            };
+
+            _context.CartItems.Add(cartItem);
             await _context.SaveChangesAsync();
-            var dto = _mapper.Map<CartItemDto>(addedItem);
+
+     
+            var cartItems = await _context.CartItems
+                .Where(ci => ci.CartId == cart.Id)
+                .Include(ci => ci.Product)
+                .ToListAsync();
+
+            decimal totalCartPrice = cartItems.Sum(ci => ci.Product.Price * ci.Quantity);
+            cart.TotalPrice = totalCartPrice;
+            await _context.SaveChangesAsync();
+
+            int numberOfItems = cartItems.Count;
+            int totalQuantity = cartItems.Sum(ci => ci.Quantity);
+            //  int totalQuantity = cartItems.Sum(ci => ci.Quantity);
+
             return new ResponseDto
             {
-                Message = "Item added to cart successfully",
                 IsSucceeded = true,
                 StatusCode = 201,
-                Data = dto
+                Message = "Item added to cart successfully",
+                Data = new
+                {
+                    CartId = cart.Id,
+                    TotalPrice = totalCartPrice,
+                    NumberOfItems = numberOfItems,   
+                    totalQuantity = totalQuantity
+                }
             };
         }
+
         public async Task<ResponseDto> UpdateItem(int id, CartItem cartItem)
         {
             var existingItem = await _context.CartItems.FindAsync(id);

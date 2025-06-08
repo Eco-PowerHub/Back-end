@@ -9,7 +9,7 @@ namespace EcoPowerHub.Repositories.Interfaces
     {
         Task<ResponseDto> GetAllItems();
         //Task<ResponseDto> GetItemById(int id);
-        Task<ResponseDto> AddItem(CartItemDto item);
+        Task<ResponseDto> AddToCart(CartItemDto item);
         Task<ResponseDto> UpdateItem(int id, CartItem cartItem);
         Task<ResponseDto> DeleteItem(int id);
     }

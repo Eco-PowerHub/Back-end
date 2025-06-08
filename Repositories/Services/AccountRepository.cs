@@ -80,6 +80,12 @@ namespace EcoPowerHub.Repositories.Services
             //   var token = _tokenService.GenerateToken(user);
             await _emailService.SendEmailAsync(registerDto.Email, "OTP Email Verfication", $"Hi {registerDto.UserName}" +
                 $",Use the code below to verify your Eco PowerHub account. Your OTP is {otp}");
+            var cart = new Cart
+            {
+                CustomerId = user.Id
+            };
+            _context.Carts.Add(cart);
+            await _context.SaveChangesAsync();  
             return new ResponseDto
             {
                 Message = "OTP sent to your email. Please verify to complete registration.",
@@ -129,6 +135,12 @@ namespace EcoPowerHub.Repositories.Services
                 refreshToken = newRefreshToken.Token;
                 refreshTokenExpiration = newRefreshToken.ExpiresOn;
             }
+            var cart = await _context.Carts
+                                        .AsNoTracking()
+                                        .FirstOrDefaultAsync(c => c.CustomerId == user.Id);
+
+            int cartId = cart?.Id ?? 0;
+
             return new ResponseDto
             {
                 Message = " User login successfully ",
@@ -144,8 +156,7 @@ namespace EcoPowerHub.Repositories.Services
                     Email = user.Email,
                     Role = user.Role,
                     ProfilePicture = user.ProfilePicture ?? "",
-
-
+                    CartId = cartId
                 }
             };
         }

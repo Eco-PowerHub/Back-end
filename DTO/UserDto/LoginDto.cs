@@ -9,5 +9,7 @@ namespace EcoPowerHub.DTO.UserDto
         public string Email { get; set; }
         public string Password { get; set; }
         public Roles Role { get; set; }
+       
+
     }
 }
