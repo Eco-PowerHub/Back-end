@@ -65,11 +65,12 @@ namespace EcoPowerHub.Repositories.Services
 
             var cartItem = new CartItem
             {
+
                 CartId = cart.Id,
                 ProductId = product.Id,
                 Quantity = dto.Quantity
             };
-
+           
             _context.CartItems.Add(cartItem);
             await _context.SaveChangesAsync();
 
@@ -94,6 +95,7 @@ namespace EcoPowerHub.Repositories.Services
                 Message = "Item added to cart successfully",
                 Data = new
                 {
+                    Id  = cartItem.Id,
                     CartId = cart.Id,
                     TotalPrice = totalCartPrice,
                     NumberOfItems = numberOfItems,   
