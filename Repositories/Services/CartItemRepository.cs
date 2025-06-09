@@ -210,7 +210,7 @@ namespace EcoPowerHub.Repositories.Services
 
             return new ResponseDto
             {
-                Message = "User's cart items retrieved successfully",
+                Message = "User's cart items loaded successfully",
                 IsSucceeded = true,
                 StatusCode = 200,
                 Data = cartItemsDto
