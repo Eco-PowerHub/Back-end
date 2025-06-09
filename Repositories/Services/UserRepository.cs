@@ -131,22 +131,37 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
             var roles = await _userManager.GetRolesAsync(user);
-            var userDto = new UserDataDto
-            {
-                UserId = user.Id, 
-                Username = user.UserName!,    
-                Email = user.Email!,
-                ProfilePicture = user.ProfilePicture ?? "",
-                Role = user.Role,
-               
-            };
+            //var userDto = new UserDataDto
+            //{
+            //    UserId = user.Id, 
+            //    Username = user.UserName!,    
+            //    Email = user.Email!,
+            //    ProfilePicture = user.ProfilePicture ?? "",
+            //    Role = user.Role,
 
+
+            //};
+            //var cartId = user.Carts.FirstOrDefault()?.Id;
+            var cart = await _context.Carts
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync(c => c.CustomerId == user.Id);
+
+            int cartId = cart?.Id ?? 0;
             return new ResponseDto
             {
                 Message = "User data retrieved successfully",
                 IsSucceeded = true,
                 StatusCode = 200,
-                Data = userDto
+                Data = new 
+                {
+                    UserId = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Role = user.Role,
+                    ProfilePicture = user.ProfilePicture ?? "",
+                    //   CartId = user.Carts!.First().Id
+                    CartId = cartId
+                }
             };
         }
     }

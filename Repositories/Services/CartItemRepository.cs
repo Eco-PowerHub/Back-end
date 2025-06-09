@@ -7,6 +7,7 @@ using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace EcoPowerHub.Repositories.Services
 {
@@ -14,12 +15,14 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         #region Constructor
-        public CartItemRepository(EcoPowerDbContext context, IMapper mapper) : base(context)
+        public CartItemRepository(EcoPowerDbContext context, IMapper mapper,IHttpContextAccessor httpContextAccessor) : base(context)
         {
             _context = context;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         #endregion
@@ -70,11 +73,11 @@ namespace EcoPowerHub.Repositories.Services
                 ProductId = product.Id,
                 Quantity = dto.Quantity
             };
-           
+
             _context.CartItems.Add(cartItem);
             await _context.SaveChangesAsync();
 
-     
+
             var cartItems = await _context.CartItems
                 .Where(ci => ci.CartId == cart.Id)
                 .Include(ci => ci.Product)
@@ -95,10 +98,10 @@ namespace EcoPowerHub.Repositories.Services
                 Message = "Item added to cart successfully",
                 Data = new
                 {
-                    Id  = cartItem.Id,
+                    Id = cartItem.Id,
                     CartId = cart.Id,
                     TotalPrice = totalCartPrice,
-                    NumberOfItems = numberOfItems,   
+                    NumberOfItems = numberOfItems,
                     totalQuantity = totalQuantity
                 }
             };
@@ -160,8 +163,63 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = 200
             };
         }
+        public async Task<ResponseDto> GetCurrentUserCartItemsAsync()
+        {
+            // Get current user ID from claims
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return new ResponseDto
+                {
+                    Message = "Unauthorized: User not found ",
+                    IsSucceeded = false,
+                    StatusCode = 401,
+                    Data = new List<CartItemDto>()
+                };
+            }
+
+           
+            var cart = await _context.Carts
+                .Include(c => c.CartItems)
+                    .ThenInclude(ci => ci.Product)
+                .FirstOrDefaultAsync(c => c.CustomerId == userId);
+
+            if (cart == null)
+            {
+                return new ResponseDto
+                {
+                    Message = "Cart not found for the current user",
+                    IsSucceeded = false,
+                    StatusCode = 404,
+                    Data = new List<CartItemDto>()
+                };
+            }
+
+            if (cart.CartItems == null || !cart.CartItems.Any())
+            {
+                return new ResponseDto
+                {
+                    Message = "No items found in your cart",
+                    IsSucceeded = true,
+                    StatusCode = 200,
+                    Data = new List<CartItemDto>()
+                };
+            }
+
+            var cartItemsDto = _mapper.Map<List<CartItemDto>>(cart.CartItems);
+
+            return new ResponseDto
+            {
+                Message = "User's cart items retrieved successfully",
+                IsSucceeded = true,
+                StatusCode = 200,
+                Data = cartItemsDto
+            };
+        }
 
         #endregion
 
     }
 }
+
+

@@ -30,6 +30,17 @@ namespace EcoPowerHub.Controllers
             return StatusCode(response.StatusCode, new { response.Message });
         }
 
+        [HttpGet("UserItem")]
+        public async Task<IActionResult> UserItem()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var response = await _unitOfWork.CartItems.GetCurrentUserCartItemsAsync();
+            if (response.IsSucceeded)
+                return Ok(response);
+            return StatusCode(response.StatusCode, new { response.Message });
+        }
+
         [HttpPost("AddItem")]
         public async Task<IActionResult> AddNewItem(CartItemDto cartItem)
         {

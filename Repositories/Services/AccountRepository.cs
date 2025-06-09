@@ -152,6 +152,7 @@ namespace EcoPowerHub.Repositories.Services
                     token = token,
                     RefreshToken = refreshToken,
                     RefreshTokenExpiration = refreshTokenExpiration,
+                    UserId = user.Id,
                     UserName = user.UserName,
                     Email = user.Email,
                     Role = user.Role,
