@@ -62,7 +62,7 @@ namespace EcoPowerHub.Repositories.Services
                 int batteryCount = 0;
                 if (avgMonthlyCost > 3000m && pkg.BatteryCapacity.HasValue && pkg.BatteryCapacity.Value > 0)
                 {
-                    batteryCount = (int)Math.Ceiling(dailyUsageKWh / pkg.BatteryCapacity.Value);
+                    batteryCount = (int)Math.Ceiling(dailyUsageKWh / (pkg.BatteryCapacity.Value / 1000));
                 }
 
                 decimal panelCost = requiredPanels * pkg.PanelPrice;
