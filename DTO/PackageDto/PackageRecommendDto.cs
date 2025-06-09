@@ -20,6 +20,7 @@
 
         public float ROIYears => PricePerYear > 0 ? (float)(PackagePrice / PricePerYear) : 0;
         public decimal SavingCost => ROIYears > 0 ? PricePerYear * (30 - (decimal)ROIYears) : 0;
+        public decimal TotalYearsSaving => 30 - (decimal)ROIYears;
 
         public ProductDto Product { get; set; }
     }

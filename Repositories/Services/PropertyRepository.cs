@@ -83,8 +83,11 @@ namespace EcoPowerHub.Repositories.Services
                     SurfaceArea = dto.SurfaceArea,
                     ElectricityUsage = dto.ElectricityUsage,
                     
+                    
                 });
             }
+            
+
 
             if (!recommendedPackages.Any())
             {
@@ -103,7 +106,12 @@ namespace EcoPowerHub.Repositories.Services
 
             return new ResponseDto
             {
-                Data = recommendedPackages,
+                Data =  new 
+                {
+                recommendedPackages,
+                TotalYearsSaving = recommendedPackages.Select(p=>p.TotalYearsSaving).ToList(),
+
+                },
                 IsSucceeded = true,
                 Message = "تم جلب الحزم الموصى بها بنجاح."
             };
