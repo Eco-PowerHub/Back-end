@@ -69,6 +69,8 @@ namespace EcoPowerHub.Repositories.Services
                 decimal inverterCost = (inverterPowerW / 1000m) * pkg.InverterPricePerKW;
                 decimal batteryCost = batteryCount * pkg.BatteryPrice;
                 decimal totalPrice = panelCost + inverterCost + batteryCost;
+ 
+
 
                 recommendedPackages.Add(new PackageRecommendDto
                 {
@@ -104,12 +106,14 @@ namespace EcoPowerHub.Repositories.Services
             _context.UserProperties.Add(entity);
             await _context.SaveChangesAsync();
 
+
             return new ResponseDto
             {
                 Data = new
                 {
                     recommendedPackages,
-                    TotalYearsSaving = recommendedPackages.Select(p => p.TotalYearsSaving)//.ToList(),
+                   // TotalYearsSaving = recommendedPackages.Select(p => p.TotalYearsSaving)//.ToList(),
+                  
 
                 },
                 IsSucceeded = true,
