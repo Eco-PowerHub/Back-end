@@ -31,9 +31,11 @@ namespace EcoPowerHub.AutoMapper
             //    .ReverseMap();
             //   CreateMap<Product, ProductDto>().ReverseMap();
             CreateMap<ProductDto, Product>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore());
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ReverseMap();
 
-            CreateMap<ProductDto, Product>().ReverseMap();
+
+       //     CreateMap<ProductDto, Product>().ReverseMap();
             CreateMap<CategoryDto, Category>().ReverseMap();
             CreateMap<UserSupport, GetUserSupportDto>();
             CreateMap<AddResponseDto, UserSupport>();

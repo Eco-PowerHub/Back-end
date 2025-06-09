@@ -236,7 +236,7 @@ namespace EcoPowerHub.Repositories.Services
         <p>Order ID: <strong>{order.Id}</strong></p>
         <p>Order Date: {order.OrderDate.ToString("yyyy-MM-dd HH:mm")}</p>
         <p>Total Price: <strong>{order.Price} EGP</strong></p>
-        <a href='http://157.175.182.159/{order.Id}' class='button'>View Order</a>
+        <a href='http://157.175.182.159/cart'/{order.Id} class='button'>View Order</a>
         <p class='footer'>If you didn’t place this order, please contact support immediately.</p>
         <p>Thank you for choosing Eco Power Hub 🌞</p>
     </div>

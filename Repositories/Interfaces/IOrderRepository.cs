@@ -7,7 +7,7 @@ namespace EcoPowerHub.Repositories.Interfaces
 {
     public interface IOrderRepository :IGenericRepository<Order>
     {
-        Task<ResponseDto> Checkout(CreateOrderDto dto);
+        Task<ResponseDto> Checkout();
         Task<ResponseDto> GetAllOrders();
         Task<ResponseDto> GetOrderById(int id);
         Task<ResponseDto> DeleteOrder(int id);

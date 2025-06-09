@@ -33,7 +33,7 @@ namespace EcoPowerHub.Repositories.Services
 
         #region Service Implementation
 
-        public async Task<ResponseDto> Checkout(CreateOrderDto dto)
+        public async Task<ResponseDto> Checkout()
         {
             var userId = _httpcontextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
@@ -46,7 +46,7 @@ namespace EcoPowerHub.Repositories.Services
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
                 .ThenInclude(ci => ci.Product)
-                .FirstOrDefaultAsync(c => c.Id == dto.CartId && c.CustomerId == userId);
+                .FirstOrDefaultAsync(c=> c.CustomerId == userId);
 
             if (cart == null || cart.CartItems == null || !cart.CartItems.Any())
             {
@@ -82,13 +82,13 @@ namespace EcoPowerHub.Repositories.Services
             {
                 UserId = userId,
                 OrderDate = DateTime.UtcNow,
-                Price = cart.CartItems.Sum(i => i.Product!.Price * i.Quantity),
+                Price = cart.TotalPrice,
                 OrderStatus = "Confirmed",
                 CartId = cart.Id,
             };
 
             _context.Orders.Add(order);
-            //  _context.Carts.Remove(cart);
+            // _context.Carts.Remove(cart);
             await _context.SaveChangesAsync();
 
             var customer = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
@@ -102,7 +102,11 @@ namespace EcoPowerHub.Repositories.Services
                 Message = "Order created successfully and email sent",
                 IsSucceeded = true,
                 StatusCode = 201,
-                Data = new { OrderId = order.Id }
+                Data = new 
+                {
+                    OrderId = order.Id ,
+                    Price = cart.TotalPrice ,
+                }
             };
         }
 

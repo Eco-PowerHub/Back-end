@@ -239,6 +239,7 @@ namespace EcoPowerHub.Repositories.Services
             updatedCompany.Rate = company.Rate;
             updatedCompany.Location = company.Location;
             updatedCompany.PhoneNumber = company.PhoneNumber;
+            updatedCompany.Email = company.Email;
             await _context.SaveChangesAsync();
             var updatedCompanyDto = _mapper.Map<CompanyDto>(updatedCompany);
             return new ResponseDto

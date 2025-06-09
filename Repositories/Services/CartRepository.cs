@@ -2,6 +2,7 @@
 using EcoPowerHub.Data;
 using EcoPowerHub.DTO;
 using EcoPowerHub.DTO.CartDto;
+using EcoPowerHub.DTO.OrderDto;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
@@ -50,7 +51,7 @@ namespace EcoPowerHub.Repositories.Services
                 Data = dto
             };
         }
-        public async Task<ResponseDto> AddCart()
+        public async Task<ResponseDto> GetUserCart(int cartId)
         {
             var userId = _contextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
@@ -63,24 +64,61 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
 
-            var newCart = new Cart
+            var existingCart = await _context.Carts
+                .Include(o => o.Order)
+                .FirstOrDefaultAsync(c => c.Id == cartId);
+
+            if (existingCart == null)
             {
-                CustomerId = userId
-            };
+                return new ResponseDto
+                {
+                    Message = "Cart not found!",
+                    IsSucceeded = false,
+                    StatusCode = 404
+                };
+            }
 
-            await _context.Carts.AddAsync(newCart);
-            await _context.SaveChangesAsync();
-
-            var cartDto = _mapper.Map<CartDto>(newCart);
-
+            var dto = _mapper.Map<CartDto>(existingCart);
             return new ResponseDto
             {
-                Message = "New cart added successfully!",
                 IsSucceeded = true,
                 StatusCode = 201,
-                Data = cartDto 
+                Data = dto
             };
         }
+
+        
+        //public async Task<ResponseDto> AddCart()
+        //{
+        //    var userId = _contextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //    if (string.IsNullOrEmpty(userId))
+        //    {
+        //        return new ResponseDto
+        //        {
+        //            Message = "User not found!",
+        //            IsSucceeded = false,
+        //            StatusCode = 404
+        //        };
+        //    }
+
+        //    var newCart = new Cart
+        //    {
+        //        CustomerId = userId
+        //    };
+
+        //    await _context.Carts.AddAsync(newCart);
+        //    await _context.SaveChangesAsync();
+
+        //    var cartDto = _mapper.Map<CartDto>(newCart);
+
+        //    return new ResponseDto
+        //    {
+        //        Message = "New cart added successfully!",
+        //        IsSucceeded = true,
+        //        StatusCode = 201,
+        //        Data = cartDto 
+        //    };
+        //}
 
         public async Task<ResponseDto> DeleteCart(int id)
         {
