@@ -82,7 +82,7 @@ namespace EcoPowerHub.Repositories.Services
                     InverterModel = pkg.Inverter,
                     SurfaceArea = dto.SurfaceArea,
                     ElectricityUsage = dto.ElectricityUsage,
-                    
+                    Image = pkg.Image
                     
                 });
             }
