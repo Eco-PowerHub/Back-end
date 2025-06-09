@@ -109,7 +109,7 @@ namespace EcoPowerHub.Repositories.Services
 
             return new ResponseDto
             {
-                Data = recommendedPackages;
+                Data = recommendedPackages,
                 // {
                 //     recommendedPackages,
                 //     TotalYearsSaving = recommendedPackages.Select(p => p.TotalYearsSaving)//.ToList(),
