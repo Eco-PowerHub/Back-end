@@ -99,5 +99,29 @@ namespace EcoPowerHub.Controllers
 
             return StatusCode(response.StatusCode, new { response.Message });
         }
+
+        //[HttpPost("AddpPackageTOCart/{packageId}")]
+        //public async Task<IActionResult> AddPackageToCart(int packageId,int cartId)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var response = await _unitOfWork.Packages.AddPackageToCart(packageId,cartId);
+        //    if (response.IsSucceeded)
+        //        return Ok(response);
+
+        //    return StatusCode(response.StatusCode, new { response.Message });
+        //}
+
+        //[HttpGet("UserPackage/{packageId}")]
+        //public async Task<IActionResult> GetUserPackage()
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+        //    var response = await _unitOfWork.Packages.GetCurrentUserPackageAsync();
+        //    if (response.IsSucceeded)
+        //        return Ok(response);
+
+        //    return StatusCode(response.StatusCode, new { response.Message });
+        //}
     }
 }

@@ -2,6 +2,7 @@
 using EcoPowerHub.Data;
 using EcoPowerHub.DTO;
 using EcoPowerHub.DTO.OrderDto;
+using EcoPowerHub.DTO.PackageDto;
 using EcoPowerHub.Models;
 using EcoPowerHub.Repositories.GenericRepositories;
 using EcoPowerHub.Repositories.Interfaces;
@@ -33,20 +34,22 @@ namespace EcoPowerHub.Repositories.Services
 
         #region Service Implementation
 
-        public async Task<ResponseDto> Checkout()
+        public async Task<ResponseDto> Checkout(string userId)
         {
-            var userId = _httpcontextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
+            {
                 return new ResponseDto
                 {
-                    Message = "user not authorized!",
                     IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Message = "unknown user"
                 };
+            }
 
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
                 .ThenInclude(ci => ci.Product)
-                .FirstOrDefaultAsync(c=> c.CustomerId == userId);
+                .FirstOrDefaultAsync(c => c.CustomerId == userId);
 
             if (cart == null || cart.CartItems == null || !cart.CartItems.Any())
             {
@@ -92,7 +95,7 @@ namespace EcoPowerHub.Repositories.Services
             await _context.SaveChangesAsync();
 
             var customer = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-           var emailbody = _emailTemplateService.OrderConfirmationEmail(order);
+            var emailbody = _emailTemplateService.OrderConfirmationEmail(order);
             await _emailService.SendEmailAsync(customer.Email!, " Order Confirmation Email", emailbody);
 
 
@@ -102,10 +105,75 @@ namespace EcoPowerHub.Repositories.Services
                 Message = "Order created successfully and email sent",
                 IsSucceeded = true,
                 StatusCode = 201,
-                Data = new 
+                Data = new
                 {
-                    OrderId = order.Id ,
-                    Price = cart.TotalPrice ,
+                    OrderId = order.Id,
+                    Price = cart.TotalPrice,
+                }
+            };
+        }
+
+
+        public async Task<ResponseDto> CheckoutPackage(CheckoutPackageDto dto)
+        {
+            var userId = dto.UserId; 
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return new ResponseDto
+                {
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Message = "unknown user"
+                };
+            }
+
+
+            var pkg = await _context.Packages
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == dto.PackageId);
+            if (pkg == null)
+                return new ResponseDto
+                {
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    Message = "الحزمة غير موجودة."
+                };
+
+            var order = new Order
+            {
+                UserId = userId,
+                OrderDate = DateTime.UtcNow,
+                Price = dto.TotalPrice,      
+                OrderStatus = "Confirmed",
+                CompanyId = pkg.CompanyId
+            };
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            var customer = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == userId)!;
+
+            var emailBody = _emailTemplateService.PackagePurchaseConfirmationEmail(pkg, order);
+            await _emailService.SendEmailAsync(
+             customer.Email!,
+             "تأكيد شراء الحزمة",
+             emailBody
+             );
+
+            return new ResponseDto
+            {
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.Created,
+                Message = "تم إتمام الشراء بنجاح وإرسال رسالة التأكيد.",
+                Data = new
+                {
+                    order.Id,
+                    PackageId = pkg.Id,
+                    PackageName = pkg.Name,
+                    TotalPrice = dto.TotalPrice,
+                    order.OrderDate
                 }
             };
         }
@@ -141,7 +209,7 @@ namespace EcoPowerHub.Repositories.Services
             };
         }
 
-
+       
         public async Task<ResponseDto> DeleteOrder(int id)
         {
             var order = await _context.Orders

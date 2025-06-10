@@ -12,7 +12,6 @@ namespace EcoPowerHub.DTO.UserPropertyDto
         public decimal[] ElectricityUsage { get; set; } = new decimal[6];
         public decimal ElectricityUsageAverage => ElectricityUsage.Length > 0 ? ElectricityUsage.Average() : 0;
         public decimal PricePerYear => ElectricityUsageAverage * 12;
-
         public float ROIYears => PricePerYear > 0 ? (float)(PackagePrice / PricePerYear) : 0;
         public decimal SavingCost => ROIYears > 0 ? PricePerYear * (30 - (decimal)ROIYears) : 0;
 

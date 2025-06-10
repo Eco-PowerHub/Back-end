@@ -244,5 +244,48 @@ namespace EcoPowerHub.Repositories.Services
 </html>
 ";
         }
+
+        public string PackagePurchaseConfirmationEmail(Package pkg, Order order)
+        {
+            return $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>تم استلام طلبك بنجاح، سوف يتم التواصل معك من قبل مختص</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0; padding: 20px;
+        }}
+        .container {{
+            max-width: 600px; margin: auto;
+            background-color: #fff; padding: 20px;
+            border-radius: 8px; text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }}
+        h2 {{ color: #4CAF50; }}
+        p {{ color: #555; }}
+        .footer {{ margin-top: 30px; font-size: 12px; color: #888; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <h2>تم استلام طلبك بنجاح، سوف يتم التواصل معك من قبل مختص!</h2>
+        <p>اسم الحزمة: <strong>{pkg.Name}</strong></p>
+        <p>رقم الطلب: <strong>{order.Id}</strong></p>
+        <p>المبلغ المدفوع: <strong>{order.Price} EGP</strong></p>
+        <p>تاريخ الطلب: {order.OrderDate:yyyy-MM-dd HH:mm}</p>
+        <div class='footer'>
+            شكراً لاختيارك EcoPowerHub 🌞<br/>
+            إذا لم تقم بهذا الطلب، الرجاء التواصل مع الدعم فوراً.
+        </div>
+    </div>
+</body>
+</html>";
+        }
     }
-    }
+}
+    

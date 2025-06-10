@@ -4,6 +4,7 @@
     {
         public int PackageId { get; set; }
         public string PackageName { get; set; }
+        public string Image {  get; set; }
         public decimal SuggestedPrice { get; set; }
         public int RequiredBatteries { get; set; }
         public int RequiredPanels { get; set; }
@@ -20,8 +21,7 @@
 
         public float ROIYears => PricePerYear > 0 ? (float)(PackagePrice / PricePerYear) : 0;
         public decimal SavingCost => ROIYears > 0 ? PricePerYear * (30 - (decimal)ROIYears) : 0;
-        public decimal TotalYearsSaving => 30 - (decimal)ROIYears;
-
+        public decimal TotalYearsSaving => ROIYears > 0 ? 30 - (decimal)ROIYears : 0;
         public ProductDto Product { get; set; }
     }
 

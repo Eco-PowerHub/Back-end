@@ -18,7 +18,7 @@ namespace EcoPowerHub.Repositories.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         #region Constructor
-        public CartItemRepository(EcoPowerDbContext context, IMapper mapper,IHttpContextAccessor httpContextAccessor) : base(context)
+        public CartItemRepository(EcoPowerDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(context)
         {
             _context = context;
             _mapper = mapper;
@@ -55,6 +55,58 @@ namespace EcoPowerHub.Repositories.Services
                 Data = cartList
             };
         }
+        /*
+        public async Task<ResponseDto> AddToCart(CartItemDto dto)
+        {
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.Id == dto.CartId);
+            if (cart == null)
+                return new ResponseDto { IsSucceeded = false, Message = "Cart not found", StatusCode = 404 };
+
+            var product = await _context.Products.FindAsync(dto.ProductId);
+            if (product == null)
+                return new ResponseDto { IsSucceeded = false, Message = "Product not found", StatusCode = 404 };
+
+            var cartItem = new CartItem
+            {
+
+                CartId = cart.Id,
+                ProductId = product.Id,
+                Quantity = dto.Quantity
+            };
+
+            _context.CartItems.Add(cartItem);
+            await _context.SaveChangesAsync();
+
+
+            var cartItems = await _context.CartItems
+                .Where(ci => ci.CartId == cart.Id)
+                .Include(ci => ci.Product)
+                .ToListAsync();
+
+            decimal totalCartPrice = cartItems.Sum(ci => ci.Product.Price * ci.Quantity);
+            cart.TotalPrice = totalCartPrice;
+            await _context.SaveChangesAsync();
+
+            int numberOfItems = cartItems.Count;
+            int totalQuantity = cartItems.Sum(ci => ci.Quantity);
+            //  int totalQuantity = cartItems.Sum(ci => ci.Quantity);
+
+            return new ResponseDto
+            {
+                IsSucceeded = true,
+                StatusCode = 201,
+                Message = "Item added to cart successfully",
+                Data = new
+                {
+                    Id = cartItem.Id,
+                    CartId = cart.Id,
+                    TotalPrice = totalCartPrice,
+                    NumberOfItems = numberOfItems,
+                    totalQuantity = totalQuantity
+                }
+            };
+        }
+        */
 
         public async Task<ResponseDto> AddToCart(CartItemDto dto)
         {
@@ -106,7 +158,6 @@ namespace EcoPowerHub.Repositories.Services
                 }
             };
         }
-
         public async Task<ResponseDto> UpdateItem(int id, CartItem cartItem)
         {
             var existingItem = await _context.CartItems.FindAsync(id);
@@ -178,10 +229,11 @@ namespace EcoPowerHub.Repositories.Services
                 };
             }
 
-           
+
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
                     .ThenInclude(ci => ci.Product)
+                //             .ThenInclude(c=)
                 .FirstOrDefaultAsync(c => c.CustomerId == userId);
 
             if (cart == null)
@@ -221,5 +273,3 @@ namespace EcoPowerHub.Repositories.Services
 
     }
 }
-
-

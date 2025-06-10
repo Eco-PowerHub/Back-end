@@ -1,4 +1,5 @@
 ﻿using EcoPowerHub.DTO.OrderDto;
+using EcoPowerHub.DTO.PackageDto;
 using EcoPowerHub.UOW;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -46,18 +47,28 @@ namespace EcoPowerHub.Controllers
 
         // POST api/<OrderController>
         [HttpPost("Checkout")]
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Checkout([FromBody] string userId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Orders.Checkout();
+
+            var response = await _unitOfWork.Orders.Checkout(userId);
             if (response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });
         }
-
+        [HttpPost("CheckoutPackage")]
+        public async Task<IActionResult> CheckoutPackage([FromBody] CheckoutPackageDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var response = await _unitOfWork.Orders.CheckoutPackage(dto);
+            if (response.IsSucceeded)
+                return Ok(response);
+            return StatusCode(response.StatusCode, new { response.Message });
+        }
         // DELETE api/<OrderController>/5
-     //   [Authorize(Policy = "Only Admin")]
+        //   [Authorize(Policy = "Only Admin")]
         [HttpDelete("DeleteOrder/{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {

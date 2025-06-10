@@ -1,5 +1,6 @@
 ﻿using EcoPowerHub.Helpers;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EcoPowerHub.Models
 {
@@ -24,6 +25,9 @@ namespace EcoPowerHub.Models
         public decimal PanelPrice { get; set; }
         public decimal InverterPricePerKW { get; set; }
         public decimal BatteryPrice { get; set; }
+        //[JsonIgnore]
+        //[ForeignKey("CartId")]
+        //public virtual Cart? Cart { get; set; }
 
 
     }

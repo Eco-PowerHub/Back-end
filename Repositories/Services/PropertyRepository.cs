@@ -69,6 +69,8 @@ namespace EcoPowerHub.Repositories.Services
                 decimal inverterCost = (inverterPowerW / 1000m) * pkg.InverterPricePerKW;
                 decimal batteryCost = batteryCount * pkg.BatteryPrice;
                 decimal totalPrice = panelCost + inverterCost + batteryCost;
+ 
+
 
                 recommendedPackages.Add(new PackageRecommendDto
                 {
@@ -82,7 +84,7 @@ namespace EcoPowerHub.Repositories.Services
                     InverterModel = pkg.Inverter,
                     SurfaceArea = dto.SurfaceArea,
                     ElectricityUsage = dto.ElectricityUsage,
-                    
+                    Image = pkg.Image
                     
                 });
             }
@@ -104,14 +106,11 @@ namespace EcoPowerHub.Repositories.Services
             _context.UserProperties.Add(entity);
             await _context.SaveChangesAsync();
 
+
             return new ResponseDto
             {
-                Data =  new 
-                {
-                recommendedPackages,
-                TotalYearsSaving = recommendedPackages.Select(p=>p.TotalYearsSaving).ToList(),
-
-                },
+                Data = recommendedPackages,
+                //TotalYearsSaving = recommendedPackages.Select(p => p.TotalYearsSaving)//.ToList(),
                 IsSucceeded = true,
                 Message = "تم جلب الحزم الموصى بها بنجاح."
             };
