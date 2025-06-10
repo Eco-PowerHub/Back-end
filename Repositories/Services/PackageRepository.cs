@@ -8,6 +8,7 @@ using EcoPowerHub.Repositories.Interfaces;
 using EcoPowerHub.UOW;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Security.Claims;
 
 namespace EcoPowerHub.Repositories.Services
 {
@@ -15,12 +16,15 @@ namespace EcoPowerHub.Repositories.Services
     {
         private readonly EcoPowerDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
 
         #region Constructor
-        public PackageRepository(EcoPowerDbContext context, IMapper mapper) : base(context)
+        public PackageRepository(EcoPowerDbContext context, IMapper mapper,IHttpContextAccessor httpContextAccessor) : base(context)
         {
             _mapper = mapper;
             _context = context;
+            _httpContextAccessor = httpContextAccessor; 
         }
         #endregion
         #region Service Implementation
@@ -203,7 +207,113 @@ namespace EcoPowerHub.Repositories.Services
                 StatusCode = (int)HttpStatusCode.OK,
                 Data = dto
             };
-        } 
-        #endregion
+        }
+
+        public async Task<ResponseDto> AddPackageToCart(int packageId, int cartId)
+        {
+            var existingPackage = await _context.Packages.FindAsync(packageId);
+            if (existingPackage is null)
+            {
+                return new ResponseDto
+                {
+                    Message = "Package not found!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
+            }
+
+            var cart = await _context.Carts
+                .Include(c => c.Packages) 
+                .FirstOrDefaultAsync(c => c.Id == cartId);
+
+            if (cart is null)
+            {
+                return new ResponseDto
+                {
+                    Message = "Cart not found!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
+            }
+
+           
+            if (cart.Packages.Any(p => p.Id == packageId))
+            {
+                return new ResponseDto
+                {
+                    Message = "Package already in cart!",
+                    IsSucceeded = false,
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
+
+            
+            cart.Packages.Add(existingPackage);
+
+            await _context.SaveChangesAsync();
+
+            return new ResponseDto
+            {
+                Message = "Package added to cart successfully!",
+                IsSucceeded = true,
+                StatusCode = (int)HttpStatusCode.OK,
+                Data = existingPackage
+            };
+        }
+        public async Task<ResponseDto> GetCurrentUserPackageAsync()
+        {
+           
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return new ResponseDto
+                {
+                    Message = "Unauthorized: User not found",
+                    IsSucceeded = false,
+                    StatusCode = 401,
+                    Data = new List<PackageDto>()
+                };
+            }
+
+            var cart = await _context.Carts
+                .Include(c => c.Packages)
+                .FirstOrDefaultAsync(c => c.CustomerId == userId);
+
+            if (cart == null)
+            {
+                return new ResponseDto
+                {
+                    Message = "Cart not found for the current user",
+                    IsSucceeded = false,
+                    StatusCode = 404,
+                    Data = new List<PackageDto>()
+                };
+            }
+
+            if (cart.Packages == null || !cart.Packages.Any())
+            {
+                return new ResponseDto
+                {
+                    Message = "No packages found in your cart",
+                    IsSucceeded = true,
+                    StatusCode = 200,
+                    Data = new List<PackageDto>()
+                };
+            }
+
+            // Map to DTO
+            var packageDtos = _mapper.Map<List<PackageDto>>(cart.Packages);
+
+            return new ResponseDto
+            {
+                Message = "User's cart packages loaded successfully",
+                IsSucceeded = true,
+                StatusCode = 200,
+                Data = packageDtos
+            };
+        }
+
+
     }
+    #endregion
 }

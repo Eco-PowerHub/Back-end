@@ -3,6 +3,7 @@ using System;
 using EcoPowerHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EcoPowerHub.Migrations
 {
     [DbContext(typeof(EcoPowerDbContext))]
-    partial class EcoPowerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250610083932_AddPackageTOCart")]
+    partial class AddPackageTOCart
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,9 +161,6 @@ namespace EcoPowerHub.Migrations
                     b.Property<int?>("CartId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("PackageId")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("ProductId")
                         .HasColumnType("integer");
 
@@ -170,8 +170,6 @@ namespace EcoPowerHub.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
-
-                    b.HasIndex("PackageId");
 
                     b.HasIndex("ProductId");
 
@@ -703,18 +701,12 @@ namespace EcoPowerHub.Migrations
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("EcoPowerHub.Models.Package", "Package")
-                        .WithMany()
-                        .HasForeignKey("PackageId");
-
                     b.HasOne("EcoPowerHub.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Cart");
-
-                    b.Navigation("Package");
 
                     b.Navigation("Product");
                 });
@@ -747,7 +739,7 @@ namespace EcoPowerHub.Migrations
 
             modelBuilder.Entity("EcoPowerHub.Models.Package", b =>
                 {
-                    b.HasOne("EcoPowerHub.Models.Cart", "Cart")
+                    b.HasOne("EcoPowerHub.Models.Cart", null)
                         .WithMany("Packages")
                         .HasForeignKey("CartId");
 
@@ -756,8 +748,6 @@ namespace EcoPowerHub.Migrations
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Cart");
 
                     b.Navigation("Company");
                 });

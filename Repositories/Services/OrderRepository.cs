@@ -33,20 +33,24 @@ namespace EcoPowerHub.Repositories.Services
 
         #region Service Implementation
 
-        public async Task<ResponseDto> Checkout()
+        public async Task<ResponseDto> Checkout(string userId)
         {
-            var userId = _httpcontextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
+            {
                 return new ResponseDto
                 {
-                    Message = "user not authorized!",
+                    Message = "User ID is required",
                     IsSucceeded = false,
+                    StatusCode = 400
                 };
+            }
 
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
-                .ThenInclude(ci => ci.Product)
-                .FirstOrDefaultAsync(c=> c.CustomerId == userId);
+                  .ThenInclude(p=>p.Package)
+                .Include(c => c.CartItems)
+                   .ThenInclude(ci => ci.Package)
+                .FirstOrDefaultAsync(c => c.CustomerId == userId);
 
             if (cart == null || cart.CartItems == null || !cart.CartItems.Any())
             {
@@ -60,6 +64,15 @@ namespace EcoPowerHub.Repositories.Services
 
             foreach (var item in cart.CartItems)
             {
+                if (item.Product == null && item.Package == null)
+                {
+                    return new ResponseDto
+                    {
+                        Message = "Invalid cart item: neither product nor package selected.",
+                        IsSucceeded = false,
+                        StatusCode = 400
+                    };
+                }
                 var product = item.Product;
                 if (product != null)
                 {
@@ -76,7 +89,9 @@ namespace EcoPowerHub.Repositories.Services
                     product.Stock -= item.Quantity;
                     product.Amount -= item.Quantity;
                 }
+             
             }
+            
 
             var order = new Order
             {
@@ -88,24 +103,21 @@ namespace EcoPowerHub.Repositories.Services
             };
 
             _context.Orders.Add(order);
-            // _context.Carts.Remove(cart);
             await _context.SaveChangesAsync();
 
             var customer = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-           var emailbody = _emailTemplateService.OrderConfirmationEmail(order);
-            await _emailService.SendEmailAsync(customer.Email!, " Order Confirmation Email", emailbody);
-
-
+            var emailBody = _emailTemplateService.OrderConfirmationEmail(order);
+            await _emailService.SendEmailAsync(customer.Email!, "Order Confirmation Email", emailBody);
 
             return new ResponseDto
             {
                 Message = "Order created successfully and email sent",
                 IsSucceeded = true,
                 StatusCode = 201,
-                Data = new 
+                Data = new
                 {
-                    OrderId = order.Id ,
-                    Price = cart.TotalPrice ,
+                    OrderId = order.Id,
+                    Price = cart.TotalPrice,
                 }
             };
         }

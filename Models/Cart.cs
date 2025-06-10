@@ -14,6 +14,8 @@ namespace EcoPowerHub.Models
         public ApplicationUser Customer { get; set; }
 
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+        public ICollection<Package> Packages { get; set; } = new List<Package>();
+
         public Order Order { get; set; }
     }
 }

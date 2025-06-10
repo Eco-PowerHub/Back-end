@@ -16,5 +16,10 @@ namespace EcoPowerHub.Models
         [JsonIgnore]
         [ForeignKey("ProductId")]
         public virtual Product? Product { get; set; }
+
+        [JsonIgnore]
+        [ForeignKey("PackageId")]
+        public int? PackageId { get; set; }
+        public Package? Package { get; set; }
     }
 }

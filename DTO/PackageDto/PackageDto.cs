@@ -4,6 +4,7 @@ namespace EcoPowerHub.DTO.PackageDto
 {
     public class PackageDto
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public PackageType PackageType { get; set; }
         public string Image { get; set; }

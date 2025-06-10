@@ -13,5 +13,8 @@ namespace EcoPowerHub.Repositories.Interfaces
         Task<ResponseDto> GetPackageById(int id);
           Task<ResponseDto> UpdatePackageAsync(int id, PackageDto packageDto);
         Task<ResponseDto> DeletePackageAsync(int id);
+        Task<ResponseDto> AddPackageToCart(int packageId, int cartId);
+        Task<ResponseDto> GetCurrentUserPackageAsync();
+
     }
 }

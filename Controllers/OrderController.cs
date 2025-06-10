@@ -46,11 +46,11 @@ namespace EcoPowerHub.Controllers
 
         // POST api/<OrderController>
         [HttpPost("Checkout")]
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Checkout([FromBody]string userId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _unitOfWork.Orders.Checkout();
+            var response = await _unitOfWork.Orders.Checkout(userId);
             if (response.IsSucceeded)
                 return Ok(response);
             return StatusCode(response.StatusCode, new { response.Message });

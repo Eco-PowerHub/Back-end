@@ -182,6 +182,7 @@ namespace EcoPowerHub.Repositories.Services
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
                     .ThenInclude(ci => ci.Product)
+       //             .ThenInclude(c=)
                 .FirstOrDefaultAsync(c => c.CustomerId == userId);
 
             if (cart == null)
