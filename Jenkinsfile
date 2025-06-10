@@ -8,7 +8,7 @@ pipeline {
     agent any
     environment {
         GIT_REPO = 'https://github.com/Eco-PowerHub/Back-end.git'
-        BRANCH = 'Dev'
+        BRANCH = 'Main'
         EC2_USER = 'ubuntu'
         IMAGE_NAME = 'khaledmahmoud7/eco-back'
         IMAGE_TAG = "${BUILD_NUMBER}"
