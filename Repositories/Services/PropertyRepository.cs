@@ -109,13 +109,12 @@ namespace EcoPowerHub.Repositories.Services
 
             return new ResponseDto
             {
-                Data = new
-                {
-                    recommendedPackages,
-                   // TotalYearsSaving = recommendedPackages.Select(p => p.TotalYearsSaving)//.ToList(),
-                  
+                Data = recommendedPackages,
+                // {
+                //     recommendedPackages,
+                //     TotalYearsSaving = recommendedPackages.Select(p => p.TotalYearsSaving)//.ToList(),
 
-                },
+                // },
                 IsSucceeded = true,
                 Message = "تم جلب الحزم الموصى بها بنجاح."
             };
