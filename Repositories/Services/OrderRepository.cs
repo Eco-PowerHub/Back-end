@@ -34,22 +34,33 @@ namespace EcoPowerHub.Repositories.Services
 
         #region Service Implementation
 
-        public async Task<ResponseDto> Checkout(string userId)
+        public async Task<ResponseDto> Checkout(int cartId)
         {
+            var userId = _httpcontextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 return new ResponseDto
                 {
+                    Message = "User not found!",
                     IsSucceeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Message = "unknown user"
+                    StatusCode = 404
                 };
             }
+
+            //if (string.IsNullOrEmpty(userId))
+            //{
+            //    return new ResponseDto
+            //    {
+            //        IsSucceeded = false,
+            //        StatusCode = (int)HttpStatusCode.BadRequest,
+            //        Message = "unknown user"
+            //    };
+            //}
 
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
                 .ThenInclude(ci => ci.Product)
-                .FirstOrDefaultAsync(c => c.CustomerId == userId);
+                .FirstOrDefaultAsync(c => c.Id == cartId);
 
             if (cart == null || cart.CartItems == null || !cart.CartItems.Any())
             {

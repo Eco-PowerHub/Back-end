@@ -8,7 +8,7 @@ namespace EcoPowerHub.Repositories.Interfaces
 {
     public interface IOrderRepository :IGenericRepository<Order>
     {
-        Task<ResponseDto> Checkout(string userId);
+        Task<ResponseDto> Checkout(int cartId);
         Task<ResponseDto> CheckoutPackage(CheckoutPackageDto dto);
         Task<ResponseDto> GetAllOrders();
         Task<ResponseDto> GetOrderById(int id);
