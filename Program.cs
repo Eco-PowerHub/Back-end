@@ -187,6 +187,7 @@ namespace EcoPowerHub
 
             #region MiddleWares
             app.UseCors("AllowAll");
+            app.UseHttpsRedirection();
             // Configure the HTTP request pipeline.
             app.UseSwagger();
             app.UseSwaggerUI();
@@ -195,10 +196,6 @@ namespace EcoPowerHub
             app.UseAuthorization();
             app.MapControllers();
             // Prometheus Exporter to collect Metrcis from /metrics Endpoint
-
-
-
-            
             app.UseHttpMetrics();      // Tracks HTTP request metrics
             app.UseMetricServer();     // Exposes the /metrics endpoint
 
